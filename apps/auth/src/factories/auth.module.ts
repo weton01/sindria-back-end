@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { AuthController } from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '../entities/user.entity';
 import { BcryptAdapter, envs, JwtStrategy } from '@app/utils';
 import { JwtModule } from '@nestjs/jwt';
+import { UserEntity } from '@app/common';
 
 @Module({
   imports: [

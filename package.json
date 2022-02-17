@@ -98,7 +98,8 @@
     ],
     "moduleNameMapper": {
       "^@app/foggy-common(|/.*)$": "<rootDir>/libs/foggy-common/src/$1",
-      "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1"
+      "^@app/utils(|/.*)$": "<rootDir>/libs/utils/src/$1",
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     }
   }
 }
