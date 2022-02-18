@@ -1,4 +1,4 @@
-import { Entity, ObjectIdColumn, Column } from 'typeorm';
+import { Entity, ObjectIdColumn, Column, Unique } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -8,16 +8,22 @@ export class UserEntity {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
   password: string;
 
-  @Column({ length: 6 })
+  @Column()
+  created_at?: Date;
+
+  @Column()
+  updated_ate?: Date;
+
+  @Column({ length: 4 })
   activationCode: string;
 
-  @Column({ default: false })
+  @Column('boolean', { default: false })
   active: boolean;
 
   constructor(entity?: Partial<UserEntity>) {
