@@ -9,16 +9,22 @@ export class UserEntity {
   @Column()
   username: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
   password: string;
 
-  @Column({ length: 6 })
+  @Column()
+  created_at?: Date;
+
+  @Column()
+  updated_ate?: Date;
+
+  @Column({ length: 4 })
   activationCode: string;
 
-  @Column({ default: false })
+  @Column('boolean', { default: false })
   active: boolean;
 
   @OneToOne(type => TeacherEntity, teacher => teacher.user)

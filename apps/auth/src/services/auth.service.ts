@@ -2,6 +2,8 @@ import { UserEntity } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ObjectID } from 'mongodb';
+
 import { CreateUserDto, UpdateUserDto } from '../dtos';
 
 @Injectable()
@@ -18,7 +20,10 @@ export class AuthService {
 
   async update(_id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     await this.repository.update(_id, updateUserDto);
-    return await this.repository.findOne({ _id });
+    return await this.repository.findOne({
+      where: { _id },
+      select: ['_id', 'username', 'email', 'active'],
+    });
   }
 
   async delete(id: string): Promise<any> {
@@ -38,6 +43,14 @@ export class AuthService {
   }
 
   async findById(_id: string): Promise<UserEntity> {
-    return await this.repository.findOne({ _id });
+    return await this.repository.findOne({ _id: new ObjectID(_id) });
+  }
+
+  async changePassword(_id: string, password: string): Promise<any> {
+    return await this.repository.update(_id, { password: password });
+  }
+
+  async activeUser(_id: string): Promise<any> {
+    return await this.repository.update(_id, { active: true });
   }
 }
