@@ -43,6 +43,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "teacher": {
+      "type": "application",
+      "root": "apps/teacher",
+      "entryFile": "main",
+      "sourceRoot": "apps/teacher/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/teacher/tsconfig.app.json"
+      }
     }
   }
 }
