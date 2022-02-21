@@ -1,4 +1,5 @@
-import { Entity, ObjectIdColumn, Column } from 'typeorm';
+import { Entity, ObjectIdColumn, Column, OneToOne } from 'typeorm';
+import { TeacherEntity } from './teacher.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -19,6 +20,9 @@ export class UserEntity {
 
   @Column({ default: false })
   active: boolean;
+
+  @OneToOne(type => TeacherEntity, teacher => teacher.user)
+  teacher: TeacherEntity;
 
   constructor(entity?: Partial<UserEntity>) {
     this._id = entity?._id;
