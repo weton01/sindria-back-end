@@ -1,3 +1,4 @@
+import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import serverlessExpress from '@vendia/serverless-express';
@@ -6,7 +7,7 @@ import { AuthModule } from './factories/auth.module';
 
 let server: Handler;
 
-if (process.env.IS_SERVERLESS == 'false') {
+if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(AuthModule);
 

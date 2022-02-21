@@ -1,11 +1,17 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/profe/src",
+  "sourceRoot": "./",
   "monorepo": true,
-  "root": "apps/profe",
+  "root": "./",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/profe/tsconfig.app.json"
+    "tsConfigPath": "apps/profe/tsconfig.app.json",
+    "assets": [
+      {
+        "include": "**/*.hbs",
+        "watchAssets": true
+      }
+    ]
   },
   "projects": {
     "auth": {
@@ -15,15 +21,6 @@
       "sourceRoot": "apps/auth/src",
       "compilerOptions": {
         "tsConfigPath": "apps/auth/tsconfig.app.json"
-      }
-    },
-    "categories": {
-      "type": "application",
-      "root": "apps/categories",
-      "entryFile": "main",
-      "sourceRoot": "apps/categories/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/categories/tsconfig.app.json"
       }
     },
     "utils": {
