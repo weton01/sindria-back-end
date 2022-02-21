@@ -7,7 +7,7 @@ import { AuthModule } from './factories/auth.module';
 
 let server: Handler;
 
-if (envs.IS_SERVERLESS == 'false') {
+if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(AuthModule);
 

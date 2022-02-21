@@ -1,13 +1,25 @@
-service: serverless-example
-
+service: talk-to
+disabledDeprecations:
+  - CLI_DEPLOY_FUNCTION_OPTION_V3
+  - CLI_OPTIONS_BEFORE_COMMAND
+  - MISSING_COMMANDS_OR_OPTIONS_AT_CONSTRUCTION
 plugins:
-  - serverless-dotenv-plugin
   - serverless-offline
 
 provider:
   name: aws
   runtime: nodejs14.x
-
+  stage: production
+  environment:
+    MAILER_TRANSPORT_HOST: smtp.mailtrap.io
+    MAILER_TRANSPORT_PORT: 2525
+    MAILER_TRANSPORT_AUTH_USER: bfed0bddaaa901
+    MAILER_TRANSPORT_AUTH_PASS: 34f539bbd98320
+    MAILER_MAIL_FROM: lich@lichdata.com
+    MONGO_URI: mongodb+srv://weton01:Dragonite1@professor.yrdup.mongodb.net/dev?retryWrites=true&w=majority
+    IS_SERVERLESS: true
+    NODE_ENV: production
+ 
 functions:
   main:
     handler: ./dist/apps/auth/main.handler
@@ -18,3 +30,4 @@ functions:
       - http:
           method: ANY
           path: '{proxy+}'
+    

@@ -25,7 +25,6 @@ import {
 import { AuthUserDto } from '../dtos/auth-user.dto';
 import { AuthService } from '../services/auth.service';
 import { RecoverPasswordDto } from '../dtos/recover-password.dto';
-
 @Controller('/auth')
 export class AuthController {
   constructor(
