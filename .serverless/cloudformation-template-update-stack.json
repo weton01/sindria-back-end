@@ -74,7 +74,7 @@
     "MainLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-example-dev-main"
+        "LogGroupName": "/aws/lambda/talk-to-production-main"
       }
     },
     "IamRoleLambdaExecution": {
@@ -102,8 +102,8 @@
               "Fn::Join": [
                 "-",
                 [
-                  "serverless-example",
-                  "dev",
+                  "talk-to",
+                  "production",
                   "lambda"
                 ]
               ]
@@ -119,7 +119,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-example-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/talk-to-production*:*"
                     }
                   ]
                 },
@@ -130,7 +130,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-example-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/talk-to-production*:*:*"
                     }
                   ]
                 }
@@ -143,8 +143,8 @@
           "Fn::Join": [
             "-",
             [
-              "serverless-example",
-              "dev",
+              "talk-to",
+              "production",
               {
                 "Ref": "AWS::Region"
               },
@@ -161,23 +161,23 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-example/dev/1645214857676-2022-02-18T20:07:37.676Z/serverless-example.zip"
+          "S3Key": "serverless/talk-to/production/1645440871140-2022-02-21T10:54:31.140Z/talk-to.zip"
         },
         "Handler": "./dist/apps/auth/main.handler",
         "Runtime": "nodejs14.x",
-        "FunctionName": "serverless-example-dev-main",
+        "FunctionName": "talk-to-production-main",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "IS_SERVERLESS": "true",
-            "JWT_SECRET": "test",
             "MAILER_TRANSPORT_HOST": "smtp.mailtrap.io",
             "MAILER_TRANSPORT_PORT": "2525",
             "MAILER_TRANSPORT_AUTH_USER": "bfed0bddaaa901",
             "MAILER_TRANSPORT_AUTH_PASS": "34f539bbd98320",
             "MAILER_MAIL_FROM": "lich@lichdata.com",
-            "MONGO_URI": "mongodb+srv://weton01:Dragonite1@professor.yrdup.mongodb.net/dev?retryWrites=true&w=majority"
+            "MONGO_URI": "mongodb+srv://weton01:Dragonite1@professor.yrdup.mongodb.net/dev?retryWrites=true&w=majority",
+            "IS_SERVERLESS": "true",
+            "NODE_ENV": "production"
           }
         },
         "Role": {
@@ -191,20 +191,20 @@
         "MainLogGroup"
       ]
     },
-    "MainLambdaVersionAIteIWdZeD9PQU2mkdYLgWHiOwpeekfOvkFqoXbXiE": {
+    "MainLambdaVersionHI9BAvm5i9p6Wa7OX2XSMWfJXu2jdQZTZ7xMYuNr6g": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "MainLambdaFunction"
         },
-        "CodeSha256": "T+gqDbrzmbtjFAw7rxhwZRW1VC8N/UfG8nbWL3PFac4="
+        "CodeSha256": "m88o7xxowSbDdfCsybVwG/AEBRAzv/q96SdURNArddY="
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "dev-serverless-example",
+        "Name": "production-talk-to",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
@@ -323,13 +323,13 @@
         "MainLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1645214834256": {
+    "ApiGatewayDeployment1645440850073": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         },
-        "StageName": "dev"
+        "StageName": "production"
       },
       "DependsOn": [
         "ApiGatewayMethodAny",
@@ -380,16 +380,16 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-serverless-example-dev-ServerlessDeploymentBucketName"
+        "Name": "sls-talk-to-production-ServerlessDeploymentBucketName"
       }
     },
     "MainLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "MainLambdaVersionAIteIWdZeD9PQU2mkdYLgWHiOwpeekfOvkFqoXbXiE"
+        "Ref": "MainLambdaVersionHI9BAvm5i9p6Wa7OX2XSMWfJXu2jdQZTZ7xMYuNr6g"
       },
       "Export": {
-        "Name": "sls-serverless-example-dev-MainLambdaFunctionQualifiedArn"
+        "Name": "sls-talk-to-production-MainLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -410,12 +410,12 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/dev"
+            "/production"
           ]
         ]
       },
       "Export": {
-        "Name": "sls-serverless-example-dev-ServiceEndpoint"
+        "Name": "sls-talk-to-production-ServiceEndpoint"
       }
     }
   }
