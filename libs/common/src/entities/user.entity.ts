@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  OneToOne
 } from 'typeorm';
-import { TaskEntity } from '.';
+
+import { TaskEntity } from './task.entity';
+import { TeacherEntity } from './teacher.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -36,11 +39,11 @@ export class UserEntity {
 
   @OneToMany(() => TaskEntity, (task) => task.user)
   tasks: TaskEntity[];
+  
+  @OneToOne(type => TeacherEntity, teacher => teacher.user)
+  teacher: TeacherEntity;
 
   constructor(entity?: Partial<UserEntity>) {
-    this._id = entity?._id;
-    this.username = entity?.username;
-    this.email = entity?.email;
-    this.password = entity?.password;
+
   }
 }
