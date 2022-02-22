@@ -1,4 +1,14 @@
-import { Entity, ObjectIdColumn, Column, OneToOne } from 'typeorm';
+import {
+  Entity,
+  ObjectIdColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  OneToOne
+} from 'typeorm';
+
+import { TaskEntity } from './task.entity';
 import { TeacherEntity } from './teacher.entity';
 
 @Entity({ name: 'users' })
@@ -15,25 +25,25 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column()
-  created_at?: Date;
-
-  @Column()
-  updated_ate?: Date;
-
   @Column({ length: 4 })
   activationCode: string;
 
   @Column('boolean', { default: false })
   active: boolean;
 
+  @CreateDateColumn()
+  created_at?: Date;
+
+  @UpdateDateColumn()
+  updated_at?: Date;
+
+  @OneToMany(() => TaskEntity, (task) => task.user)
+  tasks: TaskEntity[];
+  
   @OneToOne(type => TeacherEntity, teacher => teacher.user)
   teacher: TeacherEntity;
 
   constructor(entity?: Partial<UserEntity>) {
-    this._id = entity?._id;
-    this.username = entity?.username;
-    this.email = entity?.email;
-    this.password = entity?.password;
+
   }
 }
