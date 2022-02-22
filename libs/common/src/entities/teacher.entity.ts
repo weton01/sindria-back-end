@@ -1,4 +1,5 @@
 import { Entity, ObjectIdColumn, Column, OneToOne, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import { FormationEntity } from './';
 import { UserEntity, SkillEntity } from './'; 
 
 @Entity({ name: 'teachers' })
@@ -16,7 +17,10 @@ export class TeacherEntity {
   user: UserEntity; 
 
   @OneToMany(() => SkillEntity, skill => skill.teacher)
-  skills: SkillEntity;
+  skills: SkillEntity[];
+
+  @OneToMany(() => FormationEntity, formation => formation.teacher)
+  formations: FormationEntity[];
 
   @CreateDateColumn()
   created_at: Date;

@@ -10,3 +10,10 @@ export * from './filter-skill.dto';
 export * from './get-by-id-skill.dto'; 
 export * from './delete-skill.dto'
 
+
+export * from './create-formation.dto';
+export * from './update-formation.dto';
+export * from './filter-formation.dto';
+export * from './get-by-id-formation.dto'; 
+export * from './delete-formation.dto'
+
