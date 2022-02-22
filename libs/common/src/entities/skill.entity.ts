@@ -1,13 +1,13 @@
 import {
   Entity,
   ObjectIdColumn,
-  Column,
-  OneToOne,
+  Column, 
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
 import { TeacherEntity } from './';
+import { RangeSchema } from './';
 
 @Entity({ name: 'skills' })
 export class SkillEntity {
@@ -16,6 +16,9 @@ export class SkillEntity {
 
   @Column()
   name: string;
+
+  @Column()
+  range: RangeSchema;
 
   @ManyToOne(() => TeacherEntity, (teacher) => teacher.skills)
   teacher: TeacherEntity;

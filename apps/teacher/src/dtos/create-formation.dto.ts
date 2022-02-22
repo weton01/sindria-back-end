@@ -1,14 +1,11 @@
-import { FormationEntity, TeacherEntity } from '@app/common';
+import { TeacherEntity } from '@app/common';
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateFormationDto {  
+export class CreateSkillDto {  
   @IsString()
   @IsNotEmpty()
   name: string;
  
   @IsOptional()
   teacher: TeacherEntity;
-  
-  @IsOptional()
-  experience: FormationEntity;
 }
