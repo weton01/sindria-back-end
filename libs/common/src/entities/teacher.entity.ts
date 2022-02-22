@@ -1,6 +1,7 @@
 import { Entity, ObjectIdColumn, Column, OneToOne, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 import { FormationEntity } from './';
 import { UserEntity, SkillEntity } from './'; 
+import { ExperienceEntity } from './experience.entity';
 
 @Entity({ name: 'teachers' })
 export class TeacherEntity {
@@ -21,6 +22,9 @@ export class TeacherEntity {
 
   @OneToMany(() => FormationEntity, formation => formation.teacher)
   formations: FormationEntity[];
+  
+  @OneToMany(() => ExperienceEntity, experience => experience.teacher)
+  experiences: FormationEntity[];
 
   @CreateDateColumn()
   created_at: Date;
