@@ -1,4 +1,12 @@
-import { Entity, ObjectIdColumn, Column, Unique } from 'typeorm';
+import {
+  Entity,
+  ObjectIdColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
+import { TaskEntity } from '.';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -14,17 +22,20 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column()
-  created_at?: Date;
-
-  @Column()
-  updated_ate?: Date;
-
   @Column({ length: 4 })
   activationCode: string;
 
   @Column('boolean', { default: false })
   active: boolean;
+
+  @CreateDateColumn()
+  created_at?: Date;
+
+  @UpdateDateColumn()
+  updated_at?: Date;
+
+  @OneToMany(() => TaskEntity, (task) => task.user)
+  tasks: TaskEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this._id = entity?._id;

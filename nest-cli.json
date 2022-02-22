@@ -40,6 +40,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "calendar": {
+      "type": "application",
+      "root": "apps/calendar",
+      "entryFile": "main",
+      "sourceRoot": "apps/calendar/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/calendar/tsconfig.app.json"
+      }
     }
   }
 }
