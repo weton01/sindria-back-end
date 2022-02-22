@@ -34,13 +34,15 @@ export class TeacherController {
   @Delete('/:_id')
   async deleteTeacher(@Param('_id') _id: string): Promise<any> {
     const teacher = await this.teacherService.delete(_id)
-    return {message: "successfully deleted!"}
+    return teacher.affected === 1
+      ? { message: 'successfully deleted!' }
+      : { message: 'id not found!' };
   }
 
   @Get('/:_id')
   async getByIdTeacher(@Param('_id') _id: string): Promise<any> { 
-    const teacher = await this.teacherService.findById(_id);
-    return { teacher }
+    const teacher = await this.teacherService.findById(_id); 
+    return teacher !== undefined? { teacher } : {message: "id not found"};
   }
 
   @Get('/')
