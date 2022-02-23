@@ -2,14 +2,14 @@ import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import serverlessExpress from '@vendia/serverless-express';
+import { AppModule } from 'apps/teacher/src/factories/app.module';
 import { Callback, Context, Handler } from 'aws-lambda';
-import { CalendarModule } from './factories/calendar.module';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(CalendarModule);
+    const app = await NestFactory.create(AppModule);
 
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
@@ -22,7 +22,7 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(CalendarModule);
+  const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
