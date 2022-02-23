@@ -1,4 +1,4 @@
-import { TeacherEntity } from '@app/common';
+import { RangeSchemaDto } from '@app/common';
 import { Type } from 'class-transformer';
 import {
   IsString,
@@ -6,7 +6,7 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { RangeSchemaDto } from '../../../../libs/common/src/dtos/range-schema.dto';
+import { TeacherEntity } from '../entities';
 
 export class CreateExperienceDto {
   @IsString()

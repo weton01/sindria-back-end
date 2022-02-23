@@ -1,3 +1,4 @@
+import { RangeSchema } from '@app/common';
 import {
   Entity,
   ObjectIdColumn,
@@ -6,9 +7,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-
-import { TeacherEntity } from './';
-import { RangeSchema } from './';
+import { TeacherEntity } from '.';
 
 @Entity({ name: 'skills' })
 export class SkillEntity {

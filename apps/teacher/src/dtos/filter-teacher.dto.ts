@@ -2,19 +2,19 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, Min, Max, IsOptional } from 'class-validator';
 
 export class FilterTeacherDto {
-  @IsNumber() 
+  @IsNumber()
   @Min(0)
   @Max(5)
   @IsOptional()
   rating: number;
- 
+
   @IsNotEmpty()
-  @IsNumber() 
+  @IsNumber()
   @Min(0)
   @Type(() => Number)
   skip: number;
 
-  @IsNotEmpty() 
+  @IsNotEmpty()
   @IsNumber()
   @Min(0)
   @Type(() => Number)

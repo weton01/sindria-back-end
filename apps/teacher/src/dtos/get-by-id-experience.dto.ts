@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export class GetByIdExperienceDto { 
+export class GetByIdExperienceDto {
   @IsString()
   @IsNotEmpty()
   _id: string;
