@@ -184,6 +184,11 @@ export class AuthController {
 
     await this.authService.activeUser(_id);
 
-    return { message: 'sucesso' };
+    const token = await this.jwtService.sign({
+      email: user.email,
+      id: user._id,
+    });
+
+    return { token, user };
   }
 }

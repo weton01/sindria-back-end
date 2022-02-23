@@ -1,10 +1,9 @@
- 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateSkillDto, FilterSkillDto, UpdateSkillDto } from '../dtos';
-import { ObjectID } from "mongodb"
-import { SkillEntity } from '@app/common';
+import { ObjectID } from 'mongodb';
+import { SkillEntity } from '../entities';
 
 @Injectable()
 export class SkillService {
@@ -18,7 +17,10 @@ export class SkillService {
     return await this.repository.save(tempSkill);
   }
 
-  async update(_id: string, updateSkillDto: UpdateSkillDto): Promise<SkillEntity> {
+  async update(
+    _id: string,
+    updateSkillDto: UpdateSkillDto,
+  ): Promise<SkillEntity> {
     await this.repository.update(_id, updateSkillDto);
     return await this.repository.findOne({ _id });
   }
@@ -28,11 +30,14 @@ export class SkillService {
   }
 
   async find(filterSkillDto: FilterSkillDto): Promise<SkillEntity[]> {
-    return await this.repository.find({ order:{ created_at: 'DESC' }, ...filterSkillDto });
+    return await this.repository.find({
+      order: { created_at: 'DESC' },
+      ...filterSkillDto,
+    });
   }
 
-  async findOne(value: any): Promise<SkillEntity> { 
-    return await this.repository.findOne({  ...value });
+  async findOne(value: any): Promise<SkillEntity> {
+    return await this.repository.findOne({ ...value });
   }
 
   async findById(_id: string): Promise<SkillEntity> {

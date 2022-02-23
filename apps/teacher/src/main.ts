@@ -2,8 +2,9 @@ import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import serverlessExpress from '@vendia/serverless-express';
-import { Callback, Context, Handler } from 'aws-lambda';  
+import { Callback, Context, Handler } from 'aws-lambda';
 import { AppModule } from './factories/app.module';
+import 'module-alias';
 
 let server: Handler;
 
