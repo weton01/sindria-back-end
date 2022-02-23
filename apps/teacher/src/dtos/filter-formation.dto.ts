@@ -1,14 +1,14 @@
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
-export class FilterFormationDto { 
+export class FilterFormationDto {
   @IsNotEmpty()
-  @IsNumber() 
+  @IsNumber()
   @Min(0)
   @Type(() => Number)
   skip: number;
 
-  @IsNotEmpty() 
+  @IsNotEmpty()
   @IsNumber()
   @Min(0)
   @Type(() => Number)

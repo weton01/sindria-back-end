@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
 
-export class CreateTeacherDto {  
+export class CreateTeacherDto {
   @IsString()
   @IsNotEmpty()
   description: string;

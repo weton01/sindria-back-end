@@ -1,10 +1,5 @@
- 
-import { TeacherEntity } from '@app/common';
-import {
-  IsString,
-  IsNotEmpty, 
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { TeacherEntity } from '../entities';
 
 export class UpdateSkillDto {
   @IsString()
