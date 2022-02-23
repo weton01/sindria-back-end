@@ -1,11 +1,12 @@
 import {
   Entity,
   ObjectIdColumn,
-  Column, 
+  Column,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
+
 import { TeacherEntity } from './';
 import { RangeSchema } from './';
 

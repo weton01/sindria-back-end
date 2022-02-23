@@ -1,17 +1,23 @@
 import { TeacherEntity } from '@app/common';
 import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
-import { RangeSchemaDto } from './range-schema.dto';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 
-export class CreateFormationDto {  
+import { RangeSchemaDto } from '../../../../libs/common/src/dtos/range-schema.dto';
+
+export class CreateFormationDto {
   @IsString()
   @IsNotEmpty()
   name: string;
- 
+
   @IsOptional()
   teacher: TeacherEntity;
 
-  @ValidateNested( )
+  @ValidateNested()
   @Type(() => RangeSchemaDto)
-  range: RangeSchemaDto
+  range: RangeSchemaDto;
 }

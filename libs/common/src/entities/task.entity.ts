@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { UserEntity } from '.';
+import { RangeSchema, UserEntity } from './';
 
 @Entity({ name: 'tasks' })
 export class TaskEntity {
@@ -28,11 +28,8 @@ export class TaskEntity {
   @Column('boolean', { default: false })
   userConfirmation: boolean;
 
-  @Column({ type: 'timestamptz' })
-  taskInitDate: Date;
-
-  @Column({ type: 'timestamptz' })
-  taskEndDate: Date;
+  @Column()
+  range: RangeSchema;
 
   @CreateDateColumn()
   created_at?: Date;
