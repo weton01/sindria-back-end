@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  OneToOne
+  OneToOne,
 } from 'typeorm';
 
 import { TaskEntity } from './task.entity';
@@ -39,11 +39,7 @@ export class UserEntity {
 
   @OneToMany(() => TaskEntity, (task) => task.user)
   tasks: TaskEntity[];
-  
-  @OneToOne(type => TeacherEntity, teacher => teacher.user)
+
+  @OneToOne(() => TeacherEntity, (teacher) => teacher.user)
   teacher: TeacherEntity;
-
-  constructor(entity?: Partial<UserEntity>) {
-
-  }
 }
