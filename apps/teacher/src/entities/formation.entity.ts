@@ -1,16 +1,16 @@
+import { RangeSchema } from '@app/common';
 import {
   Entity,
   ObjectIdColumn,
-  Column, 
+  Column,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
 import { TeacherEntity } from '.';
-import { RangeSchema } from '.';
 
-@Entity({ name: 'experiences' })
-export class ExperienceEntity {
+@Entity({ name: 'formations' })
+export class FormationEntity {
   @ObjectIdColumn()
   _id: string;
 
@@ -20,7 +20,7 @@ export class ExperienceEntity {
   @Column()
   range: RangeSchema;
 
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.experiences)
+  @ManyToOne(() => TeacherEntity, (teacher) => teacher.formations)
   teacher: TeacherEntity;
 
   @CreateDateColumn()

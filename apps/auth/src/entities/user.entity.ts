@@ -1,3 +1,5 @@
+import { TaskEntity } from '@/calendar/entities';
+import { TeacherEntity } from '@/teacher/entities';
 import {
   Entity,
   ObjectIdColumn,
@@ -7,9 +9,6 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-
-import { TaskEntity } from './task.entity';
-import { TeacherEntity } from './teacher.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {

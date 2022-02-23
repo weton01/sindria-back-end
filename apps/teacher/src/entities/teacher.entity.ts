@@ -1,3 +1,5 @@
+import { UserEntity } from '@/auth/entities';
+
 import {
   Entity,
   ObjectIdColumn,
@@ -7,10 +9,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { FormationEntity } from './';
-import { UserEntity, SkillEntity } from './';
- 
-import { ExperienceEntity } from './experience.entity';
+
+import { FormationEntity, SkillEntity, ExperienceEntity } from '.';
 
 @Entity({ name: 'teachers' })
 export class TeacherEntity {
@@ -31,8 +31,8 @@ export class TeacherEntity {
 
   @OneToMany(() => FormationEntity, (formation) => formation.teacher)
   formations: FormationEntity[];
-  
-  @OneToMany(() => ExperienceEntity, experience => experience.teacher)
+
+  @OneToMany(() => ExperienceEntity, (experience) => experience.teacher)
   experiences: FormationEntity[];
 
   @CreateDateColumn()

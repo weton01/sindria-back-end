@@ -1,3 +1,5 @@
+import { UserEntity } from '@/auth/entities';
+import { RangeSchema } from '@app/common';
 import {
   Entity,
   ObjectIdColumn,
@@ -6,7 +8,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { RangeSchema, UserEntity } from './';
 
 @Entity({ name: 'tasks' })
 export class TaskEntity {
@@ -18,9 +19,6 @@ export class TaskEntity {
 
   @Column()
   teacherId: string;
-
-  @Column()
-  courseId: string;
 
   @Column('boolean', { default: false })
   teacherConfirmation: boolean;
