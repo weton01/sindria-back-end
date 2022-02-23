@@ -2,9 +2,9 @@ import { Entity, Column } from 'typeorm';
 
 @Entity({ name: 'rangeSchema' })
 export class RangeSchema {
-  @Column()
-  begin: string;
+  @Column({ type: 'timestamptz' })
+  begin: Date;
 
-  @Column()
-  end: string;
+  @Column({ type: 'timestamptz' })
+  end: Date;
 }
