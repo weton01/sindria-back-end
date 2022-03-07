@@ -11,8 +11,12 @@ import {
   Post,
   Query,
   UseGuards,
+  Req,
+  Body,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
-import { CalendarService } from '../services/calendar.service';
+import { CreateTaskDto } from '../dtos';
 import { TaskService } from '../services/task.service';
 
 @Controller('calendar/task')
@@ -26,10 +30,14 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(): Promise<any> {
+  async create(
+    @Req() req: any,
+    @Body() createTaskDto: CreateTaskDto,
+  ): Promise<any> {
+    const { user } = req;
+
     /*
-      Validar se usuário já existe
-      Validar se teacher já existe
+       Validar se teacher já existe
     */
 
     /*
@@ -42,7 +50,14 @@ export class TaskController {
       nessa mesma hora
     */
 
-    return;
+    const teacherFound = await this.teacherService.findOne({ user: user });
+
+    if (!teacherFound) {
+      const strErr = 'professor não encontrado';
+      throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
+    }
+
+    const taskFound = await this.taskService;
   }
 
   @Patch()

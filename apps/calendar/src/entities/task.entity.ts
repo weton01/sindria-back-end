@@ -1,4 +1,5 @@
 import { UserEntity } from '@/auth/entities';
+import { TeacherEntity } from '@/teacher/entities';
 import { RangeSchema } from '@app/common';
 import {
   Entity,
@@ -17,9 +18,6 @@ export class TaskEntity {
   @Column()
   description: string;
 
-  @Column()
-  teacherId: string;
-
   @Column('boolean', { default: false })
   teacherConfirmation: boolean;
 
@@ -37,6 +35,9 @@ export class TaskEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.tasks)
   user: UserEntity;
+
+  @ManyToOne(() => TeacherEntity, (teacher) => teacher.teachers)
+  teacher: TeacherEntity;
 
   constructor(entity?: Partial<TaskEntity>) {
     this._id = entity?._id;
