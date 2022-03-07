@@ -23,16 +23,16 @@ export class TeacherEntity {
   @Column()
   rating: number;
 
-  @OneToOne(() => UserEntity)
+  @Column(() => UserEntity)
   user: UserEntity;
 
-  @OneToMany(() => SkillEntity, (skill) => skill.teacher)
+  @Column(() => SkillEntity)
   skills: SkillEntity[];
 
-  @OneToMany(() => FormationEntity, (formation) => formation.teacher)
+  @Column(() => FormationEntity)
   formations: FormationEntity[];
 
-  @OneToMany(() => ExperienceEntity, (experience) => experience.teacher)
+  @Column(() => ExperienceEntity)
   experiences: FormationEntity[];
 
   @CreateDateColumn()
@@ -41,7 +41,12 @@ export class TeacherEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  constructor(entity?: Partial<UserEntity>) {
-    this._id = entity?._id;
+  constructor(entity?: Partial<TeacherEntity>) {
+    this.description = entity?.description;
+    this.rating = entity?.rating;
+    this.user = entity?.user;
+    this.skills = entity?.skills;
+    this.formations = entity?.formations;
+    this.experiences = entity?.experiences;
   }
 }

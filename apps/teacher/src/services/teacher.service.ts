@@ -29,15 +29,27 @@ export class TeacherService {
     return await this.repository.delete(id);
   }
 
-  async find(filterTeacherDto: FilterTeacherDto): Promise<TeacherEntity[]> {
+  async find(
+    filterTeacherDto?: FilterTeacherDto,
+    params?: any,
+  ): Promise<TeacherEntity[]> {
     return await this.repository.find({
       order: { created_at: 'DESC' },
       ...filterTeacherDto,
+      ...params,
     });
   }
 
   async findOne(value: any): Promise<TeacherEntity> {
-    return await this.repository.findOne({ ...value });
+    const foundTeachers = await this.repository.find({
+      order: { created_at: 'DESC' },
+      ...value,
+    })
+
+    if(foundTeachers.length > 0)
+      return foundTeachers[0]
+      
+    return null
   }
 
   async findById(_id: string): Promise<TeacherEntity> {

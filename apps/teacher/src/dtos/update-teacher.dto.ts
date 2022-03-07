@@ -1,4 +1,7 @@
-import { IsString, IsNotEmpty, IsNumber, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsNumber, Min, Max, ValidateNested } from 'class-validator';
+import { SkillEntity } from '../entities';
+import { CreateSkillDto } from './create-skill.dto';
 
 export class UpdateTeacherDto {
   @IsString()
@@ -10,4 +13,8 @@ export class UpdateTeacherDto {
   @Min(0)
   @Max(5)
   rating: number;
+   
+  @ValidateNested()
+  @Type(() => CreateSkillDto)
+  skills: SkillEntity[];
 }
