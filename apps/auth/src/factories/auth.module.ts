@@ -3,12 +3,8 @@ import { AuthController } from '../controllers/auth.controller';
 import { AuthService } from '../services/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BcryptAdapter, JwtStrategy } from '@app/utils';
-import {
-  JwtConfig,
-  MailerConfig,
-  TypeormConfig,
-  UserEntity,
-} from '@app/common';
+import { JwtConfig, MailerConfig, TypeormConfig } from '@app/common';
+import { UserEntity } from '../entities';
 
 @Module({
   imports: [

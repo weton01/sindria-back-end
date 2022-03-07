@@ -1,4 +1,5 @@
 import { UserEntity } from '@/auth/entities';
+import { TaskEntity } from '@/calendar/entities';
 
 import {
   Entity,
@@ -34,6 +35,9 @@ export class TeacherEntity {
 
   @OneToMany(() => ExperienceEntity, (experience) => experience.teacher)
   experiences: FormationEntity[];
+
+  @OneToMany(() => TaskEntity, (task) => task.teacher)
+  teachers: TaskEntity[];
 
   @CreateDateColumn()
   created_at: Date;
