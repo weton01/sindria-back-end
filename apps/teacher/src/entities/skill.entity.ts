@@ -20,9 +20,6 @@ export class SkillEntity {
   @Column()
   range: RangeSchema;
 
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.skills)
-  teacher: TeacherEntity;
-
   @CreateDateColumn()
   created_at: Date;
 

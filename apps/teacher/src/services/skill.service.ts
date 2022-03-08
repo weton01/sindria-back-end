@@ -37,7 +37,11 @@ export class SkillService {
   }
 
   async findOne(value: any): Promise<SkillEntity> {
-    return await this.repository.findOne({ ...value });
+    const foundSkills = await this.repository.findOne(  {
+      order: { created_at: 'DESC' },
+      where: value
+    })   
+    return foundSkills;
   }
 
   async findById(_id: string): Promise<SkillEntity> {
