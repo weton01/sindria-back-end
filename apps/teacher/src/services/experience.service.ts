@@ -45,7 +45,11 @@ export class ExperienceService {
   }
 
   async findOne(value: any): Promise<ExperienceEntity> {
-    return await this.repository.findOne({ ...value });
+    const foundSkills = await this.repository.findOne({
+      order: { created_at: 'DESC' },
+      where: value,
+    });
+    return foundSkills;
   }
 
   async findById(_id: string): Promise<ExperienceEntity> {

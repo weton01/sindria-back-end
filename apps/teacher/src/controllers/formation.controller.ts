@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -39,15 +41,19 @@ export class FormationController {
   @Delete('/:_id')
   async deleteFormation(@Param('_id') _id: string): Promise<any> {
     const formation = await this.formationService.delete(_id);
-    return formation.affected === 1
-      ? { message: 'successfully deleted!' }
-      : { message: 'id not found!' };
+    if (formation.affected === 0) {
+      const strErr = 'id não encotrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
   }
 
   @Get('/:_id')
   async getByIdFormation(@Param('_id') _id: string): Promise<any> {
-    const formation = await this.formationService.findById(_id); 
-    return formation !== undefined? { formation } : {message: "id not found"};
+    const formation = await this.formationService.findById(_id);
+    if (formation === undefined) {
+      const strErr = 'id não encotrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
   }
 
   @Get('/')

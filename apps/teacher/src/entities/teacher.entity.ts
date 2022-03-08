@@ -42,6 +42,7 @@ export class TeacherEntity {
   updated_at: Date;
 
   constructor(entity?: Partial<TeacherEntity>) {
+    this._id = entity?._id;
     this.description = entity?.description;
     this.rating = entity?.rating;
     this.user = entity?.user;
