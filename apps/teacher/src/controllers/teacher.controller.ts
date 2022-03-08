@@ -17,14 +17,11 @@ import {
 } from '@nestjs/common';
 import { ObjectID } from 'mongodb';
 import { CreateTeacherDto, FilterTeacherDto, UpdateTeacherDto } from '../dtos';
-import { SkillEntity } from '../entities';
 import { TeacherService } from '../services/teacher.service';
 
 @Controller('/teacher')
 export class TeacherController {
-  constructor(
-    private readonly teacherService: TeacherService, 
-  ) {}
+  constructor(private readonly teacherService: TeacherService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('/')
@@ -33,23 +30,21 @@ export class TeacherController {
     @Body() teacherDto: CreateTeacherDto,
   ): Promise<any> {
     const { user } = req;
- 
+
     const foundTeacher = await this.teacherService.findOne({
-      user: { _id: new ObjectID(user._id) },
+      'user._id': user._id,
     });
 
-    if (!foundTeacher) {
-      throw new HttpException(
-        'este usuário já é um professor, tente outro email',
-        HttpStatus.BAD_REQUEST,
-      );
+    if (foundTeacher) {
+      const strErr = 'este usuário já é um professor, tente outro email';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
     const newUser = new UserEntity(user);
     teacherDto.user = newUser;
 
     const teacher = await this.teacherService.create(teacherDto);
-    return { teacher };
+    return teacher;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -59,13 +54,13 @@ export class TeacherController {
     @Body() teacherDto: UpdateTeacherDto,
   ): Promise<any> {
     const foundTeacher = await this.teacherService.findById(_id);
+    
     if (!foundTeacher) {
-      throw new HttpException(
-        'professor não encontrado',
-        HttpStatus.BAD_REQUEST,
-      );
+      const strErr = 'professor não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
     await this.teacherService.update(_id, teacherDto);
+
     const foundTeacherUpdated = await this.teacherService.findById(_id);
     return foundTeacherUpdated;
   }
@@ -74,18 +69,18 @@ export class TeacherController {
   @Delete('/:_id')
   async deleteTeacher(@Param('_id') _id: string): Promise<any> {
     const foundTeacher = await this.teacherService.findById(_id);
-
     if (!foundTeacher) {
-      throw new HttpException(
-        'professor não encontrado',
-        HttpStatus.BAD_REQUEST,
-      );
+      const strErr = 'professor não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
     const teacher = await this.teacherService.delete(_id);
-    return teacher.affected === 1
-      ? { message: 'successfully deleted!' }
-      : { message: 'id not found!' };
+    if(teacher.affected === 0){
+      const strErr = 'id não encotrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
+
+    return {}
   }
 
   @UseGuards(JwtAuthGuard)
@@ -94,14 +89,11 @@ export class TeacherController {
     const foundTeacher = await this.teacherService.findById(_id);
 
     if (!foundTeacher) {
-      throw new HttpException(
-        'professor não encontrado',
-        HttpStatus.BAD_REQUEST,
-      );
+      const strErr = 'professor não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-
     const teacher = await this.teacherService.findById(_id);
-    return { teacher };
+    return teacher;
   }
 
   @UseGuards(JwtAuthGuard)
