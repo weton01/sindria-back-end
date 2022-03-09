@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
  import { FormationController } from '../controllers/formation.controller';
 import { FormationEntity, TeacherEntity } from '../entities';
+import { TeacherService } from '../services';
 import { FormationService } from '../services/formation.service';
 
 @Module({
@@ -11,6 +12,6 @@ import { FormationService } from '../services/formation.service';
 
   ],
   controllers: [FormationController],
-  providers: [FormationService],
+  providers: [FormationService, TeacherService],
 })
 export class FormationModule {}
