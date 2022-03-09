@@ -12,7 +12,7 @@ import {
   Query,
   Req,
   UseGuards,
-} from '@nestjs/common'; 
+} from '@nestjs/common';
 import { CreateSkillDto, FilterSkillDto, UpdateSkillDto } from '../dtos';
 import { TeacherService } from '../services';
 import { SkillService } from '../services';
@@ -64,17 +64,17 @@ export class SkillController {
     @Param('_id') _id: string,
     @Body() skillDto: UpdateSkillDto,
   ): Promise<any> {
-    const { user } = req; 
+    const { user } = req;
     const foundSkillId = await this.skillService.findById(_id);
 
     if (!foundSkillId) {
       const strErr = 'id não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    
+
     const foundTeacher = await this.teacherService.findOne({
       'user._id': user._id,
-    }); 
+    });
 
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
@@ -83,43 +83,56 @@ export class SkillController {
 
     const foundSkill = await this.skillService.findOne({
       name: skillDto.name,
-    }); 
+    });
 
     if (foundSkill) {
       const strErr = 'essa habilidade já existe';
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
-    } 
+    }
 
     await this.skillService.update(_id, skillDto);
 
-    const filterSkillDto = new FilterSkillDto()
+    const filterSkillDto = new FilterSkillDto();
     const skills = await this.skillService.find(filterSkillDto);
-    
+
     foundTeacher.skills = skills;
-    await this.teacherService.update(foundTeacher._id, foundTeacher)
+    await this.teacherService.update(foundTeacher._id, foundTeacher);
+
     return {};
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:_id')
-  async deleteSkill(@Param('_id') _id: string): Promise<any> {
+  async deleteSkill(@Param('_id') _id: string, @Req() req: any): Promise<any> {
+    const { user } = req;
+
     const skill = await this.skillService.delete(_id);
-    if(skill.affected === 0){
+    if (skill.affected === 0) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    return {}
+
+    const foundTeacher = await this.teacherService.findOne({
+      'user._id': user._id,
+    });
+
+    const filterSkillDto = new FilterSkillDto();
+    const skills = await this.skillService.find(filterSkillDto);
+    foundTeacher.skills = skills;
+
+    await this.teacherService.update(foundTeacher._id, foundTeacher);
+    return {};
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:_id')
   async getByIdSkill(@Param('_id') _id: string): Promise<any> {
     const skill = await this.skillService.findById(_id);
-    if(skill === undefined){
+    if (skill === undefined) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    return skill
+    return skill;
   }
 
   @UseGuards(JwtAuthGuard)
