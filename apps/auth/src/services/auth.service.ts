@@ -32,12 +32,12 @@ export class AuthService {
     return await this.repository.save(tempUser);
   }
 
-  async update(_id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
-    await this.repository.update(_id, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
+    await this.repository.update(id, updateUserDto);
 
     return await this.repository.findOne({
-      where: { _id },
-      select: ['_id', 'username', 'email', 'active'],
+      where: { id },
+      select: ['id', 'username', 'email', 'active'],
     });
   }
 
@@ -65,15 +65,15 @@ export class AuthService {
     return await this.repository.findOne({ ...value });
   }
 
-  async findById(_id: string): Promise<UserEntity> {
-    return await this.repository.findOne({ _id: new ObjectID(_id) });
+  async findById(id: string): Promise<UserEntity> {
+    return await this.repository.findOne({ id: new ObjectID(id) });
   }
 
-  async changePassword(_id: string, password: string): Promise<any> {
-    return await this.repository.update(_id, { password: password });
+  async changePassword(id: string, password: string): Promise<any> {
+    return await this.repository.update(id, { password: password });
   }
 
-  async activeUser(_id: string): Promise<any> {
-    return await this.repository.update(_id, { active: true });
+  async activeUser(id: string): Promise<any> {
+    return await this.repository.update(id, { active: true });
   }
 }

@@ -24,11 +24,11 @@ export class ExperienceService {
   }
 
   async update(
-    _id: string,
+    id: string,
     updateExperienceDto: UpdateExperienceDto,
   ): Promise<ExperienceEntity> {
-    await this.repository.update(_id, updateExperienceDto);
-    return await this.repository.findOne({ _id });
+    await this.repository.update(id, updateExperienceDto);
+    return await this.repository.findOne({ id });
   }
 
   async delete(id: string): Promise<any> {
@@ -52,7 +52,7 @@ export class ExperienceService {
     return foundSkills;
   }
 
-  async findById(_id: string): Promise<ExperienceEntity> {
-    return await this.repository.findOne({ _id: new ObjectID(_id) });
+  async findById(id: string): Promise<ExperienceEntity> {
+    return await this.repository.findOne({ id: new ObjectID(id) });
   }
 }

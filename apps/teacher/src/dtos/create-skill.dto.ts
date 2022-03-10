@@ -5,7 +5,7 @@ import { IsString, IsNotEmpty, ValidateNested, IsOptional } from 'class-validato
 export class CreateSkillDto {
   @IsString()
   @IsOptional()
-  _id: string; 
+  id: string; 
 
   @IsString()
   @IsNotEmpty()

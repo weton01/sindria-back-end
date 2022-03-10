@@ -1,22 +1,20 @@
 import { UserEntity } from '@/auth/entities';
-import { TaskEntity } from '@/calendar/entities';
 
 import {
   Entity,
-  ObjectIdColumn,
   Column,
-  OneToOne,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { FormationEntity, SkillEntity, ExperienceEntity } from '.';
 
 @Entity({ name: 'teachers' })
 export class TeacherEntity {
-  @ObjectIdColumn()
-  _id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   description: string;
@@ -27,17 +25,14 @@ export class TeacherEntity {
   @Column(() => UserEntity)
   user: UserEntity;
 
-  @Column(() => SkillEntity)
+  @OneToMany(() => SkillEntity, (skill) => skill.teacher)
   skills: SkillEntity[];
 
-  @Column(() => FormationEntity)
+  @OneToMany(() => FormationEntity, (formation) => formation.teacher)
   formations: FormationEntity[];
 
-  @Column(() => ExperienceEntity)
-  experiences: FormationEntity[];
-
-  @OneToMany(() => TaskEntity, (task) => task.teacher)
-  teachers: TaskEntity[];
+  @OneToMany(() => ExperienceEntity, (experience) => experience.teacher)
+  experiences: ExperienceEntity[];
 
   @CreateDateColumn()
   created_at: Date;
@@ -46,7 +41,7 @@ export class TeacherEntity {
   updated_at: Date;
 
   constructor(entity?: Partial<TeacherEntity>) {
-    this._id = entity?._id;
+    this.id = entity?.id;
     this.description = entity?.description;
     this.rating = entity?.rating;
     this.user = entity?.user;

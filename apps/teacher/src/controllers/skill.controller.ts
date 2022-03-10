@@ -32,7 +32,7 @@ export class SkillController {
   ): Promise<any> {
     const { user } = req;
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     });
 
     if (!foundTeacher) {
@@ -52,20 +52,20 @@ export class SkillController {
     const skill = await this.skillService.create(skillDto);
     foundTeacher.skills = [...(foundTeacher.skills || []), skill];
 
-    await this.teacherService.update(foundTeacher._id, foundTeacher);
+    await this.teacherService.update(foundTeacher.id, foundTeacher);
 
     return skill;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/:_id')
+  @Patch('/:id')
   async updateSkill(
     @Req() req: any,
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Body() skillDto: UpdateSkillDto,
   ): Promise<any> {
     const { user } = req;
-    const foundSkillId = await this.skillService.findById(_id);
+    const foundSkillId = await this.skillService.findById(id);
 
     if (!foundSkillId) {
       const strErr = 'id não encontrado';
@@ -73,7 +73,7 @@ export class SkillController {
     }
 
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     });
 
     if (!foundTeacher) {
@@ -90,44 +90,44 @@ export class SkillController {
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
 
-    await this.skillService.update(_id, skillDto);
+    await this.skillService.update(id, skillDto);
 
     const filterSkillDto = new FilterSkillDto();
     const skills = await this.skillService.find(filterSkillDto);
 
     foundTeacher.skills = skills;
-    await this.teacherService.update(foundTeacher._id, foundTeacher);
+    await this.teacherService.update(foundTeacher.id, foundTeacher);
 
     return {};
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/:_id')
-  async deleteSkill(@Param('_id') _id: string, @Req() req: any): Promise<any> {
+  @Delete('/:id')
+  async deleteSkill(@Param('id') id: string, @Req() req: any): Promise<any> {
     const { user } = req;
 
-    const skill = await this.skillService.delete(_id);
+    const skill = await this.skillService.delete(id);
     if (skill.affected === 0) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     });
 
     const filterSkillDto = new FilterSkillDto();
     const skills = await this.skillService.find(filterSkillDto);
     foundTeacher.skills = skills;
 
-    await this.teacherService.update(foundTeacher._id, foundTeacher);
+    await this.teacherService.update(foundTeacher.id, foundTeacher);
     return {};
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:_id')
-  async getByIdSkill(@Param('_id') _id: string): Promise<any> {
-    const skill = await this.skillService.findById(_id);
+  @Get('/:id')
+  async getByIdSkill(@Param('id') id: string): Promise<any> {
+    const skill = await this.skillService.findById(id);
     if (skill === undefined) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
