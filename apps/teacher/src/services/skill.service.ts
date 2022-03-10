@@ -18,11 +18,11 @@ export class SkillService {
   }
 
   async update(
-    _id: string,
+    id: string,
     updateSkillDto: UpdateSkillDto,
   ): Promise<SkillEntity> {
-    await this.repository.update(_id, updateSkillDto);
-    return await this.repository.findOne({ _id });
+    await this.repository.update(id, updateSkillDto);
+    return await this.repository.findOne({ id });
   }
 
   async delete(id: string): Promise<any> {
@@ -44,7 +44,7 @@ export class SkillService {
     return foundSkills;
   }
 
-  async findById(_id: string): Promise<SkillEntity> {
-    return await this.repository.findOne({ _id: new ObjectID(_id) });
+  async findById(id: string): Promise<SkillEntity> {
+    return await this.repository.findOne({ id: new ObjectID(id) });
   }
 }

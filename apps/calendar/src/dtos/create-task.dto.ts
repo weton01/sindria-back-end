@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsNotEmpty, ValidateNested } from 'class-validator';
 
 class TeacherDtoForTask implements Partial<CreateTeacherDto> {
-    _id: string
+    id: string
 }
 
 export class CreateTaskDto {

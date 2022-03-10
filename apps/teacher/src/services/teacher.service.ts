@@ -18,11 +18,11 @@ export class TeacherService {
   }
 
   async update(
-    _id: string,
+    id: string,
     updateTeacherDto: UpdateTeacherDto,
   ): Promise<TeacherEntity> {
-    await this.repository.update(_id, updateTeacherDto);
-    return await this.repository.findOne({ _id });
+    await this.repository.update(id, updateTeacherDto);
+    return await this.repository.findOne({ id });
   }
 
   async delete(id: string): Promise<any> {
@@ -48,7 +48,7 @@ export class TeacherService {
     return foundTeacher;
   }
 
-  async findById(_id: string): Promise<TeacherEntity> {
-    return await this.repository.findOne({ _id: new ObjectID(_id) });
+  async findById(id: string): Promise<TeacherEntity> {
+    return await this.repository.findOne({ id: new ObjectID(id) });
   }
 }

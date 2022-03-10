@@ -32,7 +32,7 @@ export class TeacherController {
     const { user } = req;
 
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     });
 
     if (foundTeacher) {
@@ -48,33 +48,33 @@ export class TeacherController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/:_id')
+  @Patch('/:id')
   async updateTeacher(
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Body() teacherDto: UpdateTeacherDto,
   ): Promise<any> {
-    const foundTeacher = await this.teacherService.findById(_id);
+    const foundTeacher = await this.teacherService.findById(id);
     
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    await this.teacherService.update(_id, teacherDto);
+    await this.teacherService.update(id, teacherDto);
 
-    const foundTeacherUpdated = await this.teacherService.findById(_id);
+    const foundTeacherUpdated = await this.teacherService.findById(id);
     return foundTeacherUpdated;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/:_id')
-  async deleteTeacher(@Param('_id') _id: string): Promise<any> {
-    const foundTeacher = await this.teacherService.findById(_id);
+  @Delete('/:id')
+  async deleteTeacher(@Param('id') id: string): Promise<any> {
+    const foundTeacher = await this.teacherService.findById(id);
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
-    const teacher = await this.teacherService.delete(_id);
+    const teacher = await this.teacherService.delete(id);
     if(teacher.affected === 0){
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
@@ -84,15 +84,15 @@ export class TeacherController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:_id')
-  async getByIdTeacher(@Param('_id') _id: string): Promise<any> {
-    const foundTeacher = await this.teacherService.findById(_id);
+  @Get('/:id')
+  async getByIdTeacher(@Param('id') id: string): Promise<any> {
+    const foundTeacher = await this.teacherService.findById(id);
 
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    const teacher = await this.teacherService.findById(_id);
+    const teacher = await this.teacherService.findById(id);
     return teacher;
   }
 

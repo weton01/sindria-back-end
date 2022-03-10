@@ -36,7 +36,7 @@ export class FormationController {
   ): Promise<any> {
     const { user } = req;
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     });
 
     if (!foundTeacher) {
@@ -56,28 +56,28 @@ export class FormationController {
     const formation = await this.formationService.create(formationDto);
     foundTeacher.formations = [...(foundTeacher.formations || []), formation];
 
-    await this.teacherService.update(foundTeacher._id, foundTeacher);
+    await this.teacherService.update(foundTeacher.id, foundTeacher);
 
     return formation;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('/:_id')
+  @Patch('/:id')
   async updateFormation(
     @Req() req: any,
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Body() formationDto: UpdateFormationDto,
   ): Promise<any> {
     const { user } = req;   
 
-    const foundFormationId = await this.formationService.findById(_id); 
+    const foundFormationId = await this.formationService.findById(id); 
     if (!foundFormationId) {
       const strErr = 'id não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     } 
   
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     }); 
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
@@ -92,40 +92,40 @@ export class FormationController {
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     } 
 
-    await this.formationService.update(_id, formationDto);
+    await this.formationService.update(id, formationDto);
     const filterFormationDto = new FilterFormationDto()
     const formations = await this.formationService.find(filterFormationDto);
     foundTeacher.formations = formations;
-    await this.teacherService.update(foundTeacher._id, foundTeacher)
+    await this.teacherService.update(foundTeacher.id, foundTeacher)
     return {};
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/:_id')
-  async deleteFormation(@Param('_id') _id: string, @Req() req: any): Promise<any> {
+  @Delete('/:id')
+  async deleteFormation(@Param('id') id: string, @Req() req: any): Promise<any> {
     const { user } = req; 
-    const formation = await this.formationService.delete(_id);
+    const formation = await this.formationService.delete(id);
     if (formation.affected === 0) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
     
     const foundTeacher = await this.teacherService.findOne({
-      'user._id': user._id,
+      'user.id': user.id,
     }); 
 
     const filterSkillDto = new FilterFormationDto()
     const formations = await this.formationService.find(filterSkillDto);
     foundTeacher.formations = formations;
 
-    await this.teacherService.update(foundTeacher._id, foundTeacher)
+    await this.teacherService.update(foundTeacher.id, foundTeacher)
     return {}
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/:_id')
-  async getByIdFormation(@Param('_id') _id: string): Promise<any> {
-    const formation = await this.formationService.findById(_id);
+  @Get('/:id')
+  async getByIdFormation(@Param('id') id: string): Promise<any> {
+    const formation = await this.formationService.findById(id);
     if (formation === undefined) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);

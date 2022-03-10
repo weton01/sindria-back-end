@@ -1,26 +1,30 @@
-import { RangeSchema } from '@app/common';
 import {
   Entity,
-  ObjectIdColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  PrimaryGeneratedColumn,
+  JoinColumn,
 } from 'typeorm';
 import { TeacherEntity } from '.';
 
 @Entity({ name: 'experiences' })
 export class ExperienceEntity {
-  @ObjectIdColumn()
-  _id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
 
-  @Column()
-  range: RangeSchema;
+  @Column({ type: 'datetime' })
+  beginDate: Date;
+
+  @Column({ type: 'datetime' })
+  endDate: Date;
 
   @ManyToOne(() => TeacherEntity, (teacher) => teacher.experiences)
+  @JoinColumn({ name: 'teacherId', referencedColumnName: 'id' })
   teacher: TeacherEntity;
 
   @CreateDateColumn()
@@ -30,6 +34,6 @@ export class ExperienceEntity {
   updated_at: Date;
 
   constructor(entity?: Partial<TeacherEntity>) {
-    this._id = entity?._id;
+    this.id = entity?.id;
   }
 }

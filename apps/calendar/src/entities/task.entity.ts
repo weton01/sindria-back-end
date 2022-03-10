@@ -1,19 +1,15 @@
-import { UserEntity } from '@/auth/entities';
-import { TeacherEntity } from '@/teacher/entities';
-import { RangeSchema } from '@app/common';
 import {
-  Entity,
-  ObjectIdColumn,
   Column,
   CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
-  ManyToOne,
 } from 'typeorm';
 
 @Entity({ name: 'tasks' })
 export class TaskEntity {
-  @ObjectIdColumn()
-  _id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   description: string;
@@ -24,8 +20,11 @@ export class TaskEntity {
   @Column('boolean', { default: false })
   userConfirmation: boolean;
 
-  @Column()
-  range: RangeSchema;
+  @Column({ type: 'datetime' })
+  beginDate: Date;
+
+  @Column({ type: 'datetime' })
+  endDate: Date;
 
   @CreateDateColumn()
   created_at?: Date;
@@ -33,13 +32,7 @@ export class TaskEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.tasks)
-  user: UserEntity;
-
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.teachers)
-  teacher: TeacherEntity;
-
   constructor(entity?: Partial<TaskEntity>) {
-    this._id = entity?._id;
+    this.id = entity?.id;
   }
 }
