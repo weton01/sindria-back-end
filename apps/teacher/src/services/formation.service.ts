@@ -24,11 +24,11 @@ export class FormationService {
   }
 
   async update(
-    _id: string,
+    id: string,
     updateFormationDto: UpdateFormationDto,
   ): Promise<FormationEntity> {
-    await this.repository.update(_id, updateFormationDto);
-    return await this.repository.findOne({ _id });
+    await this.repository.update(id, updateFormationDto);
+    return await this.repository.findOne({ id });
   }
 
   async delete(id: string): Promise<any> {
@@ -52,7 +52,7 @@ export class FormationService {
     return foundSkills;
   }
 
-  async findById(_id: string): Promise<FormationEntity> {
-    return await this.repository.findOne({ _id: new ObjectID(_id) });
+  async findById(id: string): Promise<FormationEntity> {
+    return await this.repository.findOne({ id: new ObjectID(id) });
   }
 }

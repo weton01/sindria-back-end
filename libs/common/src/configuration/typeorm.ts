@@ -10,8 +10,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { envs } from '.';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
-  type: 'mongodb',
-  url: `${envs.MONGO_URI}`,
+  type: 'mysql',
+  host: envs.DB_CONNECTION_HOST,
+  port: parseInt(envs.DB_CONNECTION_PORT),
+  username: envs.DB_CONNECTION_USERNAME,
+  password: envs.DB_CONNECTION_PASSWORD,
+  database: 'development',
+  synchronize: true,
   entities: [
     UserEntity,
     TeacherEntity,
@@ -20,6 +25,4 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     ExperienceEntity,
     TaskEntity,
   ],
-  ssl: true,
-  authSource: 'admin',
 });

@@ -159,12 +159,12 @@ export class AuthController {
     }
 
     if (!user.active) {
-      return { _id: user._id, active: user.active };
+      return { id: user.id, active: user.active };
     }
 
     const token = await this.jwtService.sign({
       email: user.email,
-      id: user._id,
+      id: user.id,
     });
 
     delete user.password;
@@ -230,7 +230,7 @@ export class AuthController {
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
-    const token = this.jwtService.sign({ _id: user._id });
+    const token = this.jwtService.sign({ id: user.id });
 
     this.mailerService.sendMail({
       to: user.email,
@@ -317,12 +317,12 @@ export class AuthController {
       },
     },
   })
-  @Patch('/active-user/:_id')
+  @Patch('/active-user/:id')
   async activeUser(
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Body() activeUserDto: ActiveUserDto,
   ): Promise<any> {
-    const user = await this.authService.findById(_id);
+    const user = await this.authService.findById(id);
 
     if (!user) {
       const strErr = 'usuário não encontrado';
@@ -339,11 +339,11 @@ export class AuthController {
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
 
-    await this.authService.activeUser(_id);
+    await this.authService.activeUser(id);
 
     const token = await this.jwtService.sign({
       email: user.email,
-      id: user._id,
+      id: user.id,
     });
 
     return { token, user };

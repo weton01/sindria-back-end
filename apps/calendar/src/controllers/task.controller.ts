@@ -65,13 +65,13 @@ export class TaskController {
     return;
   }
 
-  @Delete('/:_id')
-  delete(@Param('_id') _id: string): Promise<any> {
+  @Delete('/:id')
+  delete(@Param('id') id: string): Promise<any> {
     return;
   }
 
-  @Get('/:_id')
-  findById(@Param('_id') _id: string): Promise<any> {
+  @Get('/:id')
+  findById(@Param('id') id: string): Promise<any> {
     return;
   }
 

@@ -1,21 +1,19 @@
-import { TaskEntity } from '@/calendar/entities';
 import { TeacherEntity } from '@/teacher/entities';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
-  ObjectIdColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class UserEntity {
   @ApiProperty()
-  @ObjectIdColumn()
-  _id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ApiProperty({
     description: 'the name of user',
@@ -52,21 +50,15 @@ export class UserEntity {
   updated_at?: Date;
 
   @ApiHideProperty()
-  @OneToMany(() => TaskEntity, (task) => task.user)
-  tasks: TaskEntity[];
-
-  @ApiHideProperty()
   @OneToOne(() => TeacherEntity, (teacher) => teacher.user)
   teacher: TeacherEntity;
 
-  
   constructor(entity?: Partial<UserEntity>) {
-    this._id = entity?._id;
+    this.id = entity?.id;
     this.username = entity?.username;
     this.email = entity?.email;
     this.activationCode = entity?.activationCode;
     this.active = entity?.active;
-    this.tasks = entity?.tasks;
     this.teacher = entity?.teacher;
   }
 }

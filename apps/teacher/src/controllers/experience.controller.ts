@@ -27,26 +27,26 @@ export class ExperienceController {
     return { experience };
   }
 
-  @Patch('/:_id')
+  @Patch('/:id')
   async updateExperience(
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Body() experienceDto: UpdateExperienceDto,
   ): Promise<any> {
-    const experience = await this.experienceService.update(_id, experienceDto);
+    const experience = await this.experienceService.update(id, experienceDto);
     return { experience };
   }
 
-  @Delete('/:_id')
-  async deleteExperience(@Param('_id') _id: string): Promise<any> {
-    const experience = await this.experienceService.delete(_id);
+  @Delete('/:id')
+  async deleteExperience(@Param('id') id: string): Promise<any> {
+    const experience = await this.experienceService.delete(id);
     return experience.affected === 1
       ? { message: 'successfully deleted!' }
       : { message: 'id not found!' };
   }
 
-  @Get('/:_id')
-  async getByIdExperience(@Param('_id') _id: string): Promise<any> {
-    const experience = await this.experienceService.findById(_id); 
+  @Get('/:id')
+  async getByIdExperience(@Param('id') id: string): Promise<any> {
+    const experience = await this.experienceService.findById(id); 
     return experience !== undefined? { experience } : {message: "id not found"};
   }
 
