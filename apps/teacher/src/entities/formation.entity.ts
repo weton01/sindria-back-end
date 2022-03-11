@@ -23,7 +23,9 @@ export class FormationEntity {
   @Column({ type: 'datetime' })
   endDate: Date;
 
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.formations)
+  @ManyToOne(() => TeacherEntity, (teacher) => teacher.formations, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'teacherId', referencedColumnName: 'id' })
   teacher: TeacherEntity;
 

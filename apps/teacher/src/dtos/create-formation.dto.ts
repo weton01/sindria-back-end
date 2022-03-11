@@ -20,4 +20,5 @@ export class CreateFormationDto {
   @ValidateNested()
   @Type(() => RangeSchemaDto)
   range: RangeSchemaDto;
+ 
 }

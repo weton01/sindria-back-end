@@ -29,7 +29,10 @@ export class SkillEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.skills)
+  @ManyToOne(() => TeacherEntity, (teacher) => teacher.skills,  {
+    onDelete: "CASCADE",
+  })
+  
   @JoinColumn({ name: 'teacherId', referencedColumnName: 'id' })
   teacher: TeacherEntity;
 
