@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateTeacherDto, FilterTeacherDto, UpdateTeacherDto } from '../dtos';
 import { ObjectID } from 'mongodb';
 import { TeacherEntity } from '../entities';
+import { FilterDto } from '@app/common';
 
 @Injectable()
 export class TeacherService {
@@ -20,14 +21,12 @@ export class TeacherService {
   async update(
     id: string,
     updateTeacherDto: UpdateTeacherDto,
-  ): Promise<TeacherEntity> {
-    console.log(1);
-    
-    await this.repository.update({id: id,}, updateTeacherDto);
-    console.log(2);
+    relations: string[] = [],
+  ): Promise<TeacherEntity> {  
+    await this.repository.update({ id: id }, updateTeacherDto); 
     return await this.repository.findOne({
       where: { id: id },
-      relations: ['user'],
+      relations: relations,
     });
   }
 
@@ -36,14 +35,15 @@ export class TeacherService {
   }
 
   async find(
-    filterTeacherDto?: FilterTeacherDto,
-    params?: any,
+    filter?: FilterDto,
+     relations: string[] = [],
   ): Promise<TeacherEntity[]> {
+    const { skip, take   } = filter;
+
     const teachers = await this.repository.find({
-      where: params,
-      relations: ['user', 'skills', 'formations'],
-      order: { created_at: 'DESC' },
-      ...filterTeacherDto,
+      skip,
+      take,
+      relations: relations,
     });
 
     return teachers.map((item: TeacherEntity) => {
@@ -55,18 +55,18 @@ export class TeacherService {
     });
   }
 
-  async findOne(value: any): Promise<TeacherEntity> {
+  async findOne(value: any, relations: string[] = []): Promise<TeacherEntity> {
     const foundTeacher = await this.repository.findOne({
-      relations: ['user', 'skills', 'formations'],
+      relations: relations,
       where: value,
     });
     return foundTeacher;
   }
 
-  async findById(id: string): Promise<TeacherEntity> {
+  async findById(id: string, relations: string[] = []): Promise<TeacherEntity> {
     return await this.repository.findOne({
       where: { id: id },
-      relations: ['user', 'skills', 'formations'],
+      relations: relations,
     });
   }
 }

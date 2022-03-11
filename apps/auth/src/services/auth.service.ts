@@ -49,14 +49,11 @@ export class AuthService {
     filter: FilterDto,
     createUserDto: CreateUserDto,
   ): Promise<UserEntity[]> {
-    const { skip, take, order } = filter;
+    const { skip, take } = filter;
 
     return await this.repository.find({
       skip,
-      take,
-      order: {
-        created_at: order,
-      },
+      take, 
       ...createUserDto,
     });
   }
