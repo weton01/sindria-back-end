@@ -346,7 +346,7 @@ export class AuthController {
       id: user.id,
     });
 
-    delete user.password
+    delete user.password;
 
     return { token, user };
   }
