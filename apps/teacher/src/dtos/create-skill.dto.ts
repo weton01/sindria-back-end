@@ -1,6 +1,4 @@
-import { RangeSchemaDto } from '@app/common';
-import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, ValidateNested, IsOptional } from 'class-validator'; 
+import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator'; 
 import { TeacherEntity } from '../entities';
 
 export class CreateSkillDto {
@@ -12,10 +10,13 @@ export class CreateSkillDto {
   @IsNotEmpty()
   name: string; 
   
+  @IsDateString()
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => RangeSchemaDto)
-  range: RangeSchemaDto;
+  beginDate: string;
+
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: string;
 
   @IsOptional()
   teacher: TeacherEntity

@@ -14,8 +14,5 @@ export class FilterDto {
   @Min(0)
   @Type(() => Number)
   take: number;
-
-  @IsOptional()
-  @IsEnum(OrderBy)
-  order: OrderBy = OrderBy.DESC;
+ 
 }

@@ -111,7 +111,8 @@ export class SkillController {
   @UseGuards(JwtAuthGuard)
   @Get('/')
   async filterSkill(@Query() params: FilterSkillDto): Promise<any> {
-    const skill = await this.skillService.find(params);
+    const relations = ['teacher'];
+    const skill = await this.skillService.find(params, relations);
     return skill;
   }
 }
