@@ -8,6 +8,7 @@ import {
   UpdateExperienceDto,
   FilterExperienceDto,
 } from '@/teacher/dtos';
+import { FilterDto } from '@app/common';
 
 @Injectable()
 export class ExperienceService {
@@ -28,7 +29,10 @@ export class ExperienceService {
     updateExperienceDto: UpdateExperienceDto,
   ): Promise<ExperienceEntity> {
     await this.repository.update(id, updateExperienceDto);
-    return await this.repository.findOne({ id });
+    return await this.repository.findOne({
+      where: { id: id },
+      relations: ['teacher'],
+    });
   }
 
   async delete(id: string): Promise<any> {
@@ -36,23 +40,30 @@ export class ExperienceService {
   }
 
   async find(
-    filterExperienceDto: FilterExperienceDto,
+    filter: FilterDto,
+    relations: string[] = [],
   ): Promise<ExperienceEntity[]> {
+    const { skip, take } = filter;
     return await this.repository.find({
-      order: { created_at: 'DESC' },
-      ...filterExperienceDto,
+      skip,
+      take,
+      relations: relations,
+      ...filter,
     });
   }
 
   async findOne(value: any): Promise<ExperienceEntity> {
     const foundSkills = await this.repository.findOne({
-      order: { created_at: 'DESC' },
+      relations: ['teacher'],
       where: value,
     });
     return foundSkills;
   }
 
   async findById(id: string): Promise<ExperienceEntity> {
-    return await this.repository.findOne({ id: new ObjectID(id) });
+    return await this.repository.findOne({
+      where: { id: id },
+      relations: ['teacher'],
+    });
   }
 }

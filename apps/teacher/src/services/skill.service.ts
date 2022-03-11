@@ -1,7 +1,8 @@
+import { FilterDto } from '@app/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateSkillDto, FilterSkillDto, UpdateSkillDto } from '../dtos'; 
+import { CreateSkillDto, FilterSkillDto, UpdateSkillDto } from '../dtos';
 import { SkillEntity } from '../entities';
 
 @Injectable()
@@ -32,20 +33,20 @@ export class SkillService {
   }
 
   async find(
-    filterSkillDto: FilterSkillDto,
-    params?: any,
+    filter: FilterDto,
+    relations: string[] = [],
   ): Promise<SkillEntity[]> {
+    const { skip, take } = filter;
     return await this.repository.find({
-      where: params,
-      relations: ['teacher', 'teacher.user'],
-      order: { created_at: 'DESC' },
-      ...filterSkillDto,
+      skip,
+      take,
+      relations: relations,
     });
   }
 
   async findOne(value: any): Promise<SkillEntity> {
     const foundSkills = await this.repository.findOne({
-      relations: ['teacher',],
+      relations: ['teacher'],
       where: value,
     });
     return foundSkills;

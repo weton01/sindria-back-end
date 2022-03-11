@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm'; 
+import { Repository } from 'typeorm';
 import { FormationEntity } from '../entities';
 import {
   CreateFormationDto,
   FilterFormationDto,
   UpdateFormationDto,
 } from '../dtos';
+import { FilterDto } from '@app/common';
 
 @Injectable()
 export class FormationService {
@@ -27,7 +28,10 @@ export class FormationService {
     updateFormationDto: UpdateFormationDto,
   ): Promise<FormationEntity> {
     await this.repository.update(id, updateFormationDto);
-    return await this.repository.findOne({ id });
+    return await this.repository.findOne({
+      where: { id: id },
+      relations: ['teacher'],
+    });
   }
 
   async delete(id: string): Promise<any> {
@@ -35,23 +39,30 @@ export class FormationService {
   }
 
   async find(
-    filterFormationDto: FilterFormationDto,
+    filter: FilterDto,
+    relations: string[] = [],
   ): Promise<FormationEntity[]> {
+    const { skip, take } = filter;
     return await this.repository.find({
-      order: { created_at: 'DESC' },
-      ...filterFormationDto,
+      skip,
+      take,
+      relations: relations,
+      ...filter,
     });
   }
 
   async findOne(value: any): Promise<FormationEntity> {
     const foundSkills = await this.repository.findOne({
-      order: { created_at: 'DESC' },
+      relations: ['teacher'],
       where: value,
     });
     return foundSkills;
   }
 
   async findById(id: string): Promise<FormationEntity> {
-    return await this.repository.findOne({  where: {id: id}, relations: ['teacher']});
+    return await this.repository.findOne({
+      where: { id: id },
+      relations: ['teacher'],
+    });
   }
 }
