@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ObjectID } from 'mongodb';
+import { Repository } from 'typeorm'; 
 import { FormationEntity } from '../entities';
 import {
   CreateFormationDto,
@@ -53,6 +52,6 @@ export class FormationService {
   }
 
   async findById(id: string): Promise<FormationEntity> {
-    return await this.repository.findOne({ id: new ObjectID(id) });
+    return await this.repository.findOne({  where: {id: id}, relations: ['teacher']});
   }
 }

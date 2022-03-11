@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   async findById(id: string): Promise<UserEntity> {
-    return await this.repository.findOne({ id: new ObjectID(id) });
+    return await this.repository.findOne({ id: id });
   }
 
   async changePassword(id: string, password: string): Promise<any> {

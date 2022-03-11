@@ -14,8 +14,7 @@ import {
   Query,
   Req,
   UseGuards,
-} from '@nestjs/common';
-import { ObjectID } from 'mongodb';
+} from '@nestjs/common'; 
 import { CreateTeacherDto, FilterTeacherDto, UpdateTeacherDto } from '../dtos';
 import { TeacherService } from '../services/teacher.service';
 
@@ -32,7 +31,7 @@ export class TeacherController {
     const { user } = req;
 
     const foundTeacher = await this.teacherService.findOne({
-      'user.id': user.id,
+      user: {id: user.id}
     });
 
     if (foundTeacher) {

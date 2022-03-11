@@ -7,6 +7,8 @@ import {
   UpdateDateColumn,
   OneToMany,
   PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 import { FormationEntity, SkillEntity, ExperienceEntity } from '.';
@@ -22,16 +24,20 @@ export class TeacherEntity {
   @Column()
   rating: number;
 
-  @Column(() => UserEntity)
+  @OneToOne(() => UserEntity, (user) => user.teacher)
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
 
-  @OneToMany(() => SkillEntity, (skill) => skill.teacher)
+  @OneToMany(() => SkillEntity, (skill) => skill.teacher) 
+  @JoinColumn({ name: 'skillId', referencedColumnName: 'id' })
   skills: SkillEntity[];
 
-  @OneToMany(() => FormationEntity, (formation) => formation.teacher)
+  @OneToMany(() => FormationEntity, (formation) => formation.teacher) 
+  @JoinColumn({ name: 'formationId', referencedColumnName: 'id' })
   formations: FormationEntity[];
 
   @OneToMany(() => ExperienceEntity, (experience) => experience.teacher)
+  @JoinColumn({ name: 'experienceId', referencedColumnName: 'id' })
   experiences: ExperienceEntity[];
 
   @CreateDateColumn()

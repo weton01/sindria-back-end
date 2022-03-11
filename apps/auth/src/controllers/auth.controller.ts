@@ -346,6 +346,8 @@ export class AuthController {
       id: user.id,
     });
 
+    delete user.password
+
     return { token, user };
   }
 }

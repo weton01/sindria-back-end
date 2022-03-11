@@ -21,8 +21,14 @@ export class TeacherService {
     id: string,
     updateTeacherDto: UpdateTeacherDto,
   ): Promise<TeacherEntity> {
-    await this.repository.update(id, updateTeacherDto);
-    return await this.repository.findOne({ id });
+    console.log(1);
+    
+    await this.repository.update({id: id,}, updateTeacherDto);
+    console.log(2);
+    return await this.repository.findOne({
+      where: { id: id },
+      relations: ['user'],
+    });
   }
 
   async delete(id: string): Promise<any> {
@@ -33,22 +39,34 @@ export class TeacherService {
     filterTeacherDto?: FilterTeacherDto,
     params?: any,
   ): Promise<TeacherEntity[]> {
-    return await this.repository.find({
+    const teachers = await this.repository.find({
       where: params,
+      relations: ['user', 'skills', 'formations'],
       order: { created_at: 'DESC' },
       ...filterTeacherDto,
-     });
+    });
+
+    return teachers.map((item: TeacherEntity) => {
+      if (item.user) {
+        delete item.user.password;
+        delete item.user.activationCode;
+      }
+      return item;
+    });
   }
 
   async findOne(value: any): Promise<TeacherEntity> {
     const foundTeacher = await this.repository.findOne({
-      order: { created_at: 'DESC' },
-      where: value
-    }) 
+      relations: ['user', 'skills', 'formations'],
+      where: value,
+    });
     return foundTeacher;
   }
 
   async findById(id: string): Promise<TeacherEntity> {
-    return await this.repository.findOne({ id: new ObjectID(id) });
+    return await this.repository.findOne({
+      where: { id: id },
+      relations: ['user', 'skills', 'formations'],
+    });
   }
 }

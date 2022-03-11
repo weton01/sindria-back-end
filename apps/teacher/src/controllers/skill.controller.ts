@@ -31,14 +31,15 @@ export class SkillController {
     @Body() skillDto: CreateSkillDto,
   ): Promise<any> {
     const { user } = req;
+    
     const foundTeacher = await this.teacherService.findOne({
-      'user.id': user.id,
+      user: {id: user.id},
     });
 
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
-    }
+    }    
 
     const foundSkill = await this.skillService.findOne({
       name: skillDto.name,
@@ -48,11 +49,10 @@ export class SkillController {
       const strErr = 'essa habilidade já existe';
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
+    
+    skillDto.teacher = foundTeacher
 
-    const skill = await this.skillService.create(skillDto);
-    foundTeacher.skills = [...(foundTeacher.skills || []), skill];
-
-    await this.teacherService.update(foundTeacher.id, foundTeacher);
+    const skill = await this.skillService.create(skillDto); 
 
     return skill;
   }
@@ -64,20 +64,10 @@ export class SkillController {
     @Param('id') id: string,
     @Body() skillDto: UpdateSkillDto,
   ): Promise<any> {
-    const { user } = req;
     const foundSkillId = await this.skillService.findById(id);
 
     if (!foundSkillId) {
-      const strErr = 'id não encontrado';
-      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
-    }
-
-    const foundTeacher = await this.teacherService.findOne({
-      'user.id': user.id,
-    });
-
-    if (!foundTeacher) {
-      const strErr = 'professor não encontrado';
+      const strErr = 'habilidade não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
@@ -90,37 +80,20 @@ export class SkillController {
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
 
-    await this.skillService.update(id, skillDto);
-
-    const filterSkillDto = new FilterSkillDto();
-    const skills = await this.skillService.find(filterSkillDto);
-
-    foundTeacher.skills = skills;
-    await this.teacherService.update(foundTeacher.id, foundTeacher);
-
-    return {};
+    const skill = await this.skillService.update(id, skillDto);
+    return skill;
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async deleteSkill(@Param('id') id: string, @Req() req: any): Promise<any> {
-    const { user } = req;
-
+  async deleteSkill(@Param('id') id: string): Promise<any> {
     const skill = await this.skillService.delete(id);
+
     if (skill.affected === 0) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
-    const foundTeacher = await this.teacherService.findOne({
-      'user.id': user.id,
-    });
-
-    const filterSkillDto = new FilterSkillDto();
-    const skills = await this.skillService.find(filterSkillDto);
-    foundTeacher.skills = skills;
-
-    await this.teacherService.update(foundTeacher.id, foundTeacher);
     return {};
   }
 
