@@ -31,15 +31,15 @@ export class SkillController {
     @Body() skillDto: CreateSkillDto,
   ): Promise<any> {
     const { user } = req;
-    
+
     const foundTeacher = await this.teacherService.findOne({
-      user: {id: user.id},
+      user: { id: user.id },
     });
 
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
-    }    
+    }
 
     const foundSkill = await this.skillService.findOne({
       name: skillDto.name,
@@ -49,10 +49,10 @@ export class SkillController {
       const strErr = 'essa habilidade já existe';
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
-    
-    skillDto.teacher = foundTeacher
 
-    const skill = await this.skillService.create(skillDto); 
+    skillDto.teacher = foundTeacher;
+
+    const skill = await this.skillService.create(skillDto);
 
     return skill;
   }
