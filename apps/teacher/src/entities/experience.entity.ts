@@ -23,7 +23,7 @@ export class ExperienceEntity {
   @Column({ type: 'datetime' })
   endDate: Date;
 
-  @ManyToOne(() => TeacherEntity, (teacher) => teacher.experiences)
+  @ManyToOne(() => TeacherEntity, (teacher) => teacher.experiences, {cascade: true})
   @JoinColumn({ name: 'teacherId', referencedColumnName: 'id' })
   teacher: TeacherEntity;
 
