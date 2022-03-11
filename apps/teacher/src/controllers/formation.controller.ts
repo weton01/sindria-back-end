@@ -34,12 +34,12 @@ export class FormationController {
     @Req() req,
     @Body() formationDto: CreateFormationDto,
   ): Promise<any> {
-    const { user } = req; 
-    
+    const { user } = req;
+
     const foundTeacher = await this.teacherService.findOne({
       user: { id: user.id },
     });
-    
+
     if (!foundTeacher) {
       const strErr = 'professor não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
@@ -109,7 +109,8 @@ export class FormationController {
   @UseGuards(JwtAuthGuard)
   @Get('/')
   async filterFormation(@Query() params: FilterFormationDto): Promise<any> {
-    const formation = await this.formationService.find(params);
+    const relations = ['teacher'];
+    const formation = await this.formationService.find(params, relations);
     return formation;
   }
 }

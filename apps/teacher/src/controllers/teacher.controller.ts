@@ -1,5 +1,6 @@
 import { UserEntity } from '@/auth/entities';
 import { AuthService } from '@/auth/services';
+import { FilterDto } from '@app/common';
 import { JwtAuthGuard } from '@app/utils/guards';
 import {
   Body,
@@ -14,7 +15,7 @@ import {
   Query,
   Req,
   UseGuards,
-} from '@nestjs/common'; 
+} from '@nestjs/common';
 import { CreateTeacherDto, FilterTeacherDto, UpdateTeacherDto } from '../dtos';
 import { TeacherService } from '../services/teacher.service';
 
@@ -31,7 +32,7 @@ export class TeacherController {
     const { user } = req;
 
     const foundTeacher = await this.teacherService.findOne({
-      user: {id: user.id}
+      user: { id: user.id },
     });
 
     if (foundTeacher) {
@@ -53,15 +54,19 @@ export class TeacherController {
     @Body() teacherDto: UpdateTeacherDto,
   ): Promise<any> {
     const foundTeacher = await this.teacherService.findById(id);
-    
+
     if (!foundTeacher) {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    await this.teacherService.update(id, teacherDto);
 
-    const foundTeacherUpdated = await this.teacherService.findById(id);
-    return foundTeacherUpdated;
+    const relations = ['user', 'skills', 'formations', 'experiences'];
+    const updatedTeacher = await this.teacherService.update(
+      id,
+      teacherDto,
+      relations,
+    );
+    return updatedTeacher;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -74,12 +79,12 @@ export class TeacherController {
     }
 
     const teacher = await this.teacherService.delete(id);
-    if(teacher.affected === 0){
+    if (teacher.affected === 0) {
       const strErr = 'id não encotrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
-    return {}
+    return {};
   }
 
   @UseGuards(JwtAuthGuard)
@@ -91,14 +96,17 @@ export class TeacherController {
       const strErr = 'professor não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
-    const teacher = await this.teacherService.findById(id);
+
+    const relations = ['user', 'skills', 'formations', 'experiences'];
+    const teacher = await this.teacherService.findById(id, relations);
     return teacher;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/')
-  async filterTeacher(@Query() params: FilterTeacherDto): Promise<any> {
-    const teacher = await this.teacherService.find(params);
+  async filterTeacher(@Query() filter: FilterDto): Promise<any> {
+    const relations = ['user', 'skills', 'formations', 'experiences'];
+    const teacher = await this.teacherService.find(filter, relations);
     return teacher;
   }
 }
