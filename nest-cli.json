@@ -58,6 +58,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/teacher/tsconfig.app.json"
       }
+    },
+    "timeline": {
+      "type": "application",
+      "root": "apps/timeline",
+      "entryFile": "main",
+      "sourceRoot": "apps/timeline/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/timeline/tsconfig.app.json"
+      }
     }
   }
 }

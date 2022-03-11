@@ -21,13 +21,22 @@ provider:
     NODE_ENV: production
  
 functions:
-  main:
+  auth:
     handler: ./dist/apps/auth/main.handler
     events:
       - http:
           method: ANY
-          path: /
+          path: /auth
       - http:
           method: ANY
-          path: '{proxy+}'
+          path: '/auth/{proxy+}'
+  teacher:
+    handler: ./dist/apps/teacher/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /teacher
+      - http:
+          method: ANY
+          path: '/teacher/{proxy+}'
     

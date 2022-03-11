@@ -20,9 +20,15 @@
     "allowJs": true,
     "esModuleInterop": true,
     "paths": {
-      "@/auth/*": ["apps/auth/src/*"],
-      "@/teacher/*": ["apps/teacher/src/*"],
-      "@/calendar/*": ["apps/calendar/src/*"],
+      "@/auth/*": [
+        "apps/auth/src/*"
+      ],
+      "@/teacher/*": [
+        "apps/teacher/src/*"
+      ],
+      "@/calendar/*": [
+        "apps/calendar/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],

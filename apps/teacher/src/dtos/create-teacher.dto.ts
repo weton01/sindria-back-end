@@ -1,5 +1,12 @@
 import { UserEntity } from '@/auth/entities';
-import { IsString, IsNotEmpty, IsNumber, Min, Max, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  Min,
+  Max,
+  IsOptional,
+} from 'class-validator';
 import { ExperienceEntity, FormationEntity, SkillEntity } from '../entities';
 
 export class CreateTeacherDto {
@@ -11,7 +18,7 @@ export class CreateTeacherDto {
 
   @IsOptional()
   experiences: ExperienceEntity[];
-  
+
   @IsOptional()
   formations: FormationEntity[];
 

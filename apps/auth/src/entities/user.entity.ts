@@ -1,5 +1,6 @@
 import { TeacherEntity } from '@/teacher/entities';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { PostEntity } from 'apps/timeline/src/entities';
 import {
   Entity,
   Column,
@@ -7,6 +8,7 @@ import {
   UpdateDateColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -41,6 +43,13 @@ export class UserEntity {
   @Column('boolean', { default: false })
   active: boolean;
 
+  @ApiHideProperty()
+  @OneToOne(() => TeacherEntity, (teacher) => teacher.user)
+  teacher: TeacherEntity;
+
+  @OneToMany(() => PostEntity, (post) => post.user)
+  posts: PostEntity[];
+
   @ApiProperty()
   @CreateDateColumn()
   created_at?: Date;
@@ -48,10 +57,6 @@ export class UserEntity {
   @ApiProperty()
   @UpdateDateColumn()
   updated_at?: Date;
-
-  @ApiHideProperty()
-  @OneToOne(() => TeacherEntity, (teacher) => teacher.user)
-  teacher: TeacherEntity;
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;
