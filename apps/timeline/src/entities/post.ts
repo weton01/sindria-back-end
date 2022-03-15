@@ -44,7 +44,7 @@ export class PostEntity {
 
   @ApiProperty()
   @ManyToOne(() => UserEntity, (user) => user.posts, { cascade: true })
-  @JoinColumn({ name: 'userEnId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
 
   @ApiProperty()

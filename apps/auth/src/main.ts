@@ -13,7 +13,7 @@ let server: Handler;
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(AuthModule);
-
+    app.enableCors()
     const config = new DocumentBuilder()
       .setTitle('Auth Service')
       .setDescription(`The auth service only...`)

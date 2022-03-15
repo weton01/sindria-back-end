@@ -30,8 +30,14 @@ export class PostController {
   @Post('/')
   async createPost(@Req() req, @Body() postDto: CreatePostDto): Promise<any> {
     const { user } = req;
+    const foundUser = await this.authService.findById(user.id)
 
-    postDto.user = user;
+    if (!foundUser) {
+      const strErr = 'usuário não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
+
+    postDto.user = foundUser;
 
     return await this.postService.create(postDto);
   }
@@ -45,7 +51,15 @@ export class PostController {
   ): Promise<any> {
     const { user } = req;
 
-    const foundPost = await this.postService.findById(id);
+    const [foundPost, foundUser] = await Promise.all([
+      this.postService.findById(id),
+      this.authService.findById(user.id),
+    ]);
+
+    if (!foundUser) {
+      const strErr = 'usuário não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
 
     if (!foundPost) {
       const strErr = 'post não encontrado';
@@ -74,6 +88,11 @@ export class PostController {
       (item) => item.id === foundUser.id,
     );
 
+    if (!foundUser) {
+      const strErr = 'usuário não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
+
     if (!foundPost) {
       const strErr = 'post não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
@@ -99,6 +118,11 @@ export class PostController {
       this.authService.findById(user.id),
     ]);
 
+    if (!foundUser) {
+      const strErr = 'usuário não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
+
     if (!foundPost) {
       const strErr = 'post não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
@@ -120,6 +144,11 @@ export class PostController {
       this.postService.findById(id),
       this.authService.findById(user.id),
     ]);
+
+    if (!foundUser) {
+      const strErr = 'usuário não encontrado';
+      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
+    }
 
     if (!foundPost) {
       const strErr = 'post não encontrado';

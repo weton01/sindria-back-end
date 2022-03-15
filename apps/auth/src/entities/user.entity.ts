@@ -1,6 +1,6 @@
 import { TeacherEntity } from '@/teacher/entities';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { PostEntity } from 'apps/timeline/src/entities';
+import { CommentEntity, PostEntity } from 'apps/timeline/src/entities';
 import {
   Entity,
   Column,
@@ -49,6 +49,9 @@ export class UserEntity {
 
   @OneToMany(() => PostEntity, (post) => post.user)
   posts: PostEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.user)
+  comments: CommentEntity[];
 
   @ApiProperty()
   @CreateDateColumn()
