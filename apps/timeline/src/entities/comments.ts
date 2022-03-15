@@ -1,3 +1,4 @@
+import { UserEntity } from '@/auth/entities';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
   Column,
@@ -14,7 +15,7 @@ import {
 import { PostEntity } from '.';
 
 @Entity({ name: 'comments' })
-@Tree('nested-set')
+@Tree('closure-table')
 export class CommentEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -26,11 +27,11 @@ export class CommentEntity {
 
   @ApiProperty()
   @TreeChildren()
-  replys: CommentEntity[];
+  replys?: CommentEntity[];
 
   @ApiHideProperty()
   @TreeParent()
-  parent: CommentEntity;
+  parent?: CommentEntity;
 
   @ApiProperty()
   @ManyToOne(() => PostEntity, (post) => post.comments, {
@@ -38,6 +39,13 @@ export class CommentEntity {
   })
   @JoinColumn({ name: 'postId', referencedColumnName: 'id' })
   post: PostEntity;
+
+  @ApiHideProperty()
+  @ManyToOne(() => UserEntity, (user) => user.comments, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
+  user: UserEntity
 
   @ApiProperty()
   @CreateDateColumn()

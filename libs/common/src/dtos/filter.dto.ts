@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, Min } from 'class-validator';
-import { OrderBy } from '..';
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class FilterDto {
   @IsNotEmpty()
@@ -14,5 +13,6 @@ export class FilterDto {
   @Min(0)
   @Type(() => Number)
   take: number;
+ 
  
 }

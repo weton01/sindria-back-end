@@ -1,5 +1,5 @@
 import { FilterDto } from '@app/common';
-import { Body, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from '../dtos/post/create-post.dto';
@@ -11,9 +11,9 @@ export class PostService {
   constructor(
     @InjectRepository(PostEntity)
     private readonly repository: Repository<PostEntity>,
-  ) {}
+  ) { }
 
-  async create(@Body() createPostDto: CreatePostDto): Promise<PostEntity> {
+  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
     const tempPost = await this.repository.create({
       ...createPostDto,
     });
@@ -36,26 +36,25 @@ export class PostService {
   }
 
   async find(filter: FilterDto): Promise<PostEntity[]> {
-    const { take, skip, order } = filter;
+    const { take, skip } = filter;
     return await this.repository.find({
       take,
       skip,
       order: {
-        created_at: order,
+        created_at: 'DESC',
       },
     });
   }
 
   async findOne(params: PostEntity): Promise<PostEntity> {
     return await this.repository.findOne({
-      relations: ['likes', 'shared'],
       where: params,
     });
   }
 
   async findById(id: string): Promise<PostEntity> {
     return await this.repository.findOne({
-      relations: ['likes', 'shared'],
+    
       where: { id },
     });
   }
