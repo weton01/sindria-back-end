@@ -67,6 +67,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/timeline/tsconfig.app.json"
       }
+    },
+    "categories": {
+      "type": "application",
+      "root": "apps/categories",
+      "entryFile": "main",
+      "sourceRoot": "apps/categories/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/categories/tsconfig.app.json"
+      }
+    },
+    "category": {
+      "type": "application",
+      "root": "apps/category",
+      "entryFile": "main",
+      "sourceRoot": "apps/category/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/category/tsconfig.app.json"
+      }
     }
   }
 }

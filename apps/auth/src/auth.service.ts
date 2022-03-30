@@ -33,6 +33,7 @@ export class AuthService {
 
     const tempUser = await this.repository.create({
       ...createUserDto,
+      email: createUserDto.email.toLowerCase(),
       activationCode,
     });
 

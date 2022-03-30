@@ -41,7 +41,7 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('auth')
-@Controller('/auth')
+@Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

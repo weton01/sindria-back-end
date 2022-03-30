@@ -30,13 +30,13 @@ functions:
       - http:
           method: ANY
           path: '/auth/{proxy+}'
-  teacher:
-    handler: ./dist/apps/teacher/main.handler
+  category:
+    handler: ./dist/apps/category/main.handler
     events:
       - http:
           method: ANY
-          path: /teacher
+          path: /category
       - http:
           method: ANY
-          path: '/teacher/{proxy+}'
+          path: '/category/{proxy+}'
     

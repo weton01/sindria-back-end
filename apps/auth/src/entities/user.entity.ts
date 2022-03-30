@@ -28,7 +28,7 @@ export class UserEntity {
     description: 'the name of user',
     example: 'any_email@mail.com',
   })
-  @Column({ unique: true })
+  @Column({ unique: true,  })
   email: string;
 
   @ApiHideProperty()
