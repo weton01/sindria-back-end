@@ -1,12 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEmail } from 'class-validator';
+import { OmitType } from '@nestjs/swagger';
+import { UserDto } from './user';
 
-export class RecoverPasswordDto {
-  @ApiProperty({
-    example: 'any_email@mail.com',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-}
+export class RecoverPasswordDto extends OmitType(UserDto, ['activationCode', 'username', 'password'] as const) { }

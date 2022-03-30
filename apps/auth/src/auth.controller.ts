@@ -1,11 +1,12 @@
 import { BcryptAdapter } from '@app/utils';
 import { JwtAuthGuard } from '@app/utils/guards';
 import { MailerService } from '@nestjs-modules/mailer';
+
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
-  HttpException,
   HttpStatus,
   Param,
   Patch,
@@ -13,7 +14,9 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+
 import { JwtService } from '@nestjs/jwt';
+
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -23,16 +26,19 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+
 import {
   ActiveUserDto,
   CreateUserDto,
   RecoverCallbackDto,
   UpdateUserDto,
-} from '../dtos';
-import { AuthUserDto } from '../dtos/auth-user.dto';
-import { RecoverPasswordDto } from '../dtos/recover-password.dto';
-import { UserEntity } from '../entities';
-import { AuthService } from '../services/auth.service';
+} from './dtos';
+
+import { AuthUserDto } from './dtos/auth-user.dto';
+import { RecoverPasswordDto } from './dtos/recover-password.dto';
+import { UserEntity } from './entities';
+import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('auth')
 @Controller('/auth')
@@ -42,7 +48,7 @@ export class AuthController {
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   @ApiCreatedResponse({
     type: UserEntity,
@@ -66,15 +72,6 @@ export class AuthController {
   })
   @Post('/signup')
   async signup(@Body() userDto: CreateUserDto): Promise<any> {
-    const userExists = await this.authService.findOne({
-      email: userDto.email,
-    });
-
-    if (userExists) {
-      const strErr = 'e-mail já cadastrado em nosso sistema';
-      throw new HttpException(strErr, HttpStatus.CONFLICT);
-    }
-
     const user = await this.authService.create({
       ...userDto,
     });
@@ -142,34 +139,7 @@ export class AuthController {
   @Post('/signin')
   @HttpCode(200)
   async signin(@Body() authDto: AuthUserDto): Promise<any> {
-    const { email, password } = authDto;
-
-    const user = await this.authService.findOne({ email });
-
-    if (!user) {
-      const strErr = 'e-mail não encontrado';
-      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
-    }
-
-    const match = await this.bcryptAdapter.compare(password, user.password);
-
-    if (!match) {
-      const strErr = 'credenciais inválidas';
-      throw new HttpException(strErr, HttpStatus.UNAUTHORIZED);
-    }
-
-    if (!user.active) {
-      return { id: user.id, active: user.active };
-    }
-
-    const token = await this.jwtService.sign({
-      email: user.email,
-      id: user.id,
-    });
-
-    delete user.password;
-    delete user.activationCode;
-
+    const token = await this.authService.auth(authDto)
     return { token };
   }
 
@@ -221,19 +191,11 @@ export class AuthController {
   async recoverPassword(
     @Body() recoverPasswordDto: RecoverPasswordDto,
   ): Promise<any> {
-    const user = await this.authService.findOne({
-      email: recoverPasswordDto.email,
-    });
-
-    if (!user) {
-      const strErr = 'e-mail não encontrado';
-      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
-    }
-
-    const token = this.jwtService.sign({ id: user.id });
+ 
+    const token = this.authService.recoverPassword(recoverPasswordDto)
 
     this.mailerService.sendMail({
-      to: user.email,
+      to: recoverPasswordDto.email,
       from: 'lich@lichdata.com',
       subject: 'Recuperação de senha',
       template: '../templates/recover-password',
@@ -322,32 +284,36 @@ export class AuthController {
     @Param('id') id: string,
     @Body() activeUserDto: ActiveUserDto,
   ): Promise<any> {
-    const user = await this.authService.findById(id);
+    const token = await this.activeUser(id, activeUserDto)
 
-    if (!user) {
-      const strErr = 'usuário não encontrado';
-      throw new HttpException(strErr, HttpStatus.NOT_FOUND);
-    }
+    return { token };
+  }
 
-    if (user.active) {
-      const strErr = 'usuário já está ativo';
-      throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
-    }
+  @Get('/google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) { }
 
-    if (user.activationCode !== activeUserDto.activationCode) {
-      const strErr = 'código inválido';
-      throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
-    }
+  @Get('/google/callback')
+  @UseGuards(AuthGuard('google'))
+  async googleAuthRedirect(@Req() req) {
+    const user = await this.authService.passportLogin(req);
 
-    await this.authService.activeUser(id);
+    return await {
+      token: this.authService.createAuth2(user)
+    };
+  }
 
-    const token = await this.jwtService.sign({
-      email: user.email,
-      id: user.id,
-    });
+  @Get('/facebook')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookAuth(@Req() req) { }
 
-    delete user.password;
+  @Get('/facebook/callback')
+  @UseGuards(AuthGuard('facebook'))
+  async facebookAuthRedirect(@Req() req) {
+    const user = await this.authService.passportLogin(req);
 
-    return { token, user };
+    return await {
+      token: this.authService.createAuth2(user)
+    };
   }
 }

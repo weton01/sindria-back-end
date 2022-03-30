@@ -6,7 +6,7 @@ import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
 import 'module-alias';
-import { AuthModule } from './factories/auth.module';
+import { AuthModule } from './auth.module';
 
 let server: Handler;
 
