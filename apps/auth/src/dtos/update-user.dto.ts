@@ -1,18 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { OmitType } from '@nestjs/swagger';
+import { UserDto } from './user';
 
-export class UpdateUserDto {
-  @ApiProperty({
-    example: 'any_username',
-  })
-  @IsString()
-  @IsOptional()
-  username: string;
+export class UpdateUserDto extends OmitType(UserDto, ['activationCode', 'email'] as const) { }
 
-  @ApiProperty({
-    example: 'any_password',
-  })
-  @IsString()
-  @IsNotEmpty()
-  password: string;
-}

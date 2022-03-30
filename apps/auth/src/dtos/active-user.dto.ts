@@ -1,17 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import { OmitType } from '@nestjs/swagger';
+import { UserDto } from './user';
 
-export class ActiveUserDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(4)
-  @MaxLength(4)
-  @ApiProperty({
-    description: 'The code received in e-mail',
-    minLength: 4,
-    maxLength: 4,
-    type: String,
-    example: '0000',
-  })
-  activationCode: string;
-}
+export class ActiveUserDto extends OmitType(UserDto, ['email', 'password', 'username'] as const) { }

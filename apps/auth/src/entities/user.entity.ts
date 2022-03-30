@@ -53,6 +53,14 @@ export class UserEntity {
   @OneToMany(() => CommentEntity, (comment) => comment.user)
   comments: CommentEntity[];
 
+  @ApiHideProperty()
+  @Column({default: false})
+  isGoogle: boolean;
+
+  @ApiHideProperty()
+  @Column({default: false})
+  isFacebook: boolean;
+
   @ApiProperty()
   @CreateDateColumn()
   created_at?: Date;
