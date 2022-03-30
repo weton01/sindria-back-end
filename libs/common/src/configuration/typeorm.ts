@@ -7,6 +7,7 @@ import {
   TeacherEntity,
 } from '@/teacher/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CategoryEntity } from 'apps/category/src/entities/category';
 import { CommentEntity, PostEntity } from 'apps/timeline/src/entities';
 import { envs } from '.';
 
@@ -27,5 +28,6 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     TaskEntity,
     PostEntity,
     CommentEntity,
+    CategoryEntity
   ],
 });
