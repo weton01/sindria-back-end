@@ -167,7 +167,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/talk-to/production/1648646733895-2022-03-30T13:25:33.895Z/talk-to.zip"
+          "S3Key": "serverless/talk-to/production/1648683152199-2022-03-30T23:32:32.199Z/talk-to.zip"
         },
         "Handler": "./dist/apps/auth/main.handler",
         "Runtime": "nodejs14.x",
@@ -204,7 +204,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/talk-to/production/1648646733895-2022-03-30T13:25:33.895Z/talk-to.zip"
+          "S3Key": "serverless/talk-to/production/1648683152199-2022-03-30T23:32:32.199Z/talk-to.zip"
         },
         "Handler": "./dist/apps/category/main.handler",
         "Runtime": "nodejs14.x",
@@ -234,24 +234,24 @@
         "CategoryLogGroup"
       ]
     },
-    "AuthLambdaVersionUXxVNaeVgQBuT3EPqzEv2ZqjxUT7lSRFxsZhK5dxC0": {
+    "AuthLambdaVersiongBpmibqrjkkdHIY1aVF0oz1yZlJ30qUkREOC2DC3lo": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AuthLambdaFunction"
         },
-        "CodeSha256": "3NivWS4ZKPbR8eUSbSAjzu3orUBn0QHv4/ep/9QZ2+A="
+        "CodeSha256": "+Rl+9MZdXs4UlomaN2OwmbIgeXOUI4lzDVINQD51yg0="
       }
     },
-    "CategoryLambdaVersionUHGmhL4yl4WWxT3QSPWfBvmOHIiYpIA1Bz1ThAKln9s": {
+    "CategoryLambdaVersionyCYlkQYiz43DGjLMvOC76JzAkojwfOusBx2uBSOnDs": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CategoryLambdaFunction"
         },
-        "CodeSha256": "3NivWS4ZKPbR8eUSbSAjzu3orUBn0QHv4/ep/9QZ2+A="
+        "CodeSha256": "+Rl+9MZdXs4UlomaN2OwmbIgeXOUI4lzDVINQD51yg0="
       }
     },
     "ApiGatewayRestApi": {
@@ -504,7 +504,7 @@
         "CategoryLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1648646650530": {
+    "ApiGatewayDeployment1648683043068": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -606,7 +606,7 @@
     "AuthLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AuthLambdaVersionUXxVNaeVgQBuT3EPqzEv2ZqjxUT7lSRFxsZhK5dxC0"
+        "Ref": "AuthLambdaVersiongBpmibqrjkkdHIY1aVF0oz1yZlJ30qUkREOC2DC3lo"
       },
       "Export": {
         "Name": "sls-talk-to-production-AuthLambdaFunctionQualifiedArn"
@@ -615,7 +615,7 @@
     "CategoryLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CategoryLambdaVersionUHGmhL4yl4WWxT3QSPWfBvmOHIiYpIA1Bz1ThAKln9s"
+        "Ref": "CategoryLambdaVersionyCYlkQYiz43DGjLMvOC76JzAkojwfOusBx2uBSOnDs"
       },
       "Export": {
         "Name": "sls-talk-to-production-CategoryLambdaFunctionQualifiedArn"
