@@ -23,11 +23,11 @@
       "@/auth/*": [
         "apps/auth/src/*"
       ],
-      "@/teacher/*": [
-        "apps/teacher/src/*"
+      "@/category/*": [
+        "apps/category/src/*"
       ],
-      "@/calendar/*": [
-        "apps/calendar/src/*"
+      "@/address/*": [
+        "apps/address/src/*"
       ],
       "@app/foggy-common": [
         "libs/foggy-common/src"

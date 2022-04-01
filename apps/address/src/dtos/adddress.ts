@@ -3,7 +3,7 @@ import { messageInvalidCep } from '@app/utils/messages';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsEmail, MinLength, MaxLength, IsOptional, IsBoolean, Matches } from 'class-validator';
 
-export class UserDto {
+export class AddressDto {
   @ApiProperty({
     example: '11111-111',
   })

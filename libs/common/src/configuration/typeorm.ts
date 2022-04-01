@@ -1,14 +1,8 @@
+import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities';
-import { TaskEntity } from '@/calendar/entities';
-import {
-  ExperienceEntity,
-  FormationEntity,
-  SkillEntity,
-  TeacherEntity,
-} from '@/teacher/entities';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CategoryEntity } from 'apps/category/src/entities/category';
-import { CommentEntity, PostEntity } from 'apps/timeline/src/entities';
+import { CategoryEntity } from '@/category/entities/category';
 import { envs } from '.';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
@@ -21,13 +15,7 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   synchronize: true,
   entities: [
     UserEntity,
-    TeacherEntity,
-    SkillEntity,
-    FormationEntity,
-    ExperienceEntity,
-    TaskEntity,
-    PostEntity,
-    CommentEntity,
+    AddressEntity,
     CategoryEntity
   ],
 });
