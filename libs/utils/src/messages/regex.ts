@@ -1,0 +1,1 @@
+export const messageInvalidCep = `cep invalido, formato correto 11111-111`
