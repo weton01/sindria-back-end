@@ -1,12 +1,10 @@
-import { TeacherEntity } from '@/teacher/entities';
+import { AddressEntity } from '@/address/entities/address';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { CommentEntity, PostEntity } from 'apps/timeline/src/entities';
 import {
   Entity,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
   PrimaryGeneratedColumn,
   OneToMany,
 } from 'typeorm';
@@ -43,15 +41,8 @@ export class UserEntity {
   @Column('boolean', { default: false })
   active: boolean;
 
-  @ApiHideProperty()
-  @OneToOne(() => TeacherEntity, (teacher) => teacher.user)
-  teacher: TeacherEntity;
-
-  @OneToMany(() => PostEntity, (post) => post.user)
-  posts: PostEntity[];
-
-  @OneToMany(() => CommentEntity, (comment) => comment.user)
-  comments: CommentEntity[];
+  @OneToMany(() => AddressEntity, (address) => address.user)
+  addreesses: AddressEntity[];
 
   @ApiHideProperty()
   @Column({default: false})
@@ -75,6 +66,5 @@ export class UserEntity {
     this.email = entity?.email;
     this.activationCode = entity?.activationCode;
     this.active = entity?.active;
-    this.teacher = entity?.teacher;
   }
 }

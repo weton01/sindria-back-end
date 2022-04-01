@@ -1,13 +1,15 @@
+import { UserEntity } from '@/auth/entities';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'address' })
-export class TaskEntity {
+@Entity({ name: 'addresses' })
+export class AddressEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -37,8 +39,11 @@ export class TaskEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
+  
+  @ManyToOne(() => UserEntity, (user) => user.addreesses)
+  user: UserEntity;
 
-  constructor(entity?: Partial<TaskEntity>) {
+  constructor(entity?: Partial<AddressEntity>) {
     this.id = entity?.id;
   }
 }
