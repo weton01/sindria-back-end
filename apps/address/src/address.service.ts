@@ -1,7 +1,7 @@
-import { UserEntity } from '@/auth/entities';
+import { UserEntity } from '@/auth/entities/user';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TreeRepository } from 'typeorm';
+import { Repository, TreeRepository } from 'typeorm';
 import { CreateAddressDto } from './dtos/create';
 import { UpdateAddressDto } from './dtos/update';
 import { AddressEntity } from './entities/address';
@@ -10,9 +10,9 @@ import { AddressEntity } from './entities/address';
 export class AddressService {
   constructor(
     @InjectRepository(AddressEntity)
-    private readonly repository: TreeRepository<AddressEntity>,
+    private readonly repository: Repository<AddressEntity>,
     @InjectRepository(UserEntity)
-    private readonly userRepository: TreeRepository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>
   ) { }
 
   async create(userId: string, dto: CreateAddressDto): Promise<AddressEntity> {

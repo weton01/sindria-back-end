@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BcryptAdapter, JwtStrategy } from '@app/utils';
 import { JwtConfig, MailerConfig, TypeormConfig } from '@app/common';
-import { UserEntity } from './entities';
+import { UserEntity } from './entities/user';
 import { GoogleStrategy } from '@app/utils/passports/google';
 import { FacebookStrategy } from '@app/utils/passports/facebook';
 

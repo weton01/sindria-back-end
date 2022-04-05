@@ -1,4 +1,4 @@
-import { UserEntity } from '@/auth/entities';
+import { UserEntity } from '@/auth/entities/user';
 import { JwtConfig, TypeormConfig } from '@app/common';
 import { JwtStrategy } from '@app/utils';
 import { Module } from '@nestjs/common';

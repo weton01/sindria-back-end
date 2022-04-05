@@ -29,6 +29,9 @@
       "@/address/*": [
         "apps/address/src/*"
       ],
+      "@/credit-card/*": [
+        "apps/credit-card/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],

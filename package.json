@@ -42,6 +42,7 @@
     "mongodb": "^3.7.3",
     "mongoose": "^6.2.7",
     "mysql": "^2.18.1",
+    "nestjs-twilio": "^2.1.0",
     "nodemailer": "^6.7.2",
     "offline": "0.0.1",
     "passport": "^0.5.2",
