@@ -1,5 +1,7 @@
 import { AddressEntity } from '@/address/entities/address';
+import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+
 import {
   Entity,
   Column,
@@ -41,9 +43,6 @@ export class UserEntity {
   @Column('boolean', { default: false })
   active: boolean;
 
-  @OneToMany(() => AddressEntity, (address) => address.user)
-  addreesses: AddressEntity[];
-
   @ApiHideProperty()
   @Column({default: false})
   isGoogle: boolean;
@@ -59,6 +58,12 @@ export class UserEntity {
   @ApiProperty()
   @UpdateDateColumn()
   updated_at?: Date;
+
+  @OneToMany(() => AddressEntity, (address) => address.user)
+  addreesses: AddressEntity[];
+
+  @OneToMany(() => CreditCardEntity, (address) => address.user)
+  creditCards: AddressEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;

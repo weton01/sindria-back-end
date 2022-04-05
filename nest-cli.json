@@ -103,6 +103,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/credit-card/tsconfig.app.json"
       }
+    },
+    "flat": {
+      "type": "application",
+      "root": "apps/flat",
+      "entryFile": "main",
+      "sourceRoot": "apps/flat/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/flat/tsconfig.app.json"
+      }
     }
   }
 }

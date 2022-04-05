@@ -36,7 +36,7 @@ import {
 
 import { AuthUserDto } from './dtos/auth-user.dto';
 import { RecoverPasswordDto } from './dtos/recover-password.dto';
-import { UserEntity } from './entities';
+import { UserEntity } from './entities/user';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 

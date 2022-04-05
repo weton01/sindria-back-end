@@ -1,9 +1,10 @@
 import { AddressEntity } from '@/address/entities/address';
-import { UserEntity } from '@/auth/entities';
+import { UserEntity } from '@/auth/entities/user';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryEntity } from '@/category/entities/category';
 import { envs } from '.';
+import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -16,6 +17,7 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   entities: [
     UserEntity,
     AddressEntity,
-    CategoryEntity
+    CategoryEntity,
+    CreditCardEntity
   ],
 });

@@ -39,4 +39,32 @@ functions:
       - http:
           method: ANY
           path: '/category/{proxy+}'
+  address:
+    handler: ./dist/apps/address/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /address
+      - http:
+          method: ANY
+          path: '/address/{proxy+}'
+  credit-card:
+    handler: ./dist/apps/credit-card/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /credit-card
+      - http:
+          method: ANY
+          path: '/credit-card/{proxy+}'
+
+  flat:
+    handler: ./dist/apps/flat/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /flat
+      - http:
+          method: ANY
+          path: '/flat/{proxy+}'
     
