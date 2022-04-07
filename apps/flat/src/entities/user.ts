@@ -13,7 +13,7 @@ import { RoommateSetup, RoommateSetupSchema } from './roommate-setup';
 import { UserReasons, UserReasonsSchema } from './user-reasons';
 
 export type UserDocument = User & Document;
-@Schema({ timestamps: true,  })
+@Schema({ timestamps: true })
 export class User {
   @ApiProperty()
   _id: string;
@@ -59,17 +59,17 @@ export class User {
   description: string;
 
   @Prop({
-    enum: ["admin", "user"]
+    enum: ['admin', 'user'],
   })
   haveHome: string;
 
   @Prop({
-    enum: ["admin", "user"]
+    enum: ['admin', 'user'],
   })
   role: string;
 
   @Prop({
-    default: 1300
+    default: 1300,
   })
   monthlyBudget: number;
 
@@ -107,90 +107,90 @@ export class User {
   isNewbie: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   onBoardingProfileFinished: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   active: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   coachMarkFinished: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   accountDeleted: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   showedCeo: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   showNopeTutorial: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   showYeapTutorial: boolean;
 
   @Prop({
-    default: false
+    default: false,
   })
   showChatTutorial: boolean;
 
   @Prop({
-    type: FlatmatchSetupSchema
+    type: FlatmatchSetupSchema,
   })
   flatmatchSetup: FlatmatchSetup;
-  
+
   @Prop({
-    type: RoommateSetupSchema
+    type: RoommateSetupSchema,
   })
   roommateSetup: RoommateSetup;
 
   @Prop({
-    type: UserReasonsSchema
+    type: UserReasonsSchema,
   })
   userReasons: UserReasons;
 
   @Prop({
-    type: ImageSchema
+    type: ImageSchema,
   })
   images: [Image];
 
   @Prop({
-    type: InterestTagsSchema
+    type: InterestTagsSchema,
   })
   interestTags: [InterestTags];
 
   @Prop({
-    type: RoommateMatchedSchema
+    type: RoommateMatchedSchema,
   })
   roommateMatch: [RoommateMatched];
 
   @Prop({
-    type: FavoriteChatSchema
+    type: FavoriteChatSchema,
   })
   favoriteChat: [FavoriteChat];
 
   @Prop({
-    type: FavoritePropertySchema
+    type: FavoritePropertySchema,
   })
   favoriteProperty: [FavoriteProperty];
 
   @Prop({
-    type: DecisiveMatchSchema
+    type: DecisiveMatchSchema,
   })
   decisiveMatch: [DecisiveMatch];
-  
+
   memberGetMemberIds: [MemberGetMember];
 
   @Prop({ name: 'created_at' })

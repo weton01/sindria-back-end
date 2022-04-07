@@ -48,7 +48,7 @@ export class AuthController {
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {}
 
   @ApiCreatedResponse({
     type: UserEntity,
@@ -139,7 +139,7 @@ export class AuthController {
   @Post('/signin')
   @HttpCode(200)
   async signin(@Body() authDto: AuthUserDto): Promise<any> {
-    const token = await this.authService.auth(authDto)
+    const token = await this.authService.auth(authDto);
     return { token };
   }
 
@@ -191,8 +191,7 @@ export class AuthController {
   async recoverPassword(
     @Body() recoverPasswordDto: RecoverPasswordDto,
   ): Promise<any> {
- 
-    const token = this.authService.recoverPassword(recoverPasswordDto)
+    const token = this.authService.recoverPassword(recoverPasswordDto);
 
     this.mailerService.sendMail({
       to: recoverPasswordDto.email,
@@ -284,14 +283,16 @@ export class AuthController {
     @Param('id') id: string,
     @Body() activeUserDto: ActiveUserDto,
   ): Promise<any> {
-    const token = await this.activeUser(id, activeUserDto)
+    const token = await this.activeUser(id, activeUserDto);
 
     return { token };
   }
 
   @Get('/google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) { }
+  async googleAuth() {
+    return
+  }
 
   @Get('/google/callback')
   @UseGuards(AuthGuard('google'))
@@ -299,13 +300,15 @@ export class AuthController {
     const user = await this.authService.passportLogin(req);
 
     return await {
-      token: this.authService.createAuth2(user)
+      token: this.authService.createAuth2(user),
     };
   }
 
   @Get('/facebook')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuth(@Req() req) { }
+  async facebookAuth() {
+    return
+  }
 
   @Get('/facebook/callback')
   @UseGuards(AuthGuard('facebook'))
@@ -313,7 +316,7 @@ export class AuthController {
     const user = await this.authService.passportLogin(req);
 
     return await {
-      token: this.authService.createAuth2(user)
+      token: this.authService.createAuth2(user),
     };
   }
 }

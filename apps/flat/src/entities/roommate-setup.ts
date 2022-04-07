@@ -6,42 +6,42 @@ export type RoommateSetupDocument = RoommateSetup & Document;
 @Schema({ timestamps: true })
 export class RoommateSetup {
   @Prop({
-    enum: ["no", "yes"],
-    default: "yes"
+    enum: ['no', 'yes'],
+    default: 'yes',
   })
   men: string;
 
   @Prop({
-    enum: ["no", "yes"],
-    default: "yes"
+    enum: ['no', 'yes'],
+    default: 'yes',
   })
   woman: string;
 
   @Prop({
-    enum: ["no", "yes"],
-    default: "yes"
+    enum: ['no', 'yes'],
+    default: 'yes',
   })
   indifferent: string;
 
   @Prop({
-    default: 18
+    default: 18,
   })
   minAge: number;
 
   @Prop({
-    default: 60
+    default: 60,
   })
   maxAge: number;
 
   @Prop({
-    enum: ["no", "yes"],
-    default: "no"
+    enum: ['no', 'yes'],
+    default: 'no',
   })
   haveAnimals: string;
 
   @Prop({
-    enum: ["no", "yes"],
-    default: "no"
+    enum: ['no', 'yes'],
+    default: 'no',
   })
   smoker: string;
 

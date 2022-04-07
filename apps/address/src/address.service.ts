@@ -1,7 +1,11 @@
 import { UserEntity } from '@/auth/entities/user';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateAddressDto } from './dtos/create';
 import { UpdateAddressDto } from './dtos/update';
 import { AddressEntity } from './entities/address';
@@ -12,58 +16,54 @@ export class AddressService {
     @InjectRepository(AddressEntity)
     private readonly repository: Repository<AddressEntity>,
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
-  ) { }
+    private readonly userRepository: Repository<UserEntity>,
+  ) {}
 
   async create(userId: string, dto: CreateAddressDto): Promise<AddressEntity> {
-    const foundUser = await this.userRepository.findOne({ id: userId })
+    const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado')
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
     const foundAddress = this.repository.findOne({
       street: dto.street,
       number: dto.number,
       city: dto.city,
       neighborhood: dto.neighborhood,
-      user: foundUser
-    })
+      user: foundUser,
+    });
 
-    if (foundAddress)
-      throw new ConflictException('endereço já existente')
+    if (foundAddress) throw new ConflictException('endereço já existente');
 
-    const tempAddress = await this.repository.create(dto)
-    return await this.repository.save(tempAddress)
+    const tempAddress = await this.repository.create(dto);
+    return await this.repository.save(tempAddress);
   }
 
   async update(id: string, dto: UpdateAddressDto): Promise<AddressEntity> {
-    const foundAddress = this.repository.findOne({ id })
+    const foundAddress = this.repository.findOne({ id });
 
-    if (foundAddress)
-      throw new NotFoundException('endereço não encontrado')
+    if (foundAddress) throw new NotFoundException('endereço não encontrado');
 
-    await this.repository.update(id, dto)
-    return await this.repository.findOne({id})
+    await this.repository.update(id, dto);
+    return await this.repository.findOne({ id });
   }
 
   async delete(id: string): Promise<any> {
-    const foundAddress = this.repository.findOne({ id })
+    const foundAddress = this.repository.findOne({ id });
 
-    if (foundAddress)
-      throw new NotFoundException('endereço não encontrado')
+    if (foundAddress) throw new NotFoundException('endereço não encontrado');
 
-    return await this.repository.delete(id)
+    return await this.repository.delete(id);
   }
 
   async findOne(query: AddressEntity): Promise<AddressEntity> {
-    return this.repository.findOne(query)
+    return this.repository.findOne(query);
   }
 
   async findById(id: string): Promise<AddressEntity> {
-    return this.repository.findOne({id})
+    return this.repository.findOne({ id });
   }
 
   async find(query: AddressEntity): Promise<AddressEntity[]> {
-    return this.repository.find(query)
+    return this.repository.find(query);
   }
 }

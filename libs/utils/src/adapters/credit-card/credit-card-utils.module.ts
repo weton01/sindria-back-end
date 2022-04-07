@@ -1,9 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { CreditCardUtilsService } from './credit-card-utils.service';
- 
 
-export interface OptionsCreditCard {
-   }
+export interface OptionsCreditCard {}
 
 @Module({})
 export class CreditCardUtilsModule {
@@ -12,5 +10,5 @@ export class CreditCardUtilsModule {
       module: CreditCardUtilsModule,
       exports: [CreditCardUtilsService],
     };
-  }weton
+  }
 }

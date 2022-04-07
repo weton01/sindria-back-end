@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'categories' })
-@Tree("closure-table")
+@Tree('closure-table')
 export class CategoryEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
@@ -21,7 +21,7 @@ export class CategoryEntity {
     description: 'the name of category',
     example: 'any_category',
   })
-  @Column({unique: true})
+  @Column({ unique: true })
   name: string;
 
   @ApiProperty({

@@ -1,7 +1,24 @@
-import { Body,  Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiConflictResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
 import { ResendCodeDto } from '../dtos/user/resend-code';
 import { User } from '../entities/user';
 import { CodeService } from '../services/code';
@@ -16,7 +33,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
-    private readonly codeService: CodeService
+    private readonly codeService: CodeService,
   ) { }
 
   @ApiCreatedResponse({
@@ -41,18 +58,11 @@ export class UserController {
   })
   @Post('/signup')
   async signup(@Body() userDto: SignUpDto): Promise<any> {
-    const foundUser = await this.userService.findOne({
-      email: userDto.email,
-    });
-
-    if (foundUser) {
-      const strErr = 'e-mail já cadastrado em nosso sistema';
-      throw new HttpException(strErr, HttpStatus.CONFLICT);
-    }
-
     const newUser = await this.userService.create(userDto);
+
     await this.codeService.create(newUser);
-    return newUser
+
+    return newUser;
   }
 
   @ApiOkResponse({
@@ -80,12 +90,12 @@ export class UserController {
   @Post('/signin')
   @HttpCode(200)
   async signin(@Body() authDto: SignInDto): Promise<any> {
-    const { email } = authDto;
+    const { cellphone } = authDto;
 
-    const user = await this.userService.findOne({ email });
+    const user = await this.userService.findOne({ cellphone: `+55${cellphone}` });
 
     if (!user) {
-      const strErr = 'e-mail não encontrado';
+      const strErr = 'usuário não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
@@ -99,7 +109,7 @@ export class UserController {
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
 
-    await this.codeService.create(user)
+    await this.codeService.create(user);
 
     return {};
   }
@@ -136,14 +146,14 @@ export class UserController {
   @HttpCode(200)
   async signinCallback(
     @Param('code') code: string,
-    @Body() authDto: SignInDto
+    @Body() authDto: SignInDto,
   ): Promise<any> {
-    const { email } = authDto;
+    const { cellphone } = authDto;
 
-    const foundUser = await this.userService.findOne({ email });
+    const foundUser = await this.userService.findOne({ cellphone: `+55${cellphone}` });
 
     if (!foundUser) {
-      const strErr = 'e-mail não encontrado';
+      const strErr = 'telefone não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
@@ -157,7 +167,10 @@ export class UserController {
       throw new HttpException(strErr, HttpStatus.BAD_REQUEST);
     }
 
-    const matchCode = await this.codeService.validate(foundUser, parseFloat(code))
+    const matchCode = await this.codeService.validate(
+      foundUser,
+      parseFloat(code),
+    );
 
     if (!matchCode) {
       const strErr = 'código inválido';
@@ -175,7 +188,7 @@ export class UserController {
     }
 
     const token = await this.jwtService.sign({
-      email: foundUser.email,
+      cellphone: foundUser.cellphone,
       _id: foundUser._id,
     });
 
@@ -210,7 +223,7 @@ export class UserController {
     const foundUser = await this.userService.findById(_id);
 
     if (!foundUser) {
-      const strErr = 'e-mail não encontrado';
+      const strErr = 'usuário não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
@@ -241,40 +254,41 @@ export class UserController {
   })
   @Post('/resend-code')
   @HttpCode(200)
-  async resendCode(
-    @Body() resendCode: ResendCodeDto,
-  ): Promise<any> {
-
-    const user = await this.userService.findOne({ email: resendCode.email });
+  async resendCode(@Body() resendCode: ResendCodeDto): Promise<any> {
+    const user = await this.userService.findOne({  cellphone: `+55${ resendCode.cellphone}` });
 
     if (!user) {
       const strErr = 'e-mail não encontrado';
       throw new HttpException(strErr, HttpStatus.NOT_FOUND);
     }
 
-    await this.codeService.create(user)
+    await this.codeService.create(user);
 
     return {};
   }
 
   @Get('/google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) { }
+  async googleAuth() {
+    return;
+  }
 
   @Get('/google/callback')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req) {
-    const { email, firstName, lastName } = await this.userService.passportLogin(req);
+    const { email, firstName, lastName } = await this.userService.passportLogin(
+      req,
+    );
 
-    const foundUser = await this.userService.findOne({ email })
+    const foundUser = await this.userService.findOne({ email });
 
     if (foundUser) {
       return {
         token: await this.jwtService.sign({
           email: foundUser.email,
           _id: foundUser._id,
-        })
-      }
+        }),
+      };
     }
 
     const newUser = await this.userService.create({
@@ -282,27 +296,31 @@ export class UserController {
       firstName,
       lastName,
       cellphone: '',
-      isGoogle: true
-    })
+      isGoogle: true,
+    });
 
     return await {
       token: this.jwtService.sign({
         email: newUser.email,
         _id: newUser._id,
-      })
+      }),
     };
   }
 
   @Get('/facebook')
   @UseGuards(AuthGuard('facebook'))
-  async facebookAuth(@Req() req) { }
+  async facebookAuth() {
+    return;
+  }
 
   @Get('/facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuthRedirect(@Req() req) {
-    const { email, firstName, lastName } = await this.userService.passportLogin(req);
+    const { email, firstName, lastName } = await this.userService.passportLogin(
+      req,
+    );
 
-    const foundUser = await this.userService.findOne({ email })
+    const foundUser = await this.userService.findOne({ email });
 
     if (foundUser) {
       return await this.jwtService.sign({
@@ -316,16 +334,14 @@ export class UserController {
       firstName,
       lastName,
       cellphone: '',
-      isFacebook: true
-    })
+      isFacebook: true,
+    });
 
     return await {
       token: this.jwtService.sign({
         email: newUser.email,
         _id: newUser._id,
-      })
+      }),
     };
   }
 }
-
-

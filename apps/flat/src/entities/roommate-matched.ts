@@ -8,20 +8,20 @@ export type RoommateMatchedDocument = RoommateMatched & Document;
 export class RoommateMatched {
   @Prop({
     type: Schem.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   })
-  sender: User
-  
-  @Prop({
-    type: Schem.Types.ObjectId,
-    ref: 'User'
-  })
-  receiver: User
+  sender: User;
 
   @Prop({
     type: Schem.Types.ObjectId,
     ref: 'User',
-    enum: ["cancel", "accept", "pending"]
+  })
+  receiver: User;
+
+  @Prop({
+    type: Schem.Types.ObjectId,
+    ref: 'User',
+    enum: ['cancel', 'accept', 'pending'],
   })
   status: string;
 
@@ -32,4 +32,5 @@ export class RoommateMatched {
   updatedAt: Date;
 }
 
-export const RoommateMatchedSchema = SchemaFactory.createForClass(RoommateMatched);
+export const RoommateMatchedSchema =
+  SchemaFactory.createForClass(RoommateMatched);

@@ -1,27 +1,53 @@
 import { FilterDto } from '@app/common';
 import { BcryptAdapter } from '@app/utils';
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ActiveUserDto, AuthUserDto, CreateUserDto, RecoverPasswordDto, UpdateUserDto } from './dtos';
+import {
+  ActiveUserDto,
+  AuthUserDto,
+  CreateUserDto,
+  RecoverPasswordDto,
+  UpdateUserDto,
+} from './dtos';
 import { UserEntity } from './entities/user';
 
 @Injectable()
 export class AuthService {
+  private userSelect: any[] = [
+    'activationCode',
+    'active',
+    'created_at',
+    'email',
+    'id',
+    'isFacebook',
+    'isGoogle',
+    'password',
+    'updated_at',
+    'username',
+  ];
+
   constructor(
     @InjectRepository(UserEntity)
     private readonly repository: Repository<UserEntity>,
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
     const activationCode = Math.floor(rdm).toString();
 
     const userExists = await this.repository.findOne({
-      email: createUserDto.email,
+      where: { email: createUserDto.email },
+      select: this.userSelect,
     });
 
     if (userExists)
@@ -41,7 +67,12 @@ export class AuthService {
   }
 
   async createAuth2(createUserDto: CreateUserDto): Promise<string> {
-    const foundUser = await this.repository.findOne({ email: createUserDto.email })
+    const foundUser = await this.repository.findOne({
+      where: {
+        email: createUserDto.email,
+      },
+      select: this.userSelect,
+    });
 
     if (foundUser) {
       return await this.jwtService.sign({
@@ -52,37 +83,38 @@ export class AuthService {
 
     const newUser = await this.repository.create({
       ...createUserDto,
-      active: true
-    })
+      active: true,
+    });
 
     return await this.jwtService.sign({
       email: newUser.email,
       id: newUser.id,
-    })
+    });
   }
 
   async auth(authDto: AuthUserDto): Promise<string> {
-    const { email, password } = authDto
+    const { email, password } = authDto;
 
-    const user = await this.repository.findOne({ email });
+    const user = await this.repository.findOne({
+      where: { email },
+      select: this.userSelect,
+    });
 
-    if (!user)
-      throw new NotFoundException('e-mail não encontrado');
+    if (!user) throw new NotFoundException('e-mail não encontrado');
 
     const match = await this.bcryptAdapter.compare(password, user.password);
 
-    if (!match)
-      throw new UnauthorizedException('credenciais inválidas');
+    if (!match) throw new UnauthorizedException('credenciais inválidas');
 
-
-    if (!user.active)
-      throw new UnauthorizedException('credenciais inválidas');
+    if (!user.active) throw new BadRequestException({
+      id: user.id,
+      active: false
+    });
 
     return await this.jwtService.sign({
       email: user.email,
       id: user.id,
     });
-
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
@@ -112,20 +144,28 @@ export class AuthService {
   }
 
   async findOne(value: any): Promise<UserEntity> {
-    return await this.repository.findOne({ ...value });
+    return await this.repository.findOne({
+      where: { ...value },
+      select: this.userSelect,
+    });
   }
 
   async findById(id: string): Promise<UserEntity> {
-    return await this.repository.findOne({ id: id });
+    return await this.repository.findOne({
+      where: { id: id },
+      select: this.userSelect,
+    });
   }
 
-  async recoverPassword(recoverPasswordDto: RecoverPasswordDto): Promise<string> {
+  async recoverPassword(
+    recoverPasswordDto: RecoverPasswordDto,
+  ): Promise<string> {
     const user = await this.repository.findOne({
-      email: recoverPasswordDto.email,
+      where: { email: recoverPasswordDto.email },
+      select: this.userSelect,
     });
 
-    if (!user)
-      throw new NotFoundException('e-mail não encontrado');
+    if (!user) throw new NotFoundException('e-mail não encontrado');
 
     return this.jwtService.sign({ id: user.id });
   }
@@ -137,11 +177,9 @@ export class AuthService {
   async activeUser(id: string, activeUserDto: ActiveUserDto): Promise<string> {
     const user = await this.findById(id);
 
-    if (!user)
-      throw new NotFoundException('usuário não encontrado');
+    if (!user) throw new NotFoundException('usuário não encontrado');
 
-    if (user.active)
-      throw new BadRequestException('usuário já está ativo');
+    if (user.active) throw new BadRequestException('usuário já está ativo');
 
     if (user.activationCode !== activeUserDto.activationCode)
       throw new BadRequestException('código inválido');
@@ -155,6 +193,6 @@ export class AuthService {
   }
 
   async passportLogin(req): Promise<any> {
-    return req.user
+    return req.user;
   }
 }

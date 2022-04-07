@@ -1,5 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Profile, Strategy } from "passport-facebook";
+import { Profile, Strategy } from 'passport-facebook';
 
 import { Injectable } from '@nestjs/common';
 import { envs } from '../envs/envs';
@@ -11,8 +11,8 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       clientID: envs.FACEBOOK_AUTH_CLIENT_ID,
       clientSecret: envs.FACEBOOK_AUTH_CLIENT_SECRET,
       callbackURL: 'http://localhost/user/facebook/callback',
-      scope: "email",
-      profileFields: ["emails", "name"],
+      scope: 'email',
+      profileFields: ['emails', 'name'],
     });
   }
 
@@ -20,7 +20,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     accessToken: string,
     refreshToken: string,
     profile: Profile,
-    done: (err: any, user: any, info?: any) => void
+    done: (err: any, user: any, info?: any) => void,
   ): Promise<any> {
     const { name, emails } = profile;
     const user = {
@@ -33,6 +33,6 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
       accessToken,
     };
 
-    done(null, payload); 
+    done(null, payload);
   }
 }

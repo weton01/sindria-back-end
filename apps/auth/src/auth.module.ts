@@ -16,6 +16,12 @@ import { FacebookStrategy } from '@app/utils/passports/facebook';
     MailerConfig,
   ],
   controllers: [AuthController],
-  providers: [AuthService, BcryptAdapter, JwtStrategy, GoogleStrategy, FacebookStrategy],
+  providers: [
+    AuthService,
+    BcryptAdapter,
+    JwtStrategy,
+    GoogleStrategy,
+    FacebookStrategy,
+  ],
 })
 export class AuthModule {}

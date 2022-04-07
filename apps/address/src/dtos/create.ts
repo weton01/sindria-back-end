@@ -1,3 +1,3 @@
 import { AddressDto } from './adddress';
 
-export class CreateAddressDto extends AddressDto { }
+export class CreateAddressDto extends AddressDto {}

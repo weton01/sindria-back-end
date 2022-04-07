@@ -4,7 +4,7 @@ import { TwilioModule } from 'nestjs-twilio';
 import { envs } from '../utils/envs/envs';
 import { UserModule } from './user';
 
-console.log('here envs', envs.MONGO_HOST)
+console.log('here envs', envs.MONGO_HOST);
 
 @Module({
   imports: [
@@ -14,8 +14,7 @@ console.log('here envs', envs.MONGO_HOST)
       authToken: envs.TWAUTHTOKEN,
     }),
 
-    UserModule
-  ]
+    UserModule,
+  ],
 })
-export class AppModule { }
- 
+export class AppModule {}

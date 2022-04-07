@@ -22,7 +22,6 @@ export class Code {
 
   @Prop({ name: 'updated_at' })
   updatedAt: Date;
-
 }
 
 export const CodeSchema = SchemaFactory.createForClass(Code);
