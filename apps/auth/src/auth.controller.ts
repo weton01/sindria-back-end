@@ -283,7 +283,7 @@ export class AuthController {
     @Param('id') id: string,
     @Body() activeUserDto: ActiveUserDto,
   ): Promise<any> {
-    const token = await this.activeUser(id, activeUserDto);
+    const token = await this.authService.activeUser(id, activeUserDto);
 
     return { token };
   }
