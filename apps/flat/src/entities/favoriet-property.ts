@@ -1,15 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as Schem } from 'mongoose';
-import { UserSchema, User } from './user';
 
 export type FavoritePropertyDocument = FavoriteProperty & Document;
 
 @Schema({ timestamps: true })
 export class FavoriteProperty {
-  @Prop({ 
-    type: Schem.Types.ObjectId, ref: "Properties", autopopulate: true
+  @Prop({
+    type: Schem.Types.ObjectId,
+    ref: 'Properties',
+    autopopulate: true,
   })
-  property: any
+  property: any;
 }
 
-export const FavoritePropertySchema = SchemaFactory.createForClass(FavoriteProperty);
+export const FavoritePropertySchema =
+  SchemaFactory.createForClass(FavoriteProperty);

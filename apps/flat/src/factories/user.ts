@@ -20,11 +20,18 @@ import { envs } from '../utils/envs/envs';
       secret: envs.JWT_SECRET,
       signOptions: { expiresIn: '1000000000s' },
       verifyOptions: {
-        ignoreExpiration: true
-      }
+        ignoreExpiration: true,
+      },
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, BcryptAdapter, JwtStrategy, CodeService, GoogleStrategy, FacebookStrategy],
+  providers: [
+    UserService,
+    BcryptAdapter,
+    JwtStrategy,
+    CodeService,
+    GoogleStrategy,
+    FacebookStrategy,
+  ],
 })
-export class UserModule { }
+export class UserModule {}

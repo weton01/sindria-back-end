@@ -19,10 +19,10 @@ export class CategoryDto {
   @IsUrl()
   @IsNotEmpty()
   image: string;
- 
+
   @IsOptional()
   subCategories?: CategoryEntity[];
- 
+
   @IsOptional()
   parent?: CategoryEntity;
 }

@@ -6,11 +6,8 @@ import { CategoryService } from './category.service';
 import { CategoryEntity } from './entities/category';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([CategoryEntity]),
-    TypeormConfig,
-  ],
+  imports: [TypeOrmModule.forFeature([CategoryEntity]), TypeormConfig],
   controllers: [CategoryController],
   providers: [CategoryService],
 })
-export class CategoryModule { }
+export class CategoryModule {}

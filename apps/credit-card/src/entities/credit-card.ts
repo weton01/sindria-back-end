@@ -1,4 +1,3 @@
-
 import { UserEntity } from '@/auth/entities/user';
 import { RegexTypes } from '@app/utils/messages';
 import { Transform, TransformFnParams } from 'class-transformer';
@@ -19,7 +18,7 @@ export class CreditCardEntity {
 
   @Column()
   @Matches(RegexTypes.creditCard, {
-    message: 'cartão de crédito inválido'
+    message: 'cartão de crédito inválido',
   })
   @Transform(({ value }: TransformFnParams) => value.trim())
   number: string;
@@ -29,7 +28,7 @@ export class CreditCardEntity {
 
   @Column()
   @Matches(RegexTypes.expirationDate, {
-    message: 'data de expiração inválida'
+    message: 'data de expiração inválida',
   })
   expirationDate: string;
 

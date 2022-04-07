@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './factories/app';
-import * as fs from 'fs'
+import * as fs from 'fs';
 
 import 'module-alias';
 
@@ -17,12 +17,12 @@ import 'module-alias';
 import { envs } from './utils/envs/envs';
 
 let server: Handler;
-console.log('here envs', envs )
+console.log('here envs', envs);
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
-    app.enableCors()
+    app.enableCors();
     app.use(forwardedPrefixSwagger);
 
     const config = new DocumentBuilder()
@@ -32,7 +32,7 @@ if (envs.NODE_ENV == 'development') {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    fs.writeFileSync("./swagger-spec.json", JSON.stringify(document));
+    fs.writeFileSync('./swagger-spec.json', JSON.stringify(document));
 
     SwaggerModule.setup('user-docs', app, document);
 
@@ -48,7 +48,7 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(AppModule);
-  app.enableCors()
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );

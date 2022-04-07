@@ -1,12 +1,12 @@
 import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import 'module-alias';
 import { AddressModule } from './address.module';
+import 'module-alias';
 
 let server: Handler;
 
@@ -14,8 +14,8 @@ if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(AddressModule);
 
-    app.enableCors()
-    
+    app.enableCors();
+
     const config = new DocumentBuilder()
       .setTitle('Address Service')
       .setDescription(`The address service only...`)
@@ -25,11 +25,7 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile(
-      'swagger.json',
-      JSON.stringify(document),
-      'utf8', () => {}
-    );
+    fs.writeFile('swagger.json', JSON.stringify(document), 'utf8', () => ({}));
 
     SwaggerModule.setup('docs', app, document);
 
@@ -45,7 +41,7 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(AddressModule);
-  app.enableCors()
+  app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );

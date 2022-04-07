@@ -3,50 +3,50 @@ import { Document } from 'mongoose';
 
 export type FlatmatchSetupDocument = FlatmatchSetup & Document;
 
-@Schema({timestamps: true})
+@Schema({ timestamps: true })
 export class FlatmatchSetup {
   @Prop({
-    enum: ["apartment", "home"],
-    default: ["apartment", "home"]
+    enum: ['apartment', 'home'],
+    default: ['apartment', 'home'],
   })
   propertyType: string;
 
   @Prop({
     coordinates: [],
-    name: String
+    name: String,
   })
-  place: string
+  place: string;
 
   @Prop({
-    default: 10
+    default: 10,
   })
   areaRange: number;
 
   @Prop({
-    default: [500, 2000]
+    default: [500, 2000],
   })
-  amountRange: number[]
+  amountRange: number[];
 
   @Prop({
-    default: [20, 150]
+    default: [20, 150],
   })
-  usefulArea: number[]
+  usefulArea: number[];
 
   @Prop({
     enum: [1, 2, 3, 4],
-    default: 2
+    default: 2,
   })
-  numberOfbedroom: number
+  numberOfbedroom: number;
 
   @Prop({
     enum: [0, 1, 2, 3, 4],
-    default: 1
+    default: 1,
   })
-  parkingSpace: number
+  parkingSpace: number;
 
   @Prop({
     enum: [1, 2, 3, 4],
-    default: 2
+    default: 2,
   })
   noOfBathroom: number;
 
@@ -57,4 +57,5 @@ export class FlatmatchSetup {
   updatedAt: Date;
 }
 
-export const FlatmatchSetupSchema = SchemaFactory.createForClass(FlatmatchSetup);
+export const FlatmatchSetupSchema =
+  SchemaFactory.createForClass(FlatmatchSetup);

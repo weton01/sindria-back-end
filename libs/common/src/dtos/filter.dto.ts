@@ -13,6 +13,4 @@ export class FilterDto {
   @Min(0)
   @Type(() => Number)
   take: number;
- 
- 
 }

@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEmail, MinLength, MaxLength, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  MinLength,
+  MaxLength,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 
 export class UserDto {
   @ApiProperty({
@@ -40,7 +48,7 @@ export class UserDto {
   @IsBoolean()
   @IsOptional()
   isGoogle?: boolean;
-  
+
   @IsBoolean()
   @IsOptional()
   isFacebook?: boolean;

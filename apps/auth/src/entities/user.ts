@@ -28,27 +28,27 @@ export class UserEntity {
     description: 'the name of user',
     example: 'any_email@mail.com',
   })
-  @Column({ unique: true,  })
+  @Column({ unique: true })
   email: string;
 
   @ApiHideProperty()
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @ApiHideProperty()
-  @Column({ length: 4 })
+  @Column({ length: 4, select: false })
   activationCode: string;
 
   @ApiHideProperty()
-  @Column('boolean', { default: false })
+  @Column('boolean', { default: false, select: false })
   active: boolean;
 
   @ApiHideProperty()
-  @Column({default: false})
+  @Column({ default: false, select: false })
   isGoogle: boolean;
 
   @ApiHideProperty()
-  @Column({default: false})
+  @Column({ default: false, select: false })
   isFacebook: boolean;
 
   @ApiProperty()

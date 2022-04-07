@@ -1,7 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { TypeormConfig } from '@app/common';
 import { CypervModule, JwtStrategy } from '@app/utils';
-import { CreditCardUtilsModule } from '@app/utils/adapters/credit-card/credit-card-utils.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreditCardController } from './credit-card.controller';
@@ -15,11 +14,11 @@ import { CreditCardEntity } from './entities/credit-card';
       ALGORITHM: 'aes-256-cbc',
       ENCODING: 'hex',
       IV_LENGTH: 16,
-      KEY: '123qwe1231231231'!
+      KEY: '123qwe1231231231'!,
     }),
     TypeormConfig,
   ],
   controllers: [CreditCardController],
   providers: [CreditCardService, JwtStrategy],
 })
-export class CreditCardModule { }
+export class CreditCardModule {}

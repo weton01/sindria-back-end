@@ -14,10 +14,5 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   password: envs.DB_CONNECTION_PASSWORD,
   database: 'development',
   synchronize: true,
-  entities: [
-    UserEntity,
-    AddressEntity,
-    CategoryEntity,
-    CreditCardEntity
-  ],
+  entities: [UserEntity, AddressEntity, CategoryEntity, CreditCardEntity],
 });

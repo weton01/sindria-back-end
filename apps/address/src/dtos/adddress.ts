@@ -1,4 +1,4 @@
-import {  MessageErrors, RegexTypes } from '@app/utils/messages';
+import { MessageErrors, RegexTypes } from '@app/utils/messages';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsOptional, Matches } from 'class-validator';
 
@@ -16,7 +16,7 @@ export class AddressDto {
   })
   @IsString()
   @IsNotEmpty()
-  state: string
+  state: string;
 
   @ApiProperty({
     example: 'Any city',

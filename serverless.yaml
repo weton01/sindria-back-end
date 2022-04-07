@@ -11,11 +11,22 @@ provider:
   runtime: nodejs14.x
   stage: production
   environment:
+    JWT_SECRET: 0a6b944d-d2fb-46fc-a85e-0295c986cd9f
     MAILER_TRANSPORT_HOST: smtp.mailtrap.io
     MAILER_TRANSPORT_PORT: 2525
     MAILER_TRANSPORT_AUTH_USER: bfed0bddaaa901
     MAILER_TRANSPORT_AUTH_PASS: 34f539bbd98320
     MAILER_MAIL_FROM: lich@lichdata.com
+    DB_CONNECTION_HOST: mysqlserver.ctbhjnsyyeyu.us-east-1.rds.amazonaws.com
+    DB_CONNECTION_PORT: 3306
+    DB_CONNECTION_USERNAME: admin
+    DB_CONNECTION_PASSWORD: 2589a04e693ddd7679d83bd90a09dcbd
+    GOOGLE_AUTH_CLIENT_ID: 193865804446-0no96b25i8dgqso79uh1ar5jni2n44j6.apps.googleusercontent.com
+    GOOGLE_AUTH_CLIENT_SECRET: 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
+    FACEBOOK_AUTH_CLIENT_ID: 1003471433904383
+    FACEBOOK_AUTH_CLIENT_SECRET: 440be562ea1d7916e1c0ff385c77c08a
+    REDIRECT_URL: https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production
+
     MONGO_URI: mongodb+srv://weton01:Dragonite1@professor.yrdup.mongodb.net/dev?retryWrites=true&w=majority
     IS_SERVERLESS: true
     NODE_ENV: production
@@ -57,7 +68,6 @@ functions:
       - http:
           method: ANY
           path: '/credit-card/{proxy+}'
-
   flat:
     handler: ./dist/apps/flat/main.handler
     events:

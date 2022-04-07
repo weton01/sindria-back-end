@@ -15,4 +15,5 @@ export class MemberGetMember {
   updatedAt: Date;
 }
 
-export const MemberGetMemberSchema = SchemaFactory.createForClass(MemberGetMember);
+export const MemberGetMemberSchema =
+  SchemaFactory.createForClass(MemberGetMember);

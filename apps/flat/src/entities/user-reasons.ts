@@ -1,4 +1,3 @@
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -6,18 +5,18 @@ export type UserReasonsDocument = UserReasons & Document;
 
 @Schema({ timestamps: true })
 export class UserReasons {
-  @Prop({ 
-    default: true
+  @Prop({
+    default: true,
   })
   findMate: boolean;
 
-  @Prop({ 
-    default: true
+  @Prop({
+    default: true,
   })
   rentProperty: boolean;
 
-  @Prop({ 
-    default: true
+  @Prop({
+    default: true,
   })
   advertiseProperty: boolean;
 
@@ -29,4 +28,3 @@ export class UserReasons {
 }
 
 export const UserReasonsSchema = SchemaFactory.createForClass(UserReasons);
-

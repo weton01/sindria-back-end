@@ -1,7 +1,12 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty , IsEmail, Matches, IsOptional, } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  Matches,
+  IsOptional,
+} from 'class-validator';
 import { regexCellphone } from '../../utils/validators/cellphone';
- 
 
 export class UserDto {
   @ApiProperty({
@@ -30,10 +35,9 @@ export class UserDto {
     example: '(66)96666-6666',
   })
   @IsNotEmpty()
-  @Matches(
-    regexCellphone, 
-    { message: 'Invalid Cellphone, example: (66)96666-6666'}
-  )
+  @Matches(regexCellphone, {
+    message: 'Invalid Cellphone, example: (66)96666-6666',
+  })
   cellphone: string;
 
   @ApiHideProperty()

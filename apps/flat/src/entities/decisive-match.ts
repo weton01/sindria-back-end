@@ -8,20 +8,20 @@ export type DecisiveMatchDocument = DecisiveMatch & Document;
 export class DecisiveMatch {
   @Prop({
     type: Schem.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
   })
-  sender: User
-  
-  @Prop({
-    type: Schem.Types.ObjectId,
-    ref: 'User'
-  })
-  receiver: User
+  sender: User;
 
   @Prop({
     type: Schem.Types.ObjectId,
     ref: 'User',
-    enum: ["cancel", "accept", "pending"]
+  })
+  receiver: User;
+
+  @Prop({
+    type: Schem.Types.ObjectId,
+    ref: 'User',
+    enum: ['cancel', 'accept', 'pending'],
   })
   status: string;
 

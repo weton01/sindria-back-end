@@ -17,7 +17,7 @@ export class AddressEntity {
   cep: string;
 
   @Column()
-  state: string
+  state: string;
 
   @Column()
   city: string;
@@ -39,7 +39,7 @@ export class AddressEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
-  
+
   @ManyToOne(() => UserEntity, (user) => user.addreesses)
   user: UserEntity;
 
