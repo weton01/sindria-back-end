@@ -1,5 +1,6 @@
 import { FilterDto } from '@app/common';
 import { BcryptAdapter } from '@app/utils';
+import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   ConflictException,
@@ -39,7 +40,8 @@ export class AuthService {
     private readonly repository: Repository<UserEntity>,
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
-  ) {}
+    private readonly mailerService: MailerService,
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
@@ -61,6 +63,16 @@ export class AuthService {
       ...createUserDto,
       email: createUserDto.email.toLowerCase(),
       activationCode,
+    });
+
+    this.mailerService.sendMail({
+      to: tempUser.email,
+      from: 'sindria@sin-express.com',
+      subject: 'Confirmação de conta',
+      template: '../templates/email-confirmation',
+      context: {
+        activationCode: tempUser.activationCode,
+      },
     });
 
     return await this.repository.save(tempUser);
@@ -106,10 +118,22 @@ export class AuthService {
 
     if (!match) throw new UnauthorizedException('credenciais inválidas');
 
-    if (!user.active) throw new BadRequestException({
-      id: user.id,
-      active: false
-    });
+    if (!user.active) {
+      this.mailerService.sendMail({
+        to: user.email,
+        from: 'lich@lichdata.com',
+        subject: 'Confirmação de e-mail',
+        template: '../templates/email-confirmation',
+        context: {
+          activationCode: user.activationCode,
+        },
+      });
+
+      throw new BadRequestException({
+        id: user.id,
+        active: false
+      })
+    }
 
     return await this.jwtService.sign({
       email: user.email,
@@ -159,15 +183,26 @@ export class AuthService {
 
   async recoverPassword(
     recoverPasswordDto: RecoverPasswordDto,
-  ): Promise<string> {
+  ): Promise<any> {
     const user = await this.repository.findOne({
       where: { email: recoverPasswordDto.email },
       select: this.userSelect,
     });
 
+
     if (!user) throw new NotFoundException('e-mail não encontrado');
 
-    return this.jwtService.sign({ id: user.id });
+    this.mailerService.sendMail({
+      to: recoverPasswordDto.email,
+      from: 'lich@lichdata.com',
+      subject: 'Recuperação de senha',
+      template: '../templates/recover-password',
+      context: {
+        token: this.jwtService.sign({ id: user.id })
+      },
+    });
+
+    return true
   }
 
   async changePassword(id: string, password: string): Promise<any> {
@@ -195,4 +230,23 @@ export class AuthService {
   async passportLogin(req): Promise<any> {
     return req.user;
   }
+
+  async resendCode(id: string): Promise<any> {
+    const foundUser = await this.findOne({id})
+
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
+
+    this.mailerService.sendMail({
+      to: foundUser.email,
+      from: 'lich@lichdata.com',
+      subject: 'Confirmação de conta',
+      template: '../templates/email-confirmation',
+      context: {
+        activationCode: foundUser.activationCode,
+      },
+    });
+
+    return {};
+  }
+
 }

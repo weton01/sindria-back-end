@@ -3,4 +3,5 @@ import { CategoryDto } from './category';
 
 export class CreateSubCategoryDto extends OmitType(CategoryDto, [
   'subCategories',
+  'image'
 ] as const) {}

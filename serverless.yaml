@@ -68,6 +68,15 @@ functions:
       - http:
           method: ANY
           path: '/credit-card/{proxy+}'
+  brand:
+    handler: ./dist/apps/brand/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /brand
+      - http:
+          method: ANY
+          path: '/brand/{proxy+}'
   flat:
     handler: ./dist/apps/flat/main.handler
     events:

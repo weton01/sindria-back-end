@@ -112,6 +112,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/flat/tsconfig.app.json"
       }
+    },
+    "brand": {
+      "type": "application",
+      "root": "apps/brand",
+      "entryFile": "main",
+      "sourceRoot": "apps/brand/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/brand/tsconfig.app.json"
+      }
+    },
+    "product": {
+      "type": "application",
+      "root": "apps/product",
+      "entryFile": "main",
+      "sourceRoot": "apps/product/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/product/tsconfig.app.json"
+      }
     }
   }
 }

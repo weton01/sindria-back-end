@@ -1,30 +1,30 @@
 import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { CreditCardModule } from './credit-card.module';
+import { BrandModule } from './brand.module';
 import 'module-alias';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(CreditCardModule);
+    const app = await NestFactory.create(BrandModule);
 
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Credit Card Service')
-      .setDescription(`The address service only...`)
+      .setTitle('Brand Service')
+      .setDescription(`The Brand service only...`)
       .setVersion('1.0')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('swagger.json', JSON.stringify(document), 'utf8', () => {});
+    fs.writeFile('swagger.json', JSON.stringify(document), 'utf8', () => ({}));
 
     SwaggerModule.setup('docs', app, document);
 
@@ -39,7 +39,7 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(CreditCardModule);
+  const app = await NestFactory.create(BrandModule);
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
