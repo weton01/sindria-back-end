@@ -18,7 +18,6 @@ if (envs.NODE_ENV == 'development') {
       .setTitle('Auth Service')
       .setDescription(`The auth service only...`)
       .setVersion('1.0')
-      .addTag('auth')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

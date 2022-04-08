@@ -16,9 +16,8 @@ if (envs.NODE_ENV == 'development') {
     app.enableCors();
     const config = new DocumentBuilder()
       .setTitle('Category Service')
-      .setDescription(`The auth service only...`)
+      .setDescription(`The category service only...`)
       .setVersion('1.0')
-      .addTag('auth')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

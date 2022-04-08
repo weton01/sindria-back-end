@@ -16,7 +16,6 @@ export class CategoryDto {
     example: 'https://any_image.com',
   })
   @IsString()
-  @IsUrl()
   @IsNotEmpty()
   image: string;
 

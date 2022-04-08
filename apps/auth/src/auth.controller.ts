@@ -1,6 +1,5 @@
 import { BcryptAdapter } from '@app/utils';
 import { JwtAuthGuard } from '@app/utils/guards';
-import { MailerService } from '@nestjs-modules/mailer';
 
 import {
   Body,
@@ -23,7 +22,6 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
@@ -40,14 +38,12 @@ import { UserEntity } from './entities/user';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@ApiTags('auth')
 @Controller()
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
-    private readonly mailerService: MailerService,
   ) {}
 
   @ApiCreatedResponse({
@@ -74,16 +70,6 @@ export class AuthController {
   async signup(@Body() userDto: CreateUserDto): Promise<any> {
     const user = await this.authService.create({
       ...userDto,
-    });
-
-    this.mailerService.sendMail({
-      to: user.email,
-      from: 'lich@lichdata.com',
-      subject: 'Recuperação de senha',
-      template: '../templates/email-confirmation',
-      context: {
-        activationCode: user.activationCode,
-      },
     });
 
     delete user.password;
@@ -140,6 +126,7 @@ export class AuthController {
   @HttpCode(200)
   async signin(@Body() authDto: AuthUserDto): Promise<any> {
     const token = await this.authService.auth(authDto);
+
     return { token };
   }
 
@@ -191,17 +178,7 @@ export class AuthController {
   async recoverPassword(
     @Body() recoverPasswordDto: RecoverPasswordDto,
   ): Promise<any> {
-    const token = this.authService.recoverPassword(recoverPasswordDto);
-
-    this.mailerService.sendMail({
-      to: recoverPasswordDto.email,
-      from: 'lich@lichdata.com',
-      subject: 'Recuperação de senha',
-      template: '../templates/recover-password',
-      context: {
-        token,
-      },
-    });
+    await this.authService.recoverPassword(recoverPasswordDto);
 
     return { message: 'o link de recuperação foi enviado ao seu e-mail' };
   }
@@ -318,5 +295,10 @@ export class AuthController {
     return await {
       token: this.authService.createAuth2(user),
     };
+  }
+
+  @Post('/resend-code/:id')
+  async resendCodeEmail(@Param('id') id) {
+    return await this.authService.resendCode(id)
   }
 }

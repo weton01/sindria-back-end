@@ -20,7 +20,6 @@ if (envs.NODE_ENV == 'development') {
       .setTitle('Address Service')
       .setDescription(`The address service only...`)
       .setVersion('1.0')
-      .addTag('address')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

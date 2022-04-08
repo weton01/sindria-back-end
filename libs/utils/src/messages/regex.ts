@@ -7,4 +7,6 @@ export const RegexTypes = {
 
 export const MessageErrors = {
   invalidCep: `cep invalido, formato correto 11111-111`,
+  forbidenToAccess: `você não pode acessar este recurso`,
+  userNotFound: `usuário não encontrado`
 };

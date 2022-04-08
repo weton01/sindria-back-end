@@ -1,5 +1,6 @@
 import { AddressEntity } from '@/address/entities/address';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { UserTypes } from '@app/common/enums/user-type';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 import {
@@ -50,6 +51,10 @@ export class UserEntity {
   @ApiHideProperty()
   @Column({ default: false, select: false })
   isFacebook: boolean;
+
+  @ApiHideProperty()
+  @Column({ default: UserTypes.customer})
+  type: number;
 
   @ApiProperty()
   @CreateDateColumn()

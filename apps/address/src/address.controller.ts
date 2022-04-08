@@ -31,27 +31,38 @@ export class AddressController {
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   async updateAddress(
+    @Req() req,
     @Param('id') id: string,
     @Body() dto: UpdateAddressDto,
   ): Promise<any> {
-    return await this.addressService.update(id, dto);
+    const { user } = req;
+
+    return await this.addressService.update(user.id, id, dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async deleteAddress(@Param('id') id: string): Promise<any> {
-    return await this.addressService.delete(id);
+  async deleteAddress(@Req() req, @Param('id') id: string): Promise<any> {
+    const { user } = req;
+
+    return await this.addressService.delete(user.id, id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAddress(@Query() query: AddressEntity): Promise<any> {
-    return await this.addressService.find(query);
+  async findAddress(@Req() req): Promise<any> {
+    const { user } = req;
+
+    console.log(user)
+
+    return await this.addressService.find(user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/:id')
-  async findAddressById(@Param('id') id: string): Promise<any> {
-    return await this.addressService.findById(id);
+  async findAddressById(@Req() req, @Param('id') id: string): Promise<any> {
+    const { user } = req;
+
+    return await this.addressService.findById(user.id, id);
   }
 }
