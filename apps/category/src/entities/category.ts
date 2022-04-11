@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ProductEntity } from 'apps/product/src/entities/product';
 import {
   Entity,
   Column,
@@ -8,6 +9,7 @@ import {
   Tree,
   TreeChildren,
   TreeParent,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity({ name: 'categories' })
@@ -36,6 +38,9 @@ export class CategoryEntity {
 
   @TreeParent()
   parent: CategoryEntity;
+  
+  @ManyToMany(() => ProductEntity, (product) => product.categories)
+  products: ProductEntity[];
 
   @ApiProperty()
   @CreateDateColumn()
@@ -44,6 +49,7 @@ export class CategoryEntity {
   @ApiProperty()
   @UpdateDateColumn()
   updated_at?: Date;
+
 
   constructor(entity?: Partial<CategoryEntity>) {
     this.id = entity?.id;

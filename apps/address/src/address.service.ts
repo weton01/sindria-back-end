@@ -81,8 +81,6 @@ export class AddressService {
   async findById(userId: string, id: string): Promise<AddressEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    console.log(foundUser)
-
     if (!foundUser)
       throw new NotFoundException('usuário não encontrado');
 
