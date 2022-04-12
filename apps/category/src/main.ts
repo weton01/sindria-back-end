@@ -13,7 +13,10 @@ let server: Handler;
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(CategoryModule);
+
+    app.setGlobalPrefix('v1');
     app.enableCors();
+
     const config = new DocumentBuilder()
       .setTitle('Category Service')
       .setDescription(`The category service only...`)
@@ -50,6 +53,9 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(CategoryModule);
+
+  app.setGlobalPrefix('v1');
+  app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),

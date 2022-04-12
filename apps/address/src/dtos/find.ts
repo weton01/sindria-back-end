@@ -4,10 +4,10 @@ import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 enum Relations {
-  user, categories, brand
+  user
 }
 
-export class FindProductDto {
+export class FindAddressDto {
   @ApiProperty({
     example: 0,
   })

@@ -15,7 +15,6 @@ if (envs.NODE_ENV == 'development') {
     const app = await NestFactory.create(AddressModule);
   
     app.setGlobalPrefix('v1');
-
     app.enableCors();
 
     const config = new DocumentBuilder()
@@ -42,8 +41,10 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(AddressModule);
+  
   app.enableCors();
   app.setGlobalPrefix('v1');
+
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );

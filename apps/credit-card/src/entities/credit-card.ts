@@ -24,6 +24,9 @@ export class CreditCardEntity {
   number: string;
 
   @Column()
+  name: string;
+
+  @Column()
   cvc: string;
 
   @Column()
@@ -31,6 +34,12 @@ export class CreditCardEntity {
     message: 'data de expiração inválida',
   })
   expirationDate: string;
+
+  @Column()
+  type: string;
+
+  @Column()
+  niceType: string;
 
   @CreateDateColumn()
   created_at?: Date;

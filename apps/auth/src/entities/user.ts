@@ -70,7 +70,7 @@ export class UserEntity {
   updated_at?: Date;
 
   @OneToMany(() => AddressEntity, (address) => address.user)
-  addreesses: AddressEntity[];
+  addresses: AddressEntity[];
 
   @OneToMany(() => CreditCardEntity, (address) => address.user)
   creditCards: AddressEntity[];

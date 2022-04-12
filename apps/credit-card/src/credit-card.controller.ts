@@ -6,13 +6,15 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { CreditCardService } from './credit-card.service';
 import { CreateCreditCardDto } from './dtos/create';
+import { FindCreditCardDto } from './dtos/find';
 
-@Controller('credit-card')
+@Controller()
 export class CreditCardController {
   constructor(private readonly creditCardService: CreditCardService) {}
 
@@ -44,9 +46,10 @@ export class CreditCardController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/')
-  async getCreditCards(@Req() req): Promise<any> {
+  async getCreditCards(@Query() query: FindCreditCardDto, @Req() req): Promise<any> {
     const { user } = req;
 
-    return await this.creditCardService.find(user.id);
+    const [items, count] = await this.creditCardService.find(query, user.id);
+    return { items, count }
   }
 }

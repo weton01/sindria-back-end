@@ -15,6 +15,7 @@ if (envs.NODE_ENV == 'development') {
     const app = await NestFactory.create(CreditCardModule);
 
     app.enableCors();
+    app.setGlobalPrefix('v1');
 
     const config = new DocumentBuilder()
       .setTitle('Credit Card Service')
@@ -40,7 +41,10 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(CreditCardModule);
+
   app.enableCors();
+  app.setGlobalPrefix('v1');
+
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
