@@ -2,6 +2,7 @@ import { AddressEntity } from '@/address/entities/address';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { UserTypes } from '@app/common/enums/user-type';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { ProductEntity } from 'apps/product/src/entities/product';
 
 import {
   Entity,
@@ -53,8 +54,12 @@ export class UserEntity {
   isFacebook: boolean;
 
   @ApiHideProperty()
-  @Column({ default: UserTypes.customer})
-  type: number;
+  @Column({ 
+    type: "enum",
+    enum: UserTypes,
+    default: UserTypes.customer
+  })
+  type: UserTypes;
 
   @ApiProperty()
   @CreateDateColumn()
@@ -69,6 +74,9 @@ export class UserEntity {
 
   @OneToMany(() => CreditCardEntity, (address) => address.user)
   creditCards: AddressEntity[];
+
+  @OneToMany(() => ProductEntity, (address) => address.user)
+  products: ProductEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;
