@@ -10,6 +10,7 @@ import {
   TreeChildren,
   TreeParent,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity({ name: 'categories' })
@@ -39,7 +40,12 @@ export class CategoryEntity {
   @TreeParent()
   parent: CategoryEntity;
   
-  @ManyToMany(() => ProductEntity, (product) => product.categories)
+  @ManyToMany(() => ProductEntity, (product) => product.categories,  {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate:'CASCADE'
+  })
+  @JoinTable()
   products: ProductEntity[];
 
   @ApiProperty()

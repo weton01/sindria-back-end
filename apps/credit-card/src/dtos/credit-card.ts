@@ -22,6 +22,13 @@ export class CreditCardDto {
   @IsNotEmpty()
   cvc: string;
 
+  @ApiProperty({
+    example: 'any_name',
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
   @Matches(RegexTypes.expirationDate, {
     message: 'data de expiração inválida, ex: (20/2015)',
   })

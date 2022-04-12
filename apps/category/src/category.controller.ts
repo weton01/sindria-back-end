@@ -12,7 +12,7 @@ import { CreateCategoryDto } from './dtos/create';
 import { CreateSubCategoryDto } from './dtos/create-sub';
 import { UpdatetegoryDto } from './dtos/update';
 
-@Controller('category')
+@Controller()
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 

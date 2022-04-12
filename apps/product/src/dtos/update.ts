@@ -1,4 +1,6 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { ProductDto } from './product';
 
-export class UpdateProductDto extends OmitType(ProductDto, ['name'] as const) {}
+class AuxDto extends PartialType(ProductDto) { }
+
+export class UpdateProductDto extends OmitType(AuxDto, ['name'] as const) { }

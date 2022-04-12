@@ -77,6 +77,15 @@ functions:
       - http:
           method: ANY
           path: '/brand/{proxy+}'
+  product:
+    handler: ./dist/apps/product/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /product
+      - http:
+          method: ANY
+          path: '/product/{proxy+}'
   flat:
     handler: ./dist/apps/flat/main.handler
     events:

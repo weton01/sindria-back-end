@@ -1,19 +1,24 @@
 import { UserEntity } from '@/auth/entities/user';
+import { CategoryEntity } from '@/category/entities/category';
 import { MessageErrors } from '@app/utils/messages';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dtos/create';
+import { FindProductDto } from './dtos/find';
 import { UpdateProductDto } from './dtos/update';
 import { ProductEntity } from './entities/product';
 
 @Injectable()
 export class ProductService {
   constructor(
+
     @InjectRepository(ProductEntity)
     private readonly repository: Repository<ProductEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: Repository<CategoryEntity>,
   ) { }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
@@ -32,6 +37,7 @@ export class ProductService {
       ...dto,
       user: foundUser
     });
+
     return await this.repository.save(tempProduct);
   }
 
@@ -49,9 +55,9 @@ export class ProductService {
     if (foundProduct.user.id !== foundUser.id)
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
 
-    await this.repository.update(id, dto);
+    await this.repository.save({ ...foundProduct, ...dto });
 
-    return await this.repository.findOne({ id });
+    return await this.repository.findOne({ where: { id }, relations: ['user', 'categories', 'brand'] });
   }
 
   async delete(userId: string, id: string): Promise<any> {
@@ -81,12 +87,17 @@ export class ProductService {
     return await this.repository.findOne({ where: { id }, relations: ['user', 'categories', 'brand'] });
   }
 
-  async find(userId: string): Promise<ProductEntity[]> {
+  async find(query: FindProductDto, userId: string): Promise<[ProductEntity[], number]> {
+    const { skip, take, relations, orderBy } = query
+
     const foundUser = await this.userRepository.findOne({ id: userId });
 
     if (!foundUser)
       throw new NotFoundException('usuário não encontrado');
 
-    return await this.repository.find({ user: foundUser });
+    return await this.repository.findAndCount({
+      order: { created_at: orderBy },
+      skip, take, relations,
+    });
   }
 }

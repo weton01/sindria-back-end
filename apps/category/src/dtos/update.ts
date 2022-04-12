@@ -1,7 +1,9 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { CategoryDto } from './category';
 
-export class UpdatetegoryDto extends OmitType(CategoryDto, [
+class AuxDto extends PartialType(CategoryDto){}
+
+export class UpdatetegoryDto extends OmitType(AuxDto, [
   'parent',
   'subCategories',
 ] as const) {}

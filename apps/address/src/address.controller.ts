@@ -7,16 +7,18 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dtos/create';
+import { FindAddressDto } from './dtos/find';
 import { UpdateAddressDto } from './dtos/update';
 
 @Controller()
 export class AddressController {
-  constructor(private readonly addressService: AddressService) {}
+  constructor(private readonly addressService: AddressService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -48,12 +50,11 @@ export class AddressController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async findAddress(@Req() req): Promise<any> {
+  async findAddress(@Query() query: FindAddressDto, @Req() req): Promise<any> {
     const { user } = req;
 
-    console.log(user)
-
-    return await this.addressService.find(user.id);
+    const [items, count] = await this.addressService.find(query, user.id);
+    return { items, count }
   }
 
   @UseGuards(JwtAuthGuard)

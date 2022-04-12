@@ -4,13 +4,14 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { CreateAddressDto } from './dtos/create';
 import { UpdateAddressDto } from './dtos/update';
 import { AddressEntity } from './entities/address';
+import { FindAddressDto } from './dtos/find';
 
 @Injectable()
 export class AddressService {
@@ -74,7 +75,7 @@ export class AddressService {
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
 
     await this.repository.delete(id);
-    
+
     return {}
   }
 
@@ -92,12 +93,18 @@ export class AddressService {
     return foundAddress
   }
 
-  async find(userId: string): Promise<AddressEntity[]> {
-    const foundUser = await this.userRepository.findOne({ id: userId });
+  async find(query: FindAddressDto, userId: string): Promise<[AddressEntity[], number]> {
+    const { skip, take, relations, orderBy } = query
 
-    if (!foundUser)
+    const user = await this.userRepository.findOne({ id: userId });
+
+    if (!user)
       throw new NotFoundException('usuário não encontrado');
 
-    return await this.repository.find({ user: foundUser });
+    return await this.repository.findAndCount({
+      where: { user },
+      order: { created_at: orderBy },
+      skip, take, relations,
+    });
   }
 }

@@ -40,7 +40,7 @@ export class AddressEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.addreesses)
+  @ManyToOne(() => UserEntity, (user) => user.addresses)
   user: UserEntity;
 
   constructor(entity?: Partial<AddressEntity>) {

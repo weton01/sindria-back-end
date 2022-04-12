@@ -9,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCreditCardDto } from './dtos/create';
 import { CreditCardEntity } from './entities/credit-card';
+import creditCardType from 'credit-card-type'
+import { FindCreditCardDto } from './dtos/find';
 
 @Injectable()
 export class CreditCardService {
@@ -18,12 +20,13 @@ export class CreditCardService {
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     private readonly cypervService: CypervService,
-  ) {}
+  ) { }
 
   async create(
     userId: string,
     dto: CreateCreditCardDto,
   ): Promise<CreditCardEntity> {
+
     const foundUser = await this.userRepository.findOne({ id: userId });
 
     if (!foundUser) throw new NotFoundException('usuário não encontrado');
@@ -37,8 +40,12 @@ export class CreditCardService {
     if (alreadyExists)
       throw new ConflictException('cartão de crédito já cadastrado');
 
+    const { niceType, type } = creditCardType(dto.number)[0];
+
     const cc = await this.repository.create({
       ...dto,
+      type,
+      niceType,
       user: foundUser,
       number: this.cypervService.encrypt(dto.number),
       cvc: this.cypervService.encrypt(dto.cvc),
@@ -83,19 +90,25 @@ export class CreditCardService {
     };
   }
 
-  async find(userId: string): Promise<CreditCardEntity[]> {
+  async find(query: FindCreditCardDto, userId: string,): Promise<[CreditCardEntity[], number]> {
+    const { skip, take, relations, orderBy } = query
+
     const foundUser = await this.userRepository.findOne({ id: userId });
 
     if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    const creditCards = await this.repository.find({ user: foundUser });
+    const creditCards = await this.repository.findAndCount({
+      where: { user: foundUser },
+      order: { created_at: orderBy },
+      skip, take, relations,
+    });
 
-    console.log('creditCards', creditCards, foundUser);
-
-    return creditCards.map((cc) => ({
+    creditCards[0] = creditCards[0].map((cc) => ({
       ...cc,
       cvc: '***',
       number: this.cypervService.decrypt(cc.number).replace(/.(?=.{4})/g, '*'),
     }));
+
+    return creditCards
   }
 }
