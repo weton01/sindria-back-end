@@ -1,7 +1,9 @@
+import { ProductEntity } from 'apps/product/src/entities/product';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +24,9 @@ export class BrandEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
+  
+  @OneToMany(() => ProductEntity, (product) => product.brand)
+  products: ProductEntity;
 
   constructor(entity?: Partial<BrandEntity>) {
     this.id = entity?.id;

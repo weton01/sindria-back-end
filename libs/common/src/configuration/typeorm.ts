@@ -4,6 +4,7 @@ import { CategoryEntity } from '@/category/entities/category';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
+import { ProductEntity } from 'apps/product/src/entities/product';
 import { envs } from '.';
 
 
@@ -15,5 +16,5 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   password: envs.DB_CONNECTION_PASSWORD,
   database: 'development',
   synchronize: true,
-  entities: [UserEntity, AddressEntity, CategoryEntity, CreditCardEntity, BrandEntity],
+  entities: [UserEntity, AddressEntity, CategoryEntity, CreditCardEntity, BrandEntity, ProductEntity],
 });

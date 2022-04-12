@@ -7,16 +7,14 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dtos/create';
 import { UpdateAddressDto } from './dtos/update';
-import { AddressEntity } from './entities/address';
 
-@Controller('address')
+@Controller()
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 

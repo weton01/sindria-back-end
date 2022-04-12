@@ -5,14 +5,14 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { ProductModule } from './product.module';
+import { InventoryModule } from './inventory.module';
 import 'module-alias';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(ProductModule);
+    const app = await NestFactory.create(InventoryModule);
 
     app.enableCors();
 
@@ -39,7 +39,7 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(ProductModule);
+  const app = await NestFactory.create(InventoryModule);
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
