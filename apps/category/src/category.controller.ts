@@ -6,10 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dtos/create';
 import { CreateSubCategoryDto } from './dtos/create-sub';
+import { FindCategoryDto } from './dtos/find';
 import { UpdatetegoryDto } from './dtos/update';
 
 @Controller()
@@ -17,8 +19,22 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  async getCategoeries(): Promise<any> {
+  async getCategories(): Promise<any> {
     return await this.categoryService.find();
+  }
+
+  @Get('/categories')
+  async findCategories(@Query() query: FindCategoryDto): Promise<any> {
+    const [items, count] = await this.categoryService.findCategories(query);
+
+    return { items, count }
+  }
+
+  @Get('/sub-categories')
+  async findSubCategories(@Query() query: FindCategoryDto): Promise<any> {
+    const [items, count] = await this.categoryService.findSubCategories(query);
+
+    return { items, count }
   }
 
   @Get('/:id')
@@ -42,6 +58,11 @@ export class CategoryController {
   @Patch('/:id')
   async updateCategory(@Param('id') id, @Body() dto: UpdatetegoryDto) {
     return await this.categoryService.update(id, dto);
+  }
+
+  @Patch('/sub-category/:id')
+  async updateSubCategory(@Param('id') id, @Body() dto: UpdatetegoryDto) {
+    return await this.categoryService.updateSub(id, dto);
   }
 
   @Delete('/:id')
