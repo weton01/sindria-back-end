@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNotEmpty, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
 import { CategoryEntity } from '../entities/category';
 
 export class CategoryDto {
@@ -18,6 +18,10 @@ export class CategoryDto {
   @IsString()
   @IsNotEmpty()
   image: string;
+
+  @IsString()
+  @IsNotEmpty()
+  groupName: string;
 
   @IsOptional()
   subCategories?: CategoryEntity[];

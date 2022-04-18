@@ -5,21 +5,21 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { AddressModule } from './address.module';
+import { TagModule } from './tag.module';
 import 'module-alias';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(AddressModule);
+    const app = await NestFactory.create(TagModule);
 
     app.setGlobalPrefix('v1');
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Address Service')
-      .setDescription(`The address service only...`)
+      .setTitle('Tag Service')
+      .setDescription(`The Tag service only...`)
       .setVersion('1.0')
       .build();
 
@@ -30,14 +30,7 @@ if (envs.NODE_ENV == 'development') {
     SwaggerModule.setup('docs', app, document);
 
     app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        forbidNonWhitelisted: true,
-        transformOptions: {
-          enableImplicitConversion: true,
-        },
-      }),
+      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
     );
 
     await app.listen(3000);
@@ -47,8 +40,8 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(AddressModule);
-
+  const app = await NestFactory.create(TagModule);
+  
   app.enableCors();
   app.setGlobalPrefix('v1');
 

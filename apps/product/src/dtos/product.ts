@@ -1,4 +1,5 @@
 import { CategoryEntity } from '@/category/entities/category';
+import { TagEntity } from '@/tag/entities/tag';
 import { ApiProperty } from '@nestjs/swagger';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
 import { Type } from 'class-transformer';
@@ -69,4 +70,9 @@ export class ProductDto {
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)
   categories: CategoryEntity[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AuxSingleDto)
+  tags: TagEntity[];
 }

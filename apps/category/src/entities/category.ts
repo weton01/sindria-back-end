@@ -39,14 +39,9 @@ export class CategoryEntity {
 
   @TreeParent()
   parent: CategoryEntity;
-  
-  @ManyToMany(() => ProductEntity, (product) => product.categories,  {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
-  })
-  @JoinTable()
-  products: ProductEntity[];
+
+  @Column()
+  groupName: string;
 
   @ApiProperty()
   @CreateDateColumn()
@@ -55,6 +50,14 @@ export class CategoryEntity {
   @ApiProperty()
   @UpdateDateColumn()
   updated_at?: Date;
+
+  @ManyToMany(() => ProductEntity, (product) => product.categories,  {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate:'CASCADE'
+  })
+  @JoinTable()
+  products: ProductEntity[];
 
 
   constructor(entity?: Partial<CategoryEntity>) {
