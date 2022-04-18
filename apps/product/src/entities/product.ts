@@ -1,6 +1,8 @@
 import { UserEntity } from '@/auth/entities/user';
+import { BrandEntity } from '@/brand/entities/brand';
 import { CategoryEntity } from '@/category/entities/category';
-import { BrandEntity } from 'apps/brand/src/entities/brand';
+import { TagEntity } from '@/tag/entities/tag';
+
 import {
   Column,
   CreateDateColumn,
@@ -35,6 +37,12 @@ export class ProductEntity {
   @Column("simple-array")
   images: string[];
 
+  @CreateDateColumn()
+  created_at?: Date;
+
+  @UpdateDateColumn()
+  updated_at?: Date;
+
   @ManyToOne(() => UserEntity, (user) => user.products)
   user: UserEntity;
 
@@ -45,11 +53,9 @@ export class ProductEntity {
   @JoinTable()
   categories: CategoryEntity[];
 
-  @CreateDateColumn()
-  created_at?: Date;
-
-  @UpdateDateColumn()
-  updated_at?: Date;
+  @ManyToMany(() => TagEntity, (tag) => tag.products)
+  @JoinTable()
+  tags: TagEntity[];
 
   constructor(entity?: Partial<ProductEntity>) {
     this.id = entity?.id;

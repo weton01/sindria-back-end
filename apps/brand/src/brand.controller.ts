@@ -1,10 +1,11 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dtos/create';
+import { FindBrandDto } from './dtos/find';
 import { UpdateBrandDto } from './dtos/update';
 
-@Controller('brand')
+@Controller()
 export class BrandController {
   constructor(private readonly brandService: BrandService) {}
 
@@ -41,7 +42,8 @@ export class BrandController {
   }
 
   @Get('/')
-  async getBrands(): Promise<any> {
-    return await this.brandService.find();
+  async getBrands(@Query() query: FindBrandDto): Promise<any> {
+    const [items, count] = await this.brandService.find(query);
+    return { items, count }
   }
 }
