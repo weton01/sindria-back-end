@@ -7,7 +7,7 @@ import {
   NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateAddressDto } from './dtos/create';
 import { UpdateAddressDto } from './dtos/update';
 import { AddressEntity } from './entities/address';
@@ -94,7 +94,7 @@ export class AddressService {
   }
 
   async find(query: FindAddressDto, userId: string): Promise<[AddressEntity[], number]> {
-    const { skip, take, relations, orderBy } = query
+    const { skip, take, relations, orderBy, select, where } = query
 
     const user = await this.userRepository.findOne({ id: userId });
 
@@ -102,9 +102,9 @@ export class AddressService {
       throw new NotFoundException('usuário não encontrado');
 
     return await this.repository.findAndCount({
-      where: { user },
+      where: { ...where, user },
       order: { created_at: orderBy },
-      skip, take, relations,
+      skip, take, relations, select
     });
   }
 }

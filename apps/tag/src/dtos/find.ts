@@ -1,18 +1,18 @@
 import { OrderBy } from '@app/common';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
-import { AddressDto } from './adddress';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { TagDto } from './tag';
 
 enum Relations {
-  user
+  products
 }
 
 enum Fields {
-  id, cep, state, city, number, neighborhood, street, complement, created_at, updated_at
+  id, name, created_at, updated_at
 }
 
-export class FindAddressDto {
+export class FindTagDto {
   @ApiProperty({
     example: 0,
   })
@@ -33,7 +33,7 @@ export class FindAddressDto {
     example: 'relation,relation',
   })
   @Transform(({ value }) => {
-    if (value)
+    if(value)
       return value.split(',')
     return []
   }, { toClassOnly: true })
@@ -52,7 +52,7 @@ export class FindAddressDto {
     example: 'field,field',
   })
   @Transform(({ value }) => {
-    if (value)
+    if(value)
       return value.split(',')
     return ['id']
   }, { toClassOnly: true })
@@ -66,5 +66,5 @@ export class FindAddressDto {
       return  Object.fromEntries( new URLSearchParams(value) )
     return {}
   }, { toClassOnly: true })
-  where: AddressDto
+  where: TagDto
 }

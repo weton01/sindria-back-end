@@ -17,8 +17,6 @@ export class ProductService {
     private readonly repository: Repository<ProductEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(CategoryEntity)
-    private readonly categoryRepository: Repository<CategoryEntity>,
   ) { }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
@@ -88,7 +86,7 @@ export class ProductService {
   }
 
   async find(query: FindProductDto, userId: string): Promise<[ProductEntity[], number]> {
-    const { skip, take, relations, orderBy } = query
+    const { skip, take, relations, orderBy, select, where } = query
 
     const foundUser = await this.userRepository.findOne({ id: userId });
 
@@ -97,7 +95,7 @@ export class ProductService {
 
     return await this.repository.findAndCount({
       order: { created_at: orderBy },
-      skip, take, relations,
+      skip, take, relations, select, where
     });
   }
 }
