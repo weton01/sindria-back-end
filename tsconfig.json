@@ -32,6 +32,15 @@
       "@/credit-card/*": [
         "apps/credit-card/src/*"
       ],
+      "@/brand/*": [
+        "apps/brand/src/*"
+      ],
+      "@/product/*": [
+        "apps/product/src/*"
+      ],
+      "@/tag/*": [
+        "apps/tag/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],
