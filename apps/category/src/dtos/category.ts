@@ -20,7 +20,7 @@ export class CategoryDto {
   image: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   groupName: string;
 
   @IsOptional()

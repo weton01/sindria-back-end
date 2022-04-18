@@ -1,12 +1,14 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TreeRepository } from 'typeorm';
+import { TreeRepository, IsNull, Not} from 'typeorm';
 import { CreateCategoryDto } from './dtos/create';
 import { CreateSubCategoryDto } from './dtos/create-sub';
+import { FindCategoryDto } from './dtos/find';
 import { UpdatetegoryDto } from './dtos/update';
 import { CategoryEntity } from './entities/category';
 
@@ -32,13 +34,15 @@ export class CategoryService {
     dto: CreateSubCategoryDto,
   ): Promise<CategoryEntity> {
     const [foundSub, parent] = await Promise.all([
-      this.repository.findOne({ name: dto.name }),
-      this.repository.findOne({ id }),
+      this.repository.findOne({ name: dto.name, parent: {id} }),
+      this.repository.findOne({ id, parent: null}),
     ]);
 
-    if (foundSub) throw new ConflictException('categoria já existente');
+    if (foundSub) 
+      throw new ConflictException('sub-categoria já cadastrada para essa categoria');
 
-    if (!parent) throw new NotFoundException('categoria não encontrada');
+    if (!parent) 
+      throw new NotFoundException('categoria não encontrada ou inválida');
 
     const newCategory = await this.repository.create({
       ...dto,
@@ -48,14 +52,26 @@ export class CategoryService {
     return await this.repository.save(newCategory);
   }
 
-  async find(): Promise<CategoryEntity[]> {
-    return await this.repository.findTrees();
+  async update(id: string, dto: UpdatetegoryDto): Promise<CategoryEntity> {
+    const foundCategory = await this.repository.findOne({ id, parent: null });
+
+    if (!foundCategory) throw new NotFoundException('categoria não encontrada ou inválida');
+
+    await this.repository.update(id, dto);
+    return await this.repository.findOne({ id });
   }
 
-  async update(id: string, dto: UpdatetegoryDto): Promise<CategoryEntity> {
-    const foundCategory = this.repository.findOne({ id });
+  async updateSub(id: string, dto: UpdatetegoryDto): Promise<CategoryEntity> {
+    const foundSub = await this.repository
+      .createQueryBuilder()
+      .where(`(id = :id) AND (parentId IS NOT NULL)`, {id})
+      .getOne()
 
-    if (foundCategory) throw new NotFoundException('categoria não encontrada');
+    if (!foundSub) 
+      throw new NotFoundException('sub-categoria não encontrada ou não é uma sub-categoria');
+
+    if (!dto.groupName)
+      throw new NotFoundException('sub-categoria precisa de groupName');
 
     await this.repository.update(id, dto);
     return await this.repository.findOne({ id });
@@ -64,12 +80,38 @@ export class CategoryService {
   async delete(id: string): Promise<any> {
     const foundCategory = this.repository.findOne({ id });
 
-    if (foundCategory) throw new NotFoundException('categoria não encontrada');
+    if (!foundCategory) throw new NotFoundException('categoria não encontrada');
 
-    return await this.repository.delete(id);
+    await this.repository.delete(id);
+
+    return {}
   }
 
   async findById(id: string): Promise<CategoryEntity> {
     return this.repository.findOne({ id });
+  }
+
+  async find(): Promise<CategoryEntity[]> {
+    return await this.repository.findTrees();
+  }
+
+  async findCategories(query: FindCategoryDto): Promise<[CategoryEntity[], number]> {
+    const { skip, take, relations, orderBy, select } = query
+
+    return await this.repository.findAndCount({
+      where: { parent: null },
+      order: { created_at: orderBy },
+      skip, take, relations, select
+    });
+  }
+
+  async findSubCategories(query: FindCategoryDto): Promise<[CategoryEntity[], number]> {
+    const { skip, take, relations, orderBy, select } = query
+
+    return await this.repository.findAndCount({
+      where: { parent: Not(IsNull()) },
+      order: { created_at: orderBy },
+      skip, take, relations, select
+    });
   }
 }
