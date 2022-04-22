@@ -38,8 +38,14 @@
       "@/product/*": [
         "apps/product/src/*"
       ],
+      "@/inventory/*": [
+        "apps/inventory/src/*"
+      ],
       "@/tag/*": [
         "apps/tag/src/*"
+      ],
+      "@/comment/*": [
+        "apps/comment/src/*"
       ],
       "@app/foggy-common": [
         "libs/foggy-common/src"

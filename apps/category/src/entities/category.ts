@@ -37,10 +37,10 @@ export class CategoryEntity {
   @TreeChildren()
   subCategories: CategoryEntity[];
 
-  @TreeParent()
+  @TreeParent({ onDelete: 'CASCADE' })
   parent: CategoryEntity;
 
-  @Column()
+  @Column({nullable: true})
   groupName: string;
 
   @ApiProperty()

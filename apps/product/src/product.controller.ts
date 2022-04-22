@@ -1,5 +1,5 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { CreateProductDto } from './dtos/create';
 import { FindProductDto } from './dtos/find';
 import { UpdateProductDto } from './dtos/update';
@@ -52,5 +52,13 @@ export class ProductController {
     const { user } = req;
 
     return await this.productService.findById(user.id, id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/assign-url')
+  @HttpCode(200)
+  async assignUrl(@Req() req, @Param('id') id: string): Promise<any> {
+    const url = await this.productService.assignUrl();
+    return {url}
   }
 }

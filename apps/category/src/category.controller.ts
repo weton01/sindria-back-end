@@ -23,14 +23,14 @@ export class CategoryController {
     return await this.categoryService.find();
   }
 
-  @Get('/categories')
+  @Get('/category')
   async findCategories(@Query() query: FindCategoryDto): Promise<any> {
     const [items, count] = await this.categoryService.findCategories(query);
 
     return { items, count }
   }
 
-  @Get('/sub-categories')
+  @Get('/sub-category')
   async findSubCategories(@Query() query: FindCategoryDto): Promise<any> {
     const [items, count] = await this.categoryService.findSubCategories(query);
 
@@ -47,7 +47,7 @@ export class CategoryController {
     return await this.categoryService.create(dto);
   }
 
-  @Post('/:id')
+  @Post('/sub-category/:id')
   async createSubCategory(
     @Param('id') id,
     @Body() dto: CreateSubCategoryDto,

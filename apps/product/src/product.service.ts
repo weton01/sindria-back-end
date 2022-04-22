@@ -1,5 +1,4 @@
 import { UserEntity } from '@/auth/entities/user';
-import { CategoryEntity } from '@/category/entities/category';
 import { MessageErrors } from '@app/utils/messages';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,11 +7,14 @@ import { CreateProductDto } from './dtos/create';
 import { FindProductDto } from './dtos/find';
 import { UpdateProductDto } from './dtos/update';
 import { ProductEntity } from './entities/product';
+import { InjectS3, S3 } from 'nestjs-s3';
+import { v4 as uuid } from 'uuid';
+import { envs } from '@app/common';
 
 @Injectable()
 export class ProductService {
   constructor(
-
+    @InjectS3() private readonly s3: S3,
     @InjectRepository(ProductEntity)
     private readonly repository: Repository<ProductEntity>,
     @InjectRepository(UserEntity)
@@ -82,7 +84,10 @@ export class ProductService {
     if (!foundUser)
       throw new NotFoundException('usuário não encontrado');
 
-    return await this.repository.findOne({ where: { id }, relations: ['user', 'categories', 'brand'] });
+    return await this.repository.findOne({
+      where: { id },
+      relations: ['user', 'categories', 'brand', 'relations']
+    });
   }
 
   async find(query: FindProductDto, userId: string): Promise<[ProductEntity[], number]> {
@@ -94,8 +99,23 @@ export class ProductService {
       throw new NotFoundException('usuário não encontrado');
 
     return await this.repository.findAndCount({
-      order: { created_at: orderBy },
+      order: orderBy,
       skip, take, relations, select, where
     });
   }
+
+  async assignUrl(): Promise<string> {
+    const key = `${envs.AWS_IMAGES_BUCKET_FOLDER_NAME}/${uuid()}`
+
+    this.s3.getSignedUrl('putObject', {
+      Bucket: envs.AWS_BUCKER_NAME,
+      Key: key,
+      Expires: 600,
+      ContentType: 'image/webp',
+      ACL: 'public-read',
+    })
+
+    return `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`
+  }
+
 }
