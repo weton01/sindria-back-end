@@ -34,7 +34,7 @@ export class CategoryService {
     dto: CreateSubCategoryDto,
   ): Promise<CategoryEntity> {
     const [foundSub, parent] = await Promise.all([
-      this.repository.findOne({ name: dto.name, parent: {id} }),
+      this.repository.findOne({ name: dto.name }),
       this.repository.findOne({ id, parent: null}),
     ]);
 
@@ -88,7 +88,7 @@ export class CategoryService {
   }
 
   async findById(id: string): Promise<CategoryEntity> {
-    return this.repository.findOne({ id });
+    return await this.repository.findOne({ where: {id} });
   }
 
   async find(): Promise<CategoryEntity[]> {

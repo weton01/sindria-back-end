@@ -3,5 +3,5 @@ import { envs } from './';
 
 export const JwtConfig = JwtModule.register({
   secret: envs.JWT_SECRET,
-  signOptions: { expiresIn: '1000000000s' },
+  signOptions: { expiresIn: 60 * 60 * 24 * 7},
 });

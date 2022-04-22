@@ -2,6 +2,7 @@ import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { CategoryEntity } from '@/category/entities/category';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { VariationEntity } from 'apps/inventory/src/entities/variation';
 import { TagEntity } from '@/tag/entities/tag';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
@@ -17,5 +18,5 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   password: envs.DB_CONNECTION_PASSWORD,
   database: 'development',
   synchronize: true,
-  entities: [UserEntity, AddressEntity, CategoryEntity, CreditCardEntity, BrandEntity, ProductEntity, TagEntity],
+  entities: [UserEntity, AddressEntity, CategoryEntity, CreditCardEntity, BrandEntity, ProductEntity, TagEntity, VariationEntity],
 });

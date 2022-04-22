@@ -1,4 +1,5 @@
 import { AddressEntity } from '@/address/entities/address';
+import { CommentEntity } from '@/comment/entities/comment';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { UserTypes } from '@app/common/enums/user-type';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
@@ -77,6 +78,13 @@ export class UserEntity {
 
   @OneToMany(() => ProductEntity, (address) => address.user)
   products: ProductEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  comments: CommentEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;
