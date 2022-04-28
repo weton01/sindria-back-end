@@ -25,19 +25,7 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile(
-      'swagger.json',
-      JSON.stringify(document),
-      'utf8',
-      function (err) {
-        if (err) {
-          console.log('An error occured while writing JSON Object to File.');
-          return console.log(err);
-        }
-
-        console.log('JSON file has been saved.');
-      },
-    );
+    fs.writeFile('docs/auth.json', JSON.stringify(document), 'utf8', () => ({}));
 
     SwaggerModule.setup('docs', app, document);
 
