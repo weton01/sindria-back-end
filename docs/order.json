@@ -1,0 +1,1 @@
+{"openapi":"3.0.0","paths":{"/v1":{"get":{"operationId":"OrderController_getHello","parameters":[],"responses":{"200":{"description":""}}}}},"info":{"title":"Brand Service","description":"The Brand service only...","version":"1.0","contact":{}},"tags":[],"servers":[],"components":{"schemas":{}}}
