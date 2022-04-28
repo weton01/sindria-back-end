@@ -24,7 +24,7 @@ export class CommentEntity {
     description: 'the description of comment',
     example: 'lorem ipsum alore inta',
   })
-  @Column({ unique: true })
+  @Column()
   description: string;
  
   @TreeChildren()

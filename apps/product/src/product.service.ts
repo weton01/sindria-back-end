@@ -104,18 +104,23 @@ export class ProductService {
     });
   }
 
-  async assignUrl(): Promise<string> {
+  async assignUrl(): Promise<any> {
     const key = `${envs.AWS_IMAGES_BUCKET_FOLDER_NAME}/${uuid()}`
 
-    this.s3.getSignedUrl('putObject', {
+    const url = await this.s3.createPresignedPost({
       Bucket: envs.AWS_BUCKER_NAME,
-      Key: key,
+      Conditions: [
+        {"acl": "public-read"},
+        { 'Content-Type': 'image/webp' },
+      ],
+      Fields: {
+        key: key,
+      },
       Expires: 600,
-      ContentType: 'image/webp',
-      ACL: 'public-read',
-    })
+     })
+     
 
-    return `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`
+    return { get: `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`, put: url}
   }
 
 }

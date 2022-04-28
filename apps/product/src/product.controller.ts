@@ -38,7 +38,7 @@ export class ProductController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
+  @Get('/')
   async findProduct(@Query() query: FindProductDto, @Req() req): Promise<any> {
     const { user } = req;
 
@@ -54,11 +54,13 @@ export class ProductController {
     return await this.productService.findById(user.id, id);
   }
 
+  
   @UseGuards(JwtAuthGuard)
-  @Post('/assign-url')
+  @Get('/s3/assign-url')
   @HttpCode(200)
-  async assignUrl(@Req() req, @Param('id') id: string): Promise<any> {
+  async assignUrl(): Promise<any> {
     const url = await this.productService.assignUrl();
+    
     return {url}
   }
 }

@@ -19,8 +19,8 @@ if (envs.NODE_ENV == 'development') {
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Category Service')
-      .setDescription(`The category service only...`)
+      .setTitle('Comment Service')
+      .setDescription(`The comment service only...`)
       .setVersion('1.0')
       .build();
 
