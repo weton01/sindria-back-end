@@ -10,6 +10,12 @@ provider:
   name: aws
   runtime: nodejs14.x
   stage: production
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+      Resource: '*' 
   environment:
     JWT_SECRET: 0a6b944d-d2fb-46fc-a85e-0295c986cd9f
 
@@ -88,6 +94,15 @@ functions:
       - http:
           method: ANY
           path: '/brand/{proxy+}'
+  tag:
+    handler: ./dist/apps/tag/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /tag
+      - http:
+          method: ANY
+          path: '/tag/{proxy+}'
   product:
     handler: ./dist/apps/product/main.handler
     events:
@@ -106,15 +121,16 @@ functions:
       - http:
           method: ANY
           path: '/variation/{proxy+}'
-  tag:
-    handler: ./dist/apps/tag/main.handler
+  comment:
+    handler: ./dist/apps/comment/main.handler
     events:
       - http:
           method: ANY
-          path: /tag
+          path: /comment
       - http:
           method: ANY
-          path: '/tag/{proxy+}'
+          path: '/comment/{proxy+}'
+
   flat:
     handler: ./dist/apps/flat/main.handler
     events:

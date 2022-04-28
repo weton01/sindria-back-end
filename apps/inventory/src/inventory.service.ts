@@ -2,7 +2,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { ProductEntity } from '@/product/entities/product';
 import { VariationTypes } from '@app/common/enums/variation-type';
 import { MessageErrors } from '@app/utils/messages';
-import { ConflictException, ForbiddenException, Injectable, NotFoundException, VersioningType } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateVariationColorDto } from './dtos/create-color';
