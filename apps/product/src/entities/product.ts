@@ -3,6 +3,8 @@ import { BrandEntity } from '@/brand/entities/brand';
 import { CategoryEntity } from '@/category/entities/category';
 import { CommentEntity } from '@/comment/entities/comment';
 import { VariationEntity } from '@/inventory/entities/variation';
+import { OrderEntity } from '@/order/entities/order';
+import { OrderProductEntity } from '@/order/entities/order-product';
 import { TagEntity } from '@/tag/entities/tag';
 
 import {
@@ -59,6 +61,13 @@ export class ProductEntity {
     onUpdate: 'CASCADE'
   })
   comments: CommentEntity[];
+
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  orderProducts: OrderProductEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.products)
   user: UserEntity;

@@ -86,7 +86,7 @@ export class ProductService {
 
     return await this.repository.findOne({
       where: { id },
-      relations: ['user', 'categories', 'brand', 'relations']
+      relations: ['user', 'categories', 'brand', 'variations']
     });
   }
 

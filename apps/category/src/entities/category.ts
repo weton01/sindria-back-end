@@ -56,7 +56,6 @@ export class CategoryEntity {
     onDelete: 'CASCADE',
     onUpdate:'CASCADE'
   })
-  @JoinTable()
   products: ProductEntity[];
 
 
