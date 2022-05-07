@@ -10,25 +10,42 @@ provider:
   name: aws
   runtime: nodejs14.x
   stage: production
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+      Resource: '*' 
   environment:
     JWT_SECRET: 0a6b944d-d2fb-46fc-a85e-0295c986cd9f
+
+    DB_CONNECTION_HOST: mysqlserver.ctbhjnsyyeyu.us-east-1.rds.amazonaws.com
+    DB_CONNECTION_PORT: 3306
+    DB_CONNECTION_USERNAME: admin
+    DB_CONNECTION_PASSWORD: 2589a04e693ddd7679d83bd90a09dcbd
+    MONGO_HOST:  mongodb+srv://weton01:Dragonite1@professor.yrdup.mongodb.net/flat?authSource=admin&replicaSet=atlas-m1fn1c-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true
+
+    GOOGLE_AUTH_CLIENT_ID: 193865804446-0no96b25i8dgqso79uh1ar5jni2n44j6.apps.googleusercontent.com
+    GOOGLE_AUTH_CLIENT_SECRET: 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
+    FACEBOOK_AUTH_CLIENT_ID: 1003471433904383
+    FACEBOOK_AUTH_CLIENT_SECRET: 440be562ea1d7916e1c0ff385c77c08a
+    REDIRECT_URL: http://localhost:3000
+
+    TWACCOUNTSID: AC381988ce79fbc63d0a0f813126b42511
+    TWAUTHTOKEN: 7401a0311a51ecc41de2ee1ecf6b8fce
+    TWSERVICESID: VAdc9dd6a065d757b61fb4b38ddbf49854
+    TWSENDER: +18325328071
+
     MAILER_TRANSPORT_HOST: smtp.mailtrap.io
     MAILER_TRANSPORT_PORT: 2525
     MAILER_TRANSPORT_AUTH_USER: bfed0bddaaa901
     MAILER_TRANSPORT_AUTH_PASS: 34f539bbd98320
     MAILER_MAIL_FROM: lich@lichdata.com
-    DB_CONNECTION_HOST: mysqlserver.ctbhjnsyyeyu.us-east-1.rds.amazonaws.com
-    DB_CONNECTION_PORT: 3306
-    DB_CONNECTION_USERNAME: admin
-    DB_CONNECTION_PASSWORD: 2589a04e693ddd7679d83bd90a09dcbd
-    GOOGLE_AUTH_CLIENT_ID: 193865804446-0no96b25i8dgqso79uh1ar5jni2n44j6.apps.googleusercontent.com
-    GOOGLE_AUTH_CLIENT_SECRET: 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
-    FACEBOOK_AUTH_CLIENT_ID: 1003471433904383
-    FACEBOOK_AUTH_CLIENT_SECRET: 440be562ea1d7916e1c0ff385c77c08a
-    REDIRECT_URL: https://92yiuy5790.execute-api.us-east-1.amazonaws.com/production
 
-    MONGO_URI: mongodb+srv://weton01:Dragonite1@professor.yrdup.mongodb.net/dev?retryWrites=true&w=majority
-    IS_SERVERLESS: true
+    AWS_KEY: AKIAYXQH4BSB232TJJY7
+    AWS_ACCESS_SECRET_KEY: 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
+    AWS_BUCKER_NAME: flora-express-images
+    AWS_IMAGES_BUCKET_FOLDER_NAME: generic-shop
     NODE_ENV: production
  
 functions:
@@ -77,15 +94,6 @@ functions:
       - http:
           method: ANY
           path: '/brand/{proxy+}'
-  product:
-    handler: ./dist/apps/product/main.handler
-    events:
-      - http:
-          method: ANY
-          path: /product
-      - http:
-          method: ANY
-          path: '/product/{proxy+}'
   tag:
     handler: ./dist/apps/tag/main.handler
     events:
@@ -95,6 +103,34 @@ functions:
       - http:
           method: ANY
           path: '/tag/{proxy+}'
+  product:
+    handler: ./dist/apps/product/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /product
+      - http:
+          method: ANY
+          path: '/product/{proxy+}'
+  variation:
+    handler: ./dist/apps/inventory/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /variation
+      - http:
+          method: ANY
+          path: '/variation/{proxy+}'
+  comment:
+    handler: ./dist/apps/comment/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /comment
+      - http:
+          method: ANY
+          path: '/comment/{proxy+}'
+
   flat:
     handler: ./dist/apps/flat/main.handler
     events:

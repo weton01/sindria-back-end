@@ -39,13 +39,6 @@ export class ProductDto {
   })
   @IsNumber()
   @IsNotEmpty()
-  purchasePrice: number;
-
-  @ApiProperty({
-    example: 'lorem impsum dolent',
-  })
-  @IsNumber()
-  @IsNotEmpty()
   grossAmount: number;
 
   @ApiProperty({

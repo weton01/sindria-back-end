@@ -37,10 +37,10 @@ export class CategoryEntity {
   @TreeChildren()
   subCategories: CategoryEntity[];
 
-  @TreeParent()
+  @TreeParent({ onDelete: 'CASCADE' })
   parent: CategoryEntity;
 
-  @Column()
+  @Column({nullable: true})
   groupName: string;
 
   @ApiProperty()
@@ -56,7 +56,6 @@ export class CategoryEntity {
     onDelete: 'CASCADE',
     onUpdate:'CASCADE'
   })
-  @JoinTable()
   products: ProductEntity[];
 
 

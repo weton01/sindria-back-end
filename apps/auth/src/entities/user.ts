@@ -1,5 +1,10 @@
 import { AddressEntity } from '@/address/entities/address';
+import { CommentEntity } from '@/comment/entities/comment';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { OrderProductDto } from '@/order/dtos/order-product';
+import { OrderEntity } from '@/order/entities/order';
+import { OrderProductEntity } from '@/order/entities/order-product';
+import { OrderStoreEntity } from '@/order/entities/order-store';
 import { UserTypes } from '@app/common/enums/user-type';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { ProductEntity } from 'apps/product/src/entities/product';
@@ -69,14 +74,54 @@ export class UserEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToMany(() => AddressEntity, (address) => address.user)
+  @OneToMany(() => AddressEntity, (address) => address.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   addresses: AddressEntity[];
 
-  @OneToMany(() => CreditCardEntity, (address) => address.user)
+  @OneToMany(() => CreditCardEntity, (address) => address.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   creditCards: AddressEntity[];
 
-  @OneToMany(() => ProductEntity, (address) => address.user)
+  @OneToMany(() => ProductEntity, (address) => address.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   products: ProductEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  comments: CommentEntity[];
+
+  @OneToMany(() => OrderEntity, (comment) => comment.purchaser, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  orders: OrderEntity[];
+
+  @OneToMany(() => OrderStoreEntity, (orderStore) => orderStore.store, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  sales: OrderStoreEntity[];
+
+  @OneToMany(() => OrderProductEntity, (comment) => comment.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  productOrders: OrderProductEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;

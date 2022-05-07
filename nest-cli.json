@@ -49,34 +49,7 @@
       "compilerOptions": {
         "tsConfigPath": "apps/calendar/tsconfig.app.json"
       }
-    },
-    "teacher": {
-      "type": "application",
-      "root": "apps/teacher",
-      "entryFile": "main",
-      "sourceRoot": "apps/teacher/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/teacher/tsconfig.app.json"
-      }
-    },
-    "timeline": {
-      "type": "application",
-      "root": "apps/timeline",
-      "entryFile": "main",
-      "sourceRoot": "apps/timeline/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/timeline/tsconfig.app.json"
-      }
-    },
-    "categories": {
-      "type": "application",
-      "root": "apps/categories",
-      "entryFile": "main",
-      "sourceRoot": "apps/categories/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/categories/tsconfig.app.json"
-      }
-    },
+    }, 
     "category": {
       "type": "application",
       "root": "apps/category",
@@ -102,15 +75,6 @@
       "sourceRoot": "apps/credit-card/src",
       "compilerOptions": {
         "tsConfigPath": "apps/credit-card/tsconfig.app.json"
-      }
-    },
-    "flat": {
-      "type": "application",
-      "root": "apps/flat",
-      "entryFile": "main",
-      "sourceRoot": "apps/flat/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/flat/tsconfig.app.json"
       }
     },
     "brand": {
@@ -147,6 +111,33 @@
       "sourceRoot": "apps/tag/src",
       "compilerOptions": {
         "tsConfigPath": "apps/tag/tsconfig.app.json"
+      }
+    },
+    "comment": {
+      "type": "application",
+      "root": "apps/comment",
+      "entryFile": "main",
+      "sourceRoot": "apps/comment/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/comment/tsconfig.app.json"
+      }
+    },
+    "order": {
+      "type": "application",
+      "root": "apps/order",
+      "entryFile": "main",
+      "sourceRoot": "apps/order/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/order/tsconfig.app.json"
+      }
+    },
+    "shipping": {
+      "type": "application",
+      "root": "apps/shipping",
+      "entryFile": "main",
+      "sourceRoot": "apps/shipping/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/shipping/tsconfig.app.json"
       }
     }
   }

@@ -13,18 +13,19 @@ let server: Handler;
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
     const app = await NestFactory.create(InventoryModule);
-
+  
+    app.setGlobalPrefix('v1');
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Product Service')
-      .setDescription(`The Product service only...`)
+      .setTitle('Inventory Service')
+      .setDescription(`The Inventory service only...`)
       .setVersion('1.0')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('swagger.json', JSON.stringify(document), 'utf8', () => ({}));
+    fs.writeFile('docs/inventory.json', JSON.stringify(document), 'utf8', () => ({}));
 
     SwaggerModule.setup('docs', app, document);
 
@@ -40,7 +41,10 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(InventoryModule);
+
+  app.setGlobalPrefix('v1');
   app.enableCors();
+
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );

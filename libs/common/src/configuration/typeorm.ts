@@ -2,11 +2,16 @@ import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { CategoryEntity } from '@/category/entities/category';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { VariationEntity } from 'apps/inventory/src/entities/variation';
 import { TagEntity } from '@/tag/entities/tag';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
 import { ProductEntity } from 'apps/product/src/entities/product';
 import { envs } from '.';
+import { CommentEntity } from '@/comment/entities/comment';
+import { OrderEntity } from '@/order/entities/order';
+import { OrderStoreEntity } from '@/order/entities/order-store';
+import { OrderProductEntity } from '@/order/entities/order-product';
 
 
 export const TypeormConfig = TypeOrmModule.forRoot({
@@ -17,5 +22,18 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   password: envs.DB_CONNECTION_PASSWORD,
   database: 'development',
   synchronize: true,
-  entities: [UserEntity, AddressEntity, CategoryEntity, CreditCardEntity, BrandEntity, ProductEntity, TagEntity],
+  entities: [
+    UserEntity, 
+    AddressEntity, 
+    CategoryEntity, 
+    CreditCardEntity, 
+    BrandEntity, 
+    ProductEntity, 
+    TagEntity, 
+    VariationEntity,
+    CommentEntity,
+    OrderEntity,
+    OrderStoreEntity,
+    OrderProductEntity
+  ],
 });
