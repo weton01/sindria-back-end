@@ -1,4 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
+import { OrderEntity } from '@/order/entities/order';
 import { RegexTypes } from '@app/utils/messages';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Matches } from 'class-validator';
@@ -7,6 +8,7 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -46,6 +48,9 @@ export class CreditCardEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
+
+  @OneToMany(() => OrderEntity, (order) => order.ordersStore)
+  orders: OrderEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.creditCards)
   user: UserEntity;

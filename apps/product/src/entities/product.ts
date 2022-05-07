@@ -1,6 +1,10 @@
 import { UserEntity } from '@/auth/entities/user';
 import { BrandEntity } from '@/brand/entities/brand';
 import { CategoryEntity } from '@/category/entities/category';
+import { CommentEntity } from '@/comment/entities/comment';
+import { VariationEntity } from '@/inventory/entities/variation';
+import { OrderEntity } from '@/order/entities/order';
+import { OrderProductEntity } from '@/order/entities/order-product';
 import { TagEntity } from '@/tag/entities/tag';
 
 import {
@@ -10,6 +14,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -25,14 +30,14 @@ export class ProductEntity {
   @Column()
   description: string;
 
-  @Column({ default: true })
-  active: boolean;
-
   @Column()
   grossAmount: number;
 
   @Column()
   netAmount: number;
+
+  @Column({ default: true })
+  active: boolean;
 
   @Column("simple-array")
   images: string[];
@@ -42,6 +47,27 @@ export class ProductEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
+
+  @OneToMany(() => VariationEntity, (variation) => variation.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  variations: VariationEntity[];
+
+  @OneToMany(() => CommentEntity, (comment) => comment.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  comments: CommentEntity[];
+
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  orderProducts: OrderProductEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.products)
   user: UserEntity;

@@ -1,5 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
-import { TypeormConfig } from '@app/common';
+import { envs, TypeormConfig } from '@app/common';
 import { JwtStrategy } from '@app/utils';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,15 +11,16 @@ import { ProductService } from './product.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, ProductEntity]),
-    TypeormConfig,
     S3Module.forRoot({
       config: {
-        accessKeyId: 'minio',
-        secretAccessKey: 'password',
+        accessKeyId: envs.AWS_KEY,
+        secretAccessKey: envs.AWS_ACCESS_SECRET_KEY,
         s3ForcePathStyle: true,
         signatureVersion: 'v4',
       },
-    }),],
+    }),
+    TypeormConfig,
+  ],
   controllers: [ProductController],
   providers: [ProductService, JwtStrategy],
 })

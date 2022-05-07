@@ -1,11 +1,10 @@
-import { OrderBy } from '@app/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { ProductDto } from './product';
 
 enum Relations {
-  user, categories, brand
+  user, categories, brand, variations
 }
 
 enum Fields {
@@ -41,12 +40,13 @@ export class FindProductDto {
   @IsEnum(Relations, { each: true })
   relations: string[]
 
-  @ApiProperty({
-    example: 'DESC',
-  })
   @IsOptional()
-  @IsEnum(OrderBy)
-  orderBy: OrderBy
+  @Transform(({ value }) => {
+    if (value)
+      return Object.fromEntries(new URLSearchParams(value))
+    return {}
+  }, { toClassOnly: true })
+  orderBy: any;
 
   @ApiProperty({
     example: 'field,field',
