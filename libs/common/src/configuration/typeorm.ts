@@ -9,6 +9,9 @@ import { BrandEntity } from 'apps/brand/src/entities/brand';
 import { ProductEntity } from 'apps/product/src/entities/product';
 import { envs } from '.';
 import { CommentEntity } from '@/comment/entities/comment';
+import { OrderEntity } from '@/order/entities/order';
+import { OrderStoreEntity } from '@/order/entities/order-store';
+import { OrderProductEntity } from '@/order/entities/order-product';
 
 
 export const TypeormConfig = TypeOrmModule.forRoot({
@@ -27,6 +30,10 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     BrandEntity, 
     ProductEntity, 
     TagEntity, 
-    VariationEntity, CommentEntity
+    VariationEntity,
+    CommentEntity,
+    OrderEntity,
+    OrderStoreEntity,
+    OrderProductEntity
   ],
 });

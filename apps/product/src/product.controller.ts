@@ -53,7 +53,6 @@ export class ProductController {
 
     return await this.productService.findById(user.id, id);
   }
-
   
   @UseGuards(JwtAuthGuard)
   @Get('/s3/assign-url')

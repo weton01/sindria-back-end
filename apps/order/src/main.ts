@@ -18,8 +18,8 @@ if (envs.NODE_ENV == 'development') {
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Brand Service')
-      .setDescription(`The Brand service only...`)
+      .setTitle('Order Service')
+      .setDescription(`The Order service only...`)
       .setVersion('1.0')
       .build();
 

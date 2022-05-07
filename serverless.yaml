@@ -113,7 +113,7 @@ functions:
           method: ANY
           path: '/product/{proxy+}'
   variation:
-    handler: ./dist/apps/variation/main.handler
+    handler: ./dist/apps/inventory/main.handler
     events:
       - http:
           method: ANY

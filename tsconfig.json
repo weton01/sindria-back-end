@@ -47,6 +47,9 @@
       "@/comment/*": [
         "apps/comment/src/*"
       ],
+      "@/order/*": [
+        "apps/order/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],

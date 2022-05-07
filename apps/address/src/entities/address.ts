@@ -1,9 +1,11 @@
 import { UserEntity } from '@/auth/entities/user';
+import { OrderEntity } from '@/order/entities/order';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,6 +41,9 @@ export class AddressEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
+
+  @OneToMany(() => OrderEntity, (order) => order.ordersStore)
+  orders: OrderEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.addresses)
   user: UserEntity;
