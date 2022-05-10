@@ -49,7 +49,7 @@
       "compilerOptions": {
         "tsConfigPath": "apps/calendar/tsconfig.app.json"
       }
-    }, 
+    },
     "category": {
       "type": "application",
       "root": "apps/category",
@@ -138,6 +138,15 @@
       "sourceRoot": "apps/shipping/src",
       "compilerOptions": {
         "tsConfigPath": "apps/shipping/tsconfig.app.json"
+      }
+    },
+    "review": {
+      "type": "application",
+      "root": "apps/review",
+      "entryFile": "main",
+      "sourceRoot": "apps/review/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/review/tsconfig.app.json"
       }
     }
   }
