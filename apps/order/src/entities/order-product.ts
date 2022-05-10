@@ -1,12 +1,13 @@
 import { UserEntity } from '@/auth/entities/user';
-import { VariationEntity } from '@/inventory/entities/variation';
 import { ProductEntity } from '@/product/entities/product';
+import { ReviewEntity } from '@/review/entities/review';
 
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -43,6 +44,9 @@ export class OrderProductEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.productOrders)
   user: UserEntity;
+
+  @OneToMany(() => ReviewEntity, (user) => user.orderProduct)
+  reviews: ReviewEntity[];
 
   constructor(entity?: Partial<OrderProductEntity>) {
     this.id = entity?.id;

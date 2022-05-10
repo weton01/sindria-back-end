@@ -130,6 +130,24 @@ functions:
       - http:
           method: ANY
           path: '/comment/{proxy+}'
+  order:
+    handler: ./dist/apps/order/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /order
+      - http:
+          method: ANY
+          path: '/order/{proxy+}'
+  review:
+    handler: ./dist/apps/review/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /review
+      - http:
+          method: ANY
+          path: '/review/{proxy+}'
 
   flat:
     handler: ./dist/apps/flat/main.handler

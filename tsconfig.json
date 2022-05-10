@@ -50,6 +50,9 @@
       "@/order/*": [
         "apps/order/src/*"
       ],
+      "@/review/*": [
+        "apps/review/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],

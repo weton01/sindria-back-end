@@ -1,18 +1,18 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
+import { BrandEntity } from '@/brand/entities/brand';
 import { CategoryEntity } from '@/category/entities/category';
+import { CommentEntity } from '@/comment/entities/comment';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
-import { VariationEntity } from 'apps/inventory/src/entities/variation';
+import { OrderEntity } from '@/order/entities/order';
+import { OrderProductEntity } from '@/order/entities/order-product';
+import { OrderStoreEntity } from '@/order/entities/order-store';
+import { ProductEntity } from '@/product/entities/product';
+import { ReviewEntity } from '@/review/entities/review';
 import { TagEntity } from '@/tag/entities/tag';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BrandEntity } from 'apps/brand/src/entities/brand';
-import { ProductEntity } from 'apps/product/src/entities/product';
+import { VariationEntity } from 'apps/inventory/src/entities/variation';
 import { envs } from '.';
-import { CommentEntity } from '@/comment/entities/comment';
-import { OrderEntity } from '@/order/entities/order';
-import { OrderStoreEntity } from '@/order/entities/order-store';
-import { OrderProductEntity } from '@/order/entities/order-product';
-
 
 export const TypeormConfig = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -23,17 +23,18 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   database: 'development',
   synchronize: true,
   entities: [
-    UserEntity, 
-    AddressEntity, 
-    CategoryEntity, 
-    CreditCardEntity, 
-    BrandEntity, 
-    ProductEntity, 
-    TagEntity, 
+    UserEntity,
+    AddressEntity,
+    CategoryEntity,
+    CreditCardEntity,
+    BrandEntity,
+    ProductEntity,
+    TagEntity,
     VariationEntity,
     CommentEntity,
     OrderEntity,
     OrderStoreEntity,
-    OrderProductEntity
+    OrderProductEntity,
+    ReviewEntity
   ],
 });
