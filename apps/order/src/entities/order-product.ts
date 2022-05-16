@@ -1,4 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
+import { BrandEntity } from '@/brand/entities/brand';
+import { CategoryEntity } from '@/category/entities/category';
 import { ProductEntity } from '@/product/entities/product';
 import { ReviewEntity } from '@/review/entities/review';
 
@@ -6,6 +8,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -38,6 +42,17 @@ export class OrderProductEntity {
 
   @ManyToOne(() => OrderStoreEntity, (orderStore) => orderStore.products)
   orderStore: OrderStoreEntity;
+
+  @ManyToOne(() => BrandEntity, (brand) => brand.orderProducts)
+  brand: BrandEntity;
+
+  @ManyToMany(() => CategoryEntity, (category) => category.orderProducts,  {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate:'CASCADE'
+  })
+  @JoinTable()
+  categories: CategoryEntity[];
 
   @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
   product: ProductEntity

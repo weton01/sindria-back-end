@@ -22,7 +22,7 @@ import { OrderService } from './order.service';
       CreditCardEntity,
       AddressEntity,
       OrderProductEntity,
-      OrderStoreEntity
+      OrderStoreEntity,
     ]),
     TypeormConfig,
     JwtConfig,

@@ -2,7 +2,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { MessageErrors } from '@app/utils/messages';
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, TreeRepository } from 'typeorm';
 import { CreateProductDto } from './dtos/create';
 import { FindProductDto } from './dtos/find';
 import { UpdateProductDto } from './dtos/update';
@@ -10,6 +10,8 @@ import { ProductEntity } from './entities/product';
 import { InjectS3, S3 } from 'nestjs-s3';
 import { v4 as uuid } from 'uuid';
 import { envs } from '@app/common';
+import { CategoryEntity } from '@/category/entities/category';
+import { OrderProductEntity } from '@/order/entities/order-product';
 
 @Injectable()
 export class ProductService {
@@ -19,12 +21,21 @@ export class ProductService {
     private readonly repository: Repository<ProductEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: TreeRepository<CategoryEntity>,
+    @InjectRepository(OrderProductEntity)
+    private readonly orderProductRepository: TreeRepository<OrderProductEntity>,
   ) { }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
+    if (!foundUser)
+      throw new NotFoundException('usuário não encontrado');
+
+    const momCategories = await Promise.all(
+      dto.categories.map(category => this.categoryRepository.findAncestors(category))
+    )
 
     const foundProduct = await this.repository.findOne({
       name: dto.name
@@ -35,7 +46,8 @@ export class ProductService {
 
     const tempProduct = await this.repository.create({
       ...dto,
-      user: foundUser
+      user: foundUser,
+      momCategories: momCategories.map(item => item[1])
     });
 
     return await this.repository.save(tempProduct);
@@ -90,18 +102,80 @@ export class ProductService {
     });
   }
 
-  async find(query: FindProductDto, userId: string): Promise<[ProductEntity[], number]> {
+  async find(query: FindProductDto): Promise<[ProductEntity[], number]> {
     const { skip, take, relations, orderBy, select, where } = query
-
-    const foundUser = await this.userRepository.findOne({ id: userId });
-
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
 
     return await this.repository.findAndCount({
       order: orderBy,
       skip, take, relations, select, where
     });
+  }
+
+  async findHome(): Promise<any> {
+    const [bestSalers, bestBrands, bestCategories] = await Promise.all([
+      this.orderProductRepository
+        .createQueryBuilder('obp')
+        .select(['SUM(obp.quantity) as salesQuantity', 'obp.productId', 'p.name', 'p.id', 'p.images'])
+        .leftJoin('obp.product', 'p')
+        .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+        .andWhere(`obp.created_at <= NOW()`)
+        .groupBy('obp.productId')
+        .limit(5)
+        .getRawMany(),
+
+      this.orderProductRepository
+        .createQueryBuilder('obp')
+        .select(['SUM(obp.quantity) as salesQuantity', 'b.name', 'b.id', 'b.image'])
+        .leftJoin('obp.brand', 'b')
+        .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+        .andWhere(`obp.created_at <= NOW()`)
+        .groupBy('obp.brandId')
+        .limit(2)
+        .getRawMany(),
+
+      this.orderProductRepository
+        .createQueryBuilder('obp')
+        .select(['SUM(obp.quantity) as salesQuantity', 'c.name', 'c.id', 'c.image'])
+        .leftJoin('obp.categories', 'c')
+        .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+        .andWhere(`obp.created_at <= NOW()`)
+        .groupBy('c.id')
+        .limit(6)
+        .getRawMany(),
+    ])
+    return {
+      bestSalers,
+      bestBrands,
+      bestCategories
+    }
+  }
+
+  async findNavbar(name: string, params: any): Promise<ProductEntity[]> {
+    name = name
+      .trim()
+      .toLowerCase()
+      .replace(/\w\S*/g, (w) =>
+        (w.replace(/^\w/, (c) => c.toUpperCase()))
+      )
+
+    if (params.category)
+      return await this.repository
+        .createQueryBuilder('p')
+        .select(['p.id', 'p.name'])
+        .distinctOn(['p.name'])
+        .leftJoin('p.momCategories', 'c')
+        .where(`p.name LIKE '%${name}%'`)
+        .andWhere(`c.id = :category`, { category: params.category })
+        .take(5)
+        .getMany();
+
+    return await this.repository
+      .createQueryBuilder('p')
+      .select(['p.id', 'p.name'])
+      .distinctOn(['p.name'])
+      .where(`p.name LIKE '%${name}%'`)
+      .take(5)
+      .getMany();
   }
 
   async assignUrl(): Promise<any> {
@@ -110,17 +184,17 @@ export class ProductService {
     const url = await this.s3.createPresignedPost({
       Bucket: envs.AWS_BUCKER_NAME,
       Conditions: [
-        {"acl": "public-read"},
+        { "acl": "public-read" },
         { 'Content-Type': 'image/webp' },
       ],
       Fields: {
         key: key,
       },
       Expires: 600,
-     })
-     
+    })
 
-    return { get: `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`, put: url}
+
+    return { get: `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`, put: url }
   }
 
 }
