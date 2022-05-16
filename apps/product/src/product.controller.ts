@@ -37,12 +37,10 @@ export class ProductController {
     return await this.productService.delete(user.id, id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/')
-  async findProduct(@Query() query: FindProductDto, @Req() req): Promise<any> {
-    const { user } = req;
+  async findProduct(@Query() query: FindProductDto): Promise<any> {
+    const [items, count] = await this.productService.find(query);
 
-    const [items, count] = await this.productService.find(query, user.id);
     return { items, count }
   }
 
@@ -53,7 +51,20 @@ export class ProductController {
 
     return await this.productService.findById(user.id, id);
   }
-  
+
+  @Get('/home/superstore')
+  async findProductHome(): Promise<any> {
+    return await this.productService.findHome();
+  }
+
+  @Get('/navbar/:name')
+  async findProductNavbar(
+    @Query() params: any,
+    @Param('name') name: string, 
+  ): Promise<any> {
+    return await this.productService.findNavbar(name, params);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('/s3/assign-url')
   @HttpCode(200)

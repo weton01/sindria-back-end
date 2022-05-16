@@ -5,6 +5,7 @@ import { OrderProductDto } from '@/order/dtos/order-product';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { OrderStoreEntity } from '@/order/entities/order-store';
+import { ReviewEntity } from '@/review/entities/review';
 import { UserTypes } from '@app/common/enums/user-type';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { ProductEntity } from 'apps/product/src/entities/product';
@@ -122,6 +123,13 @@ export class UserEntity {
     onUpdate: 'CASCADE'
   })
   productOrders: OrderProductEntity[];
+
+  @OneToMany(() => ReviewEntity, (comment) => comment.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  reviews: ReviewEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;

@@ -2,8 +2,8 @@ import { CategoryEntity } from '@/category/entities/category';
 import { TagEntity } from '@/tag/entities/tag';
 import { ApiProperty } from '@nestjs/swagger';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
-import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsBoolean, IsArray, IsUUID, ValidateNested } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsOptional, IsNumber, IsBoolean, IsArray, IsUUID, ValidateNested, ArrayNotEmpty } from 'class-validator';
 
 class AuxSingleDto {
   @ApiProperty({
@@ -19,6 +19,11 @@ export class ProductDto {
   @ApiProperty({
     example: 'any_name',
   })
+  @Transform(({ value }) => {
+    if (value)
+      return value.trim().toLowerCase().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+    return ""
+  }, { toClassOnly: true })
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -60,6 +65,7 @@ export class ProductDto {
   brand: BrandEntity;
 
   @IsArray()
+  @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)
   categories: CategoryEntity[];

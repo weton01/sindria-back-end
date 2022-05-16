@@ -1,12 +1,17 @@
 import { UserEntity } from '@/auth/entities/user';
-import { VariationEntity } from '@/inventory/entities/variation';
+import { BrandEntity } from '@/brand/entities/brand';
+import { CategoryEntity } from '@/category/entities/category';
 import { ProductEntity } from '@/product/entities/product';
+import { ReviewEntity } from '@/review/entities/review';
 
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -38,11 +43,25 @@ export class OrderProductEntity {
   @ManyToOne(() => OrderStoreEntity, (orderStore) => orderStore.products)
   orderStore: OrderStoreEntity;
 
+  @ManyToOne(() => BrandEntity, (brand) => brand.orderProducts)
+  brand: BrandEntity;
+
+  @ManyToMany(() => CategoryEntity, (category) => category.orderProducts,  {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate:'CASCADE'
+  })
+  @JoinTable()
+  categories: CategoryEntity[];
+
   @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
   product: ProductEntity
 
   @ManyToOne(() => UserEntity, (user) => user.productOrders)
   user: UserEntity;
+
+  @OneToMany(() => ReviewEntity, (user) => user.orderProduct)
+  reviews: ReviewEntity[];
 
   constructor(entity?: Partial<OrderProductEntity>) {
     this.id = entity?.id;
