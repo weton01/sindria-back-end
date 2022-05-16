@@ -12,6 +12,7 @@ import { v4 as uuid } from 'uuid';
 import { envs } from '@app/common';
 import { CategoryEntity } from '@/category/entities/category';
 import { OrderProductEntity } from '@/order/entities/order-product';
+import { ReviewEntity } from '@/review/entities/review';
 
 @Injectable()
 export class ProductService {
@@ -25,6 +26,8 @@ export class ProductService {
     private readonly categoryRepository: TreeRepository<CategoryEntity>,
     @InjectRepository(OrderProductEntity)
     private readonly orderProductRepository: TreeRepository<OrderProductEntity>,
+    @InjectRepository(ReviewEntity)
+    private readonly reviewRepository: TreeRepository<ReviewEntity>,
   ) { }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
@@ -112,7 +115,7 @@ export class ProductService {
   }
 
   async findHome(): Promise<any> {
-    const [bestSalers, bestBrands, bestCategories] = await Promise.all([
+    const [bestSalers, bestBrands, bestCategories, bestReviews] = await Promise.all([
       this.orderProductRepository
         .createQueryBuilder('obp')
         .select(['SUM(obp.quantity) as salesQuantity', 'obp.productId', 'p.name', 'p.id', 'p.images'])
@@ -142,11 +145,24 @@ export class ProductService {
         .groupBy('c.id')
         .limit(6)
         .getRawMany(),
+      
+      this.reviewRepository
+      .createQueryBuilder('r')
+      .select(['AVG(r.rating) as rate', 'COUNT(r.id) as qtd', 'p.name', 'p.id', 'p.images' ])
+      .leftJoin('r.orderProduct', 'obp')
+      .leftJoin('r.product', 'p')
+      .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+      .andWhere(`obp.created_at <= NOW()`)
+      .groupBy('r.productId')
+      .limit(6)
+      .getRawMany(),
     ])
+
     return {
       bestSalers,
       bestBrands,
-      bestCategories
+      bestCategories,
+      bestReviews
     }
   }
 
