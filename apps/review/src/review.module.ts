@@ -1,23 +1,17 @@
 import { UserEntity } from '@/auth/entities/user';
-import { CategoryEntity } from '@/category/entities/category';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { envs, TypeormConfig } from '@app/common';
 import { JwtStrategy } from '@app/utils';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { S3Module } from 'nestjs-s3';
-import { ProductEntity } from './entities/product';
-import { ProductController } from './product.controller';
-import { ProductService } from './product.service';
+import { ReviewEntity } from './entities/review';
+import { ReviewController } from './review.controller';
+import { ReviewService } from './review.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      UserEntity, 
-      ProductEntity, 
-      CategoryEntity, 
-      OrderProductEntity
-    ]),
+    TypeOrmModule.forFeature([UserEntity, OrderProductEntity, ReviewEntity]),
     S3Module.forRoot({
       config: {
         accessKeyId: envs.AWS_KEY,
@@ -26,9 +20,9 @@ import { ProductService } from './product.service';
         signatureVersion: 'v4',
       },
     }),
-    TypeormConfig,
+    TypeormConfig
   ],
-  controllers: [ProductController],
-  providers: [ProductService, JwtStrategy],
+  controllers: [ReviewController],
+  providers: [ReviewService, JwtStrategy],
 })
-export class ProductModule { }
+export class ReviewModule { }

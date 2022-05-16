@@ -5,6 +5,7 @@ import { CommentEntity } from '@/comment/entities/comment';
 import { VariationEntity } from '@/inventory/entities/variation';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderProductEntity } from '@/order/entities/order-product';
+import { ReviewEntity } from '@/review/entities/review';
 import { TagEntity } from '@/tag/entities/tag';
 
 import {
@@ -68,6 +69,13 @@ export class ProductEntity {
     onUpdate: 'CASCADE'
   })
   orderProducts: OrderProductEntity[];
+  
+  @OneToMany(() => ReviewEntity, (review) => review.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  reviews: ReviewEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.products)
   user: UserEntity;
@@ -75,6 +83,10 @@ export class ProductEntity {
   @ManyToOne(() => BrandEntity, (brand) => brand.products)
   brand: BrandEntity;
 
+  @ManyToMany(() => CategoryEntity, (category) => category.products)
+  @JoinTable()
+  momCategories: CategoryEntity[];
+  
   @ManyToMany(() => CategoryEntity, (category) => category.products)
   @JoinTable()
   categories: CategoryEntity[];

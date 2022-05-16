@@ -26,7 +26,7 @@ export class OrderService {
     @InjectRepository(OrderProductEntity)
     private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(OrderStoreEntity)
-    private readonly orderStoreRepository: Repository<OrderStoreEntity>,
+    private readonly orderStoreRepository: Repository<OrderStoreEntity>
   ) { }
 
   async createCreditCardOrder(userId: string, dto: OrderDto): Promise<OrderEntity> {
@@ -46,6 +46,9 @@ export class OrderService {
       throw new NotFoundException('endereço não encontrado')
 
     const newProducts = await Promise.all(dto.orderProducts.map(async p => {
+      p.categories = p.product.categories
+      p.brand = p.product.brand
+
       const newProduct = this.orderProductRepository.create({ ...p, freezeProduct: p, user: p.product.user })
       return await this.orderProductRepository.save(newProduct)
     }))
@@ -62,8 +65,8 @@ export class OrderService {
       newProducts.map(product => {
         if (product.user.id === userId) {
           newStores[index].totalAmount += product.netAmount;
-          newStores[index].products.push(product)
-          newStores[index].store = product.user
+          newStores[index].products.push(product);
+          newStores[index].store = product.user;
         }
       })
     })

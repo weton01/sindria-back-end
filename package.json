@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/profe/test/jest-e2e.json",
-    "deploy": "nest build address && nest build auth && nest build brand && nest build category && nest build credit-card && nest build product && nest build tag && nest build variation && nest build comment && serverless deploy"
+    "deploy": "nest build address && nest build auth && nest build brand && nest build category && nest build credit-card && nest build product && nest build tag && nest build variation && nest build comment && nest build review && serverless deploy"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",

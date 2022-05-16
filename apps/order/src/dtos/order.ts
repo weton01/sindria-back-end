@@ -34,7 +34,6 @@ export class OrderDto {
   @Type(() => OrderProductDto)
   orderProducts: OrderProductEntity[];
   
-  
   @IsEnum(InvoiceTypes)
   @IsNotEmpty()
   invoiceType: InvoiceTypes
