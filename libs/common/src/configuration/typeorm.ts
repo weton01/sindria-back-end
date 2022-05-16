@@ -35,6 +35,6 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     OrderEntity,
     OrderStoreEntity,
     OrderProductEntity,
-    ReviewEntity
+    ReviewEntity,
   ],
 });

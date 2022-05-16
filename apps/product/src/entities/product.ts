@@ -85,6 +85,10 @@ export class ProductEntity {
 
   @ManyToMany(() => CategoryEntity, (category) => category.products)
   @JoinTable()
+  momCategories: CategoryEntity[];
+  
+  @ManyToMany(() => CategoryEntity, (category) => category.products)
+  @JoinTable()
   categories: CategoryEntity[];
 
   @ManyToMany(() => TagEntity, (tag) => tag.products)
