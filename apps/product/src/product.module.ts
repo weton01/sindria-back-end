@@ -1,6 +1,7 @@
 import { UserEntity } from '@/auth/entities/user';
 import { CategoryEntity } from '@/category/entities/category';
 import { OrderProductEntity } from '@/order/entities/order-product';
+import { ReviewEntity } from '@/review/entities/review';
 import { envs, TypeormConfig } from '@app/common';
 import { JwtStrategy } from '@app/utils';
 import { Module } from '@nestjs/common';
@@ -16,7 +17,9 @@ import { ProductService } from './product.service';
       UserEntity, 
       ProductEntity, 
       CategoryEntity, 
-      OrderProductEntity
+      OrderProductEntity,
+      ReviewEntity,
+      ProductEntity
     ]),
     S3Module.forRoot({
       config: {
