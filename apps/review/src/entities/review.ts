@@ -19,12 +19,12 @@ export class ReviewEntity {
   @Column()
   description: string;
 
-  @Column("simple-array")
+  @Column('simple-array')
   image: string[];
 
   @Column()
   rating: number;
- 
+
   @CreateDateColumn()
   created_at?: Date;
 
@@ -37,9 +37,12 @@ export class ReviewEntity {
   @ManyToOne(() => ProductEntity, (product) => product.reviews)
   product: ProductEntity;
 
-  @ManyToOne(() => OrderProductEntity, (orderProductEntity) => orderProductEntity.reviews)
+  @ManyToOne(
+    () => OrderProductEntity,
+    (orderProductEntity) => orderProductEntity.reviews,
+  )
   orderProduct: OrderProductEntity;
- 
+
   constructor(entity?: Partial<ReviewEntity>) {
     this.id = entity?.id;
   }

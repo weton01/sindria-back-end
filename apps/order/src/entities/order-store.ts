@@ -21,19 +21,19 @@ export class OrderStoreEntity {
   @Column()
   totalAmount: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   trackingCode: string;
 
-  @Column({ 
-    type: "enum",
+  @Column({
+    type: 'enum',
     enum: OrderStatus,
-    default: OrderStatus.processed
-  }) 
+    default: OrderStatus.processed,
+  })
   trackingStatus: OrderStatus;
- 
-  @Column({nullable: true})
+
+  @Column({ nullable: true })
   trackingDate: string;
- 
+
   @CreateDateColumn()
   created_at?: Date;
 

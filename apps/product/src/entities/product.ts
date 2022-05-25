@@ -2,8 +2,8 @@ import { UserEntity } from '@/auth/entities/user';
 import { BrandEntity } from '@/brand/entities/brand';
 import { CategoryEntity } from '@/category/entities/category';
 import { CommentEntity } from '@/comment/entities/comment';
-import { VariationEntity } from '@/inventory/entities/variation';
-import { OrderEntity } from '@/order/entities/order';
+import { MutationEntity } from '@/inventory/mutation/entities/mutation';
+import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
 import { TagEntity } from '@/tag/entities/tag';
@@ -37,10 +37,19 @@ export class ProductEntity {
   @Column()
   netAmount: number;
 
+  @Column({ default: 0 })
+  rating: number;
+
+  @Column({ default: 0 })
+  reviewsQuantity: number;
+
+  @Column({ default: 0 })
+  salesQuantity: number;
+
   @Column({ default: true })
   active: boolean;
 
-  @Column("simple-array")
+  @Column('simple-array')
   images: string[];
 
   @CreateDateColumn()
@@ -52,30 +61,37 @@ export class ProductEntity {
   @OneToMany(() => VariationEntity, (variation) => variation.product, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   variations: VariationEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.product, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   comments: CommentEntity[];
 
   @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   orderProducts: OrderProductEntity[];
-  
+
   @OneToMany(() => ReviewEntity, (review) => review.product, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   reviews: ReviewEntity[];
+
+  @OneToMany(() => MutationEntity, (mution) => mution.product, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  mutations: MutationEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.products)
   user: UserEntity;
@@ -86,7 +102,7 @@ export class ProductEntity {
   @ManyToMany(() => CategoryEntity, (category) => category.products)
   @JoinTable()
   momCategories: CategoryEntity[];
-  
+
   @ManyToMany(() => CategoryEntity, (category) => category.products)
   @JoinTable()
   categories: CategoryEntity[];

@@ -5,11 +5,14 @@ import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { TagDto } from './tag';
 
 enum Relations {
-  products
+  products,
 }
 
 enum Fields {
-  id, name, created_at, updated_at
+  id,
+  name,
+  created_at,
+  updated_at,
 }
 
 export class FindTagDto {
@@ -32,39 +35,45 @@ export class FindTagDto {
   @ApiProperty({
     example: 'relation,relation',
   })
-  @Transform(({ value }) => {
-    if(value)
-      return value.split(',')
-    return []
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return [];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Relations, { each: true })
-  relations: string[]
+  relations: string[];
 
   @ApiProperty({
     example: 'DESC',
   })
   @IsOptional()
   @IsEnum(OrderBy)
-  orderBy: OrderBy
+  orderBy: OrderBy;
 
   @ApiProperty({
     example: 'field,field',
   })
-  @Transform(({ value }) => {
-    if(value)
-      return value.split(',')
-    return ['id']
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return ['id'];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Fields, { each: true })
-  select: any
+  select: any;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    if (value)
-      return  Object.fromEntries( new URLSearchParams(value) )
-    return {}
-  }, { toClassOnly: true })
-  where: TagDto
+  @Transform(
+    ({ value }) => {
+      if (value) return Object.fromEntries(new URLSearchParams(value));
+      return {};
+    },
+    { toClassOnly: true },
+  )
+  where: TagDto;
 }

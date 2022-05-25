@@ -1,6 +1,11 @@
 import { UserEntity } from '@/auth/entities/user';
 import { MessageErrors } from '@app/utils/messages';
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, TreeRepository } from 'typeorm';
 import { CreateProductDto } from './dtos/create';
@@ -28,60 +33,73 @@ export class ProductService {
     private readonly orderProductRepository: TreeRepository<OrderProductEntity>,
     @InjectRepository(ReviewEntity)
     private readonly reviewRepository: TreeRepository<ReviewEntity>,
-  ) { }
+  ) {}
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
     const momCategories = await Promise.all(
-      dto.categories.map(category => this.categoryRepository.findAncestors(category))
-    )
+      dto.categories.map((category) =>
+        this.categoryRepository.findAncestors(category),
+      ),
+    );
 
     const foundProduct = await this.repository.findOne({
-      name: dto.name
+      name: dto.name,
     });
 
     if (foundProduct)
-      throw new ConflictException('produto com o mesmo nome já cadastrado para o seu usuário');
+      throw new ConflictException(
+        'produto com o mesmo nome já cadastrado para o seu usuário',
+      );
 
     const tempProduct = await this.repository.create({
       ...dto,
       user: foundUser,
-      momCategories: momCategories.map(item => item[1])
+      momCategories: momCategories.map((item) => item[1]),
     });
 
     return await this.repository.save(tempProduct);
   }
 
-  async update(userId: string, id: string, dto: UpdateProductDto): Promise<ProductEntity> {
+  async update(
+    userId: string,
+    id: string,
+    dto: UpdateProductDto,
+  ): Promise<ProductEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    const foundProduct = await this.repository.findOne({ where: { id }, relations: ['user'] });
+    const foundProduct = await this.repository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
-    if (!foundProduct)
-      throw new NotFoundException('produto não encontrado');
+    if (!foundProduct) throw new NotFoundException('produto não encontrado');
 
     if (foundProduct.user.id !== foundUser.id)
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
 
     await this.repository.save({ ...foundProduct, ...dto });
 
-    return await this.repository.findOne({ where: { id }, relations: ['user', 'categories', 'brand'] });
+    return await this.repository.findOne({
+      where: { id },
+      relations: ['user', 'categories', 'brand'],
+    });
   }
 
   async delete(userId: string, id: string): Promise<any> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    const foundProduct = await this.repository.findOne({ where: { id }, relations: ['user'] });
+    const foundProduct = await this.repository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
     if (!foundProduct) throw new NotFoundException('produto não encontrado');
 
@@ -90,89 +108,132 @@ export class ProductService {
 
     await this.repository.delete(id);
 
-    return {}
+    return {};
   }
 
-  async findById(userId: string, id: string): Promise<ProductEntity> {
-    const foundUser = await this.userRepository.findOne({ id: userId });
+  async findById(id: string): Promise<ProductEntity> {
+    const foundUser = await this.userRepository.findOne();
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
     return await this.repository.findOne({
       where: { id },
-      relations: ['user', 'categories', 'brand', 'variations']
+      relations: [
+        'variations',
+        'tags',
+        'user',
+        'categories',
+        'brand',
+        'reviews',
+        'reviews.user',
+        'comments',
+        'comments.user',
+        'comments.reply',
+      ],
     });
   }
 
   async find(query: FindProductDto): Promise<[ProductEntity[], number]> {
-    const { skip, take, relations, orderBy, select, where } = query
+    const { skip, take, relations, orderBy, select, where } = query;
 
     return await this.repository.findAndCount({
       order: orderBy,
-      skip, take, relations, select, where
+      skip,
+      take,
+      relations,
+      select,
+      where,
     });
   }
 
+  async filter(): Promise<any> {
+    return;
+  }
+
   async findHome(): Promise<any> {
-    const [bestSalers, bestBrands, bestCategories, bestReviews] = await Promise.all([
-      this.orderProductRepository
-        .createQueryBuilder('obp')
-        .select(['SUM(obp.quantity) as salesQuantity', 'obp.productId', 'p.name', 'p.id', 'p.images'])
-        .leftJoin('obp.product', 'p')
-        .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
-        .andWhere(`obp.created_at <= NOW()`)
-        .groupBy('obp.productId')
-        .limit(5)
-        .getRawMany(),
+    const [bestSalers, bestBrands, bestCategories, bestReviews] =
+      await Promise.all([
+        this.orderProductRepository
+          .createQueryBuilder('obp')
+          .select([
+            'SUM(obp.quantity) as salesQuantity',
+            'obp.productId',
+            'p.name',
+            'p.id',
+            'p.images',
+            'p.netAmount',
+            'p.grossAmount',
+          ])
+          .leftJoin('obp.product', 'p')
+          .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+          .andWhere(`obp.created_at <= NOW()`)
+          .groupBy('obp.productId')
+          .limit(10)
+          .getRawMany(),
 
-      this.orderProductRepository
-        .createQueryBuilder('obp')
-        .select(['SUM(obp.quantity) as salesQuantity', 'b.name', 'b.id', 'b.image'])
-        .leftJoin('obp.brand', 'b')
-        .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
-        .andWhere(`obp.created_at <= NOW()`)
-        .groupBy('obp.brandId')
-        .limit(2)
-        .getRawMany(),
+        this.orderProductRepository
+          .createQueryBuilder('obp')
+          .select([
+            'SUM(obp.quantity) as salesQuantity',
+            'b.name',
+            'b.id',
+            'b.image',
+          ])
+          .leftJoin('obp.brand', 'b')
+          .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+          .andWhere(`obp.created_at <= NOW()`)
+          .groupBy('obp.brandId')
+          .limit(2)
+          .getRawMany(),
 
-      this.orderProductRepository
-        .createQueryBuilder('obp')
-        .select(['SUM(obp.quantity) as salesQuantity', 'c.name', 'c.id', 'c.image'])
-        .leftJoin('obp.categories', 'c')
-        .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
-        .andWhere(`obp.created_at <= NOW()`)
-        .groupBy('c.id')
-        .limit(6)
-        .getRawMany(),
-      
-      this.reviewRepository
-      .createQueryBuilder('r')
-      .select(['AVG(r.rating) as rate', 'COUNT(r.id) as qtd', 'p.name', 'p.id', 'p.images' ])
-      .leftJoin('r.orderProduct', 'obp')
-      .leftJoin('r.product', 'p')
-      .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
-      .andWhere(`obp.created_at <= NOW()`)
-      .groupBy('r.productId')
-      .limit(6)
-      .getRawMany(),
-    ])
+        this.orderProductRepository
+          .createQueryBuilder('obp')
+          .select([
+            'SUM(obp.quantity) as salesQuantity',
+            'c.name',
+            'c.id',
+            'c.image',
+          ])
+          .leftJoin('obp.categories', 'c')
+          .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+          .andWhere(`obp.created_at <= NOW()`)
+          .groupBy('c.id')
+          .limit(6)
+          .getRawMany(),
+
+        this.reviewRepository
+          .createQueryBuilder('r')
+          .select([
+            'AVG(r.rating) as rate',
+            'COUNT(r.id) as qtd',
+            'p.name',
+            'p.id',
+            'p.images',
+            'p.netAmount',
+            'p.grossAmount',
+          ])
+          .leftJoin('r.orderProduct', 'obp')
+          .leftJoin('r.product', 'p')
+          .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
+          .andWhere(`obp.created_at <= NOW()`)
+          .groupBy('r.productId')
+          .limit(6)
+          .getRawMany(),
+      ]);
 
     return {
       bestSalers,
       bestBrands,
       bestCategories,
-      bestReviews
-    }
+      bestReviews,
+    };
   }
 
   async findNavbar(name: string, params: any): Promise<ProductEntity[]> {
     name = name
       .trim()
       .toLowerCase()
-      .replace(/\w\S*/g, (w) =>
-        (w.replace(/^\w/, (c) => c.toUpperCase()))
-      )
+      .replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
 
     if (params.category)
       return await this.repository
@@ -195,22 +256,20 @@ export class ProductService {
   }
 
   async assignUrl(): Promise<any> {
-    const key = `${envs.AWS_IMAGES_BUCKET_FOLDER_NAME}/${uuid()}`
+    const key = `${envs.AWS_IMAGES_BUCKET_FOLDER_NAME}/${uuid()}`;
 
     const url = await this.s3.createPresignedPost({
       Bucket: envs.AWS_BUCKER_NAME,
-      Conditions: [
-        { "acl": "public-read" },
-        { 'Content-Type': 'image/webp' },
-      ],
+      Conditions: [{ acl: 'public-read' }, { 'Content-Type': 'image/webp' }],
       Fields: {
         key: key,
       },
       Expires: 600,
-    })
+    });
 
-
-    return { get: `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`, put: url }
+    return {
+      get: `https://${envs.AWS_BUCKER_NAME}.s3.amazonaws.com/${key}`,
+      put: url,
+    };
   }
-
 }

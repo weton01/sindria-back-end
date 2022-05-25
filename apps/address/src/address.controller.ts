@@ -9,7 +9,7 @@ import {
   Post,
   Query,
   Req,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dtos/create';
@@ -18,7 +18,7 @@ import { UpdateAddressDto } from './dtos/update';
 
 @Controller()
 export class AddressController {
-  constructor(private readonly addressService: AddressService) { }
+  constructor(private readonly addressService: AddressService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -54,7 +54,7 @@ export class AddressController {
     const { user } = req;
 
     const [items, count] = await this.addressService.find(query, user.id);
-    return { items, count }
+    return { items, count };
   }
 
   @UseGuards(JwtAuthGuard)

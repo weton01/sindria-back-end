@@ -1,7 +1,6 @@
 import { AddressEntity } from '@/address/entities/address';
 import { CommentEntity } from '@/comment/entities/comment';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
-import { OrderProductDto } from '@/order/dtos/order-product';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { OrderStoreEntity } from '@/order/entities/order-store';
@@ -60,10 +59,10 @@ export class UserEntity {
   isFacebook: boolean;
 
   @ApiHideProperty()
-  @Column({ 
-    type: "enum",
+  @Column({
+    type: 'enum',
     enum: UserTypes,
-    default: UserTypes.customer
+    default: UserTypes.customer,
   })
   type: UserTypes;
 
@@ -78,56 +77,56 @@ export class UserEntity {
   @OneToMany(() => AddressEntity, (address) => address.user, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   addresses: AddressEntity[];
 
   @OneToMany(() => CreditCardEntity, (address) => address.user, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   creditCards: AddressEntity[];
 
   @OneToMany(() => ProductEntity, (address) => address.user, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   products: ProductEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.user, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   comments: CommentEntity[];
 
   @OneToMany(() => OrderEntity, (comment) => comment.purchaser, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   orders: OrderEntity[];
 
   @OneToMany(() => OrderStoreEntity, (orderStore) => orderStore.store, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   sales: OrderStoreEntity[];
 
   @OneToMany(() => OrderProductEntity, (comment) => comment.user, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   productOrders: OrderProductEntity[];
 
   @OneToMany(() => ReviewEntity, (comment) => comment.user, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
   })
   reviews: ReviewEntity[];
 

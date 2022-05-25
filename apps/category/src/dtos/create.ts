@@ -4,5 +4,5 @@ import { CategoryDto } from './category';
 export class CreateCategoryDto extends OmitType(CategoryDto, [
   'parent',
   'subCategories',
-  'groupName'
+  'groupName',
 ] as const) {}

@@ -25,7 +25,12 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('docs/brand.json', JSON.stringify(document), 'utf8', () => ({}));
+    fs.writeFile(
+      'docs/brand.json',
+      JSON.stringify(document),
+      'utf8',
+      () => ({}),
+    );
 
     SwaggerModule.setup('docs', app, document);
 
@@ -41,7 +46,7 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(BrandModule);
-  
+
   app.enableCors();
   app.setGlobalPrefix('v1');
 

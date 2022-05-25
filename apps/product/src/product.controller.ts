@@ -1,5 +1,17 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateProductDto } from './dtos/create';
 import { FindProductDto } from './dtos/find';
 import { UpdateProductDto } from './dtos/update';
@@ -13,7 +25,7 @@ export class ProductController {
   @UseGuards(JwtAuthGuard)
   async createProduct(@Req() req, @Body() dto: CreateProductDto): Promise<any> {
     const { user } = req;
-    
+
     return await this.productService.create(user.id, dto);
   }
 
@@ -41,15 +53,12 @@ export class ProductController {
   async findProduct(@Query() query: FindProductDto): Promise<any> {
     const [items, count] = await this.productService.find(query);
 
-    return { items, count }
+    return { items, count };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/:id')
-  async findProductById(@Req() req, @Param('id') id: string): Promise<any> {
-    const { user } = req;
-
-    return await this.productService.findById(user.id, id);
+  @Get('/single/:id')
+  async findProductById(@Param('id') id: string): Promise<any> {
+    return await this.productService.findById(id);
   }
 
   @Get('/home/superstore')
@@ -60,7 +69,7 @@ export class ProductController {
   @Get('/navbar/:name')
   async findProductNavbar(
     @Query() params: any,
-    @Param('name') name: string, 
+    @Param('name') name: string,
   ): Promise<any> {
     return await this.productService.findNavbar(name, params);
   }
@@ -70,7 +79,7 @@ export class ProductController {
   @HttpCode(200)
   async assignUrl(): Promise<any> {
     const url = await this.productService.assignUrl();
-    
-    return {url}
+
+    return { url };
   }
 }

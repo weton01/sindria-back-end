@@ -112,15 +112,15 @@ functions:
       - http:
           method: ANY
           path: '/product/{proxy+}'
-  variation:
+  inventory:
     handler: ./dist/apps/inventory/main.handler
     events:
       - http:
           method: ANY
-          path: /variation
+          path: /inventory
       - http:
           method: ANY
-          path: '/variation/{proxy+}'
+          path: '/inventory/{proxy+}'
   comment:
     handler: ./dist/apps/comment/main.handler
     events:
