@@ -3,27 +3,42 @@ import { TagEntity } from '@/tag/entities/tag';
 import { ApiProperty } from '@nestjs/swagger';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
 import { Transform, Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsBoolean, IsArray, IsUUID, ValidateNested, ArrayNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsBoolean,
+  IsArray,
+  IsUUID,
+  ValidateNested,
+  ArrayNotEmpty,
+} from 'class-validator';
 
 class AuxSingleDto {
   @ApiProperty({
-    example: '12134-455ffd'
+    example: '12134-455ffd',
   })
   @IsUUID()
   @IsNotEmpty()
   id: string;
 }
 
-
 export class ProductDto {
   @ApiProperty({
     example: 'any_name',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.trim().toLowerCase().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
-    return ""
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value)
+        return value
+          .trim()
+          .toLowerCase()
+          .replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
+      return '';
+    },
+    { toClassOnly: true },
+  )
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -54,11 +69,11 @@ export class ProductDto {
   netAmount: number;
 
   @ApiProperty({
-    example: ['https://']
+    example: ['https://'],
   })
   @IsArray()
   @IsString({ each: true })
-  images: string[]
+  images: string[];
 
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)

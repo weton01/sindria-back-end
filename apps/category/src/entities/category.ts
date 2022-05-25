@@ -1,4 +1,3 @@
-import { OrderProductDto } from '@/order/dtos/order-product';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductEntity } from 'apps/product/src/entities/product';
@@ -12,8 +11,6 @@ import {
   TreeChildren,
   TreeParent,
   ManyToMany,
-  JoinTable,
-  OneToMany,
 } from 'typeorm';
 
 @Entity({ name: 'categories' })
@@ -43,7 +40,7 @@ export class CategoryEntity {
   @TreeParent({ onDelete: 'CASCADE' })
   parent: CategoryEntity;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   groupName: string;
 
   @ApiProperty()
@@ -57,7 +54,10 @@ export class CategoryEntity {
   @ManyToMany(() => ProductEntity, (product) => product.categories)
   products: ProductEntity[];
 
-  @ManyToMany(() => OrderProductEntity, (orderProduct) => orderProduct.categories)
+  @ManyToMany(
+    () => OrderProductEntity,
+    (orderProduct) => orderProduct.categories,
+  )
   orderProducts: OrderProductEntity[];
 
   constructor(entity?: Partial<CategoryEntity>) {

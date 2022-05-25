@@ -31,9 +31,9 @@ export class OrderProductEntity {
   @Column()
   quantity: number;
 
-  @Column("simple-json")
+  @Column('simple-json')
   freezeProduct: ProductEntity;
- 
+
   @CreateDateColumn()
   created_at?: Date;
 
@@ -46,16 +46,16 @@ export class OrderProductEntity {
   @ManyToOne(() => BrandEntity, (brand) => brand.orderProducts)
   brand: BrandEntity;
 
-  @ManyToMany(() => CategoryEntity, (category) => category.orderProducts,  {
+  @ManyToMany(() => CategoryEntity, (category) => category.orderProducts, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
+    onUpdate: 'CASCADE',
   })
   @JoinTable()
   categories: CategoryEntity[];
 
   @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
-  product: ProductEntity
+  product: ProductEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.productOrders)
   user: UserEntity;

@@ -19,14 +19,14 @@ export class OrderEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column("simple-json")
+  @Column('simple-json')
   freezePurchaser: UserEntity;
 
-  @Column({ 
-    type: "enum",
+  @Column({
+    type: 'enum',
     enum: InvoiceTypes,
   })
-  invoiceType: InvoiceTypes
+  invoiceType: InvoiceTypes;
 
   @CreateDateColumn()
   created_at?: Date;

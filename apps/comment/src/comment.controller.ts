@@ -1,5 +1,13 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dtos/create';
 
@@ -15,7 +23,7 @@ export class CommentController {
     @Body() dto: CreateCommentDto,
   ): Promise<any> {
     const { user } = req;
-    
+
     return await this.commentService.create(id, user.id, dto);
   }
 
@@ -28,9 +36,8 @@ export class CommentController {
   ): Promise<any> {
     const { user } = req;
 
-    return await this.commentService.reply(  id, user.id, dto);
+    return await this.commentService.reply(id, user.id, dto);
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
@@ -40,5 +47,4 @@ export class CommentController {
     await this.commentService.delete(user.id, id);
     return {};
   }
-
 }

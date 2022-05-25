@@ -26,7 +26,7 @@ export class CommentEntity {
   })
   @Column()
   description: string;
- 
+
   @TreeChildren()
   reply: CommentEntity;
 
@@ -40,7 +40,7 @@ export class CommentEntity {
   @ApiProperty()
   @UpdateDateColumn()
   updated_at?: Date;
- 
+
   @ManyToOne(() => UserEntity, (user) => user.comments)
   user: UserEntity;
 

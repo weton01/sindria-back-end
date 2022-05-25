@@ -3,7 +3,16 @@ import { VariationTypes } from '@app/common/enums/variation-type';
 import { MessageErrors, RegexTypes } from '@app/utils/messages';
 import { ApiProperty } from '@nestjs/swagger';
 
-import { IsString, IsNotEmpty, IsOptional, IsNumber, IsEnum, IsUrl, Matches, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+  IsEnum,
+  IsUrl,
+  Matches,
+  Min,
+} from 'class-validator';
 
 export class VariationDto {
   @ApiProperty({
@@ -14,28 +23,12 @@ export class VariationDto {
   name: string;
 
   @ApiProperty({
-    example: 20.5,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(0)
-  grossAmount: number;
-  
-  @ApiProperty({
     example: 22.5,
   })
   @IsNumber()
   @IsOptional()
   @Min(0)
   netAmount: number;
-
-  @ApiProperty({
-    example: 5,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(0)
-  stock: number;
 
   @ApiProperty({
     example: 5,
@@ -71,17 +64,17 @@ export class VariationDto {
   @ApiProperty({
     example: '#000',
   })
-  @Matches(RegexTypes.color, {message: MessageErrors.invalidColor})
+  @Matches(RegexTypes.color, { message: MessageErrors.invalidColor })
   @IsNotEmpty()
   color: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsEnum(VariationTypes)
-  type: VariationTypes 
+  type: VariationTypes;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsEnum(VariationSizes)
-  size: VariationSizes 
+  size: VariationSizes;
 }

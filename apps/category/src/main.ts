@@ -25,7 +25,12 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('docs/category.json', JSON.stringify(document), 'utf8', () => ({}));
+    fs.writeFile(
+      'docs/category.json',
+      JSON.stringify(document),
+      'utf8',
+      () => ({}),
+    );
 
     SwaggerModule.setup('docs', app, document);
 
@@ -33,7 +38,7 @@ if (envs.NODE_ENV == 'development') {
       new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
     );
 
-    await app.listen(3000);
+    await app.listen(3002);
   }
 
   bootstrap();

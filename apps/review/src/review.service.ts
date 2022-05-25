@@ -2,13 +2,18 @@ import { UserEntity } from '@/auth/entities/user';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ProductEntity } from '@/product/entities/product';
 import { MessageErrors } from '@app/utils/messages';
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateReviewDto } from './dtos/create';
 import { FindReviewDto } from './dtos/find';
 
-import { ReviewEntity } from './entities/review'
+import { ReviewEntity } from './entities/review';
 
 @Injectable()
 export class ReviewService {
@@ -19,49 +24,79 @@ export class ReviewService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(OrderProductEntity)
     private readonly orderProductRepository: Repository<OrderProductEntity>,
-  ) { }
+    @InjectRepository(ProductEntity)
+    private readonly productRepository: Repository<ProductEntity>,
+  ) {}
 
-  async create(userId: string, orderProductId: string, dto: CreateReviewDto): Promise<ReviewEntity> {
+  private async updateReviewProduct(
+    product: ProductEntity,
+  ): Promise<ProductEntity> {
+    const newMean = await this.repository
+      .createQueryBuilder('r')
+      .select(['AVG(r.rating) as avgRating'])
+      .where(`r.productId = ${product.id}`)
+      .getRawOne();
+
+    product.reviewsQuantity += 1;
+    product.rating = newMean.avgRating;
+
+    return this.productRepository.save(product);
+  }
+
+  async create(
+    userId: string,
+    orderProductId: string,
+    dto: CreateReviewDto,
+  ): Promise<ReviewEntity> {
     const [foundUser, foundOrderProduct, foundReview] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
-      this.orderProductRepository.findOne({ where: { id: orderProductId }, relations: ['product'] }),
+      this.orderProductRepository.findOne({
+        where: {
+          id: orderProductId,
+        },
+        relations: ['product'],
+      }),
       this.repository.findOne({
         where: {
           user: { id: userId },
-          orderProduct: { id: orderProductId }
-        }, relations: ['user', 'orderProduct']
-      })
-    ])
+          orderProduct: { id: orderProductId },
+        },
+        relations: ['user', 'orderProduct'],
+      }),
+    ]);
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
     if (!foundOrderProduct)
       throw new NotFoundException('ordem de produto não encontrada');
 
     if (foundReview)
-      throw new ConflictException('avaliação já feita para este produto desta compra');
+      throw new ConflictException(
+        'avaliação já feita para este produto desta compra',
+      );
 
-    const product: ProductEntity = foundOrderProduct.product
+    const product: ProductEntity = foundOrderProduct.product;
 
     const tempReview = await this.repository.create({
       ...dto,
       user: foundUser,
       product: product,
-      orderProduct: foundOrderProduct
+      orderProduct: foundOrderProduct,
     });
 
-    return await this.repository.save(tempReview);
+    const review = await this.repository.save(tempReview);
+    await this.updateReviewProduct(product);
+
+    return review;
   }
 
   async delete(userId: string, id: string): Promise<any> {
     const [foundUser, foundReview] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
-      this.repository.findOne({ where: { id }, relations: ['user'] })
-    ])
+      this.repository.findOne({ where: { id }, relations: ['user'] }),
+    ]);
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
     if (!foundReview) throw new NotFoundException('avaliação não encontrado');
 
@@ -70,15 +105,19 @@ export class ReviewService {
 
     await this.repository.delete(id);
 
-    return {}
+    return {};
   }
 
   async find(query: FindReviewDto): Promise<[ReviewEntity[], number]> {
-    const { skip, take, relations, orderBy, select, where } = query
+    const { skip, take, relations, orderBy, select, where } = query;
 
     return await this.repository.findAndCount({
       order: orderBy,
-      skip, take, relations, select, where
+      skip,
+      take,
+      relations,
+      select,
+      where,
     });
   }
 }

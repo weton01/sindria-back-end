@@ -1,13 +1,22 @@
 import { UserDto } from '@/auth/dtos/user';
 import { UserEntity } from '@/auth/entities/user';
-import { VariationEntity } from '@/inventory/entities/variation';
+import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { ProductDto } from '@/product/dtos/product';
 import { ProductEntity } from '@/product/entities/product';
 import { VariationSizes } from '@app/common/enums/variation-size';
 import { VariationTypes } from '@app/common/enums/variation-type';
 import { ApiProperty, IntersectionType, OmitType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested, } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 class AuxVariationDto {
   @ApiProperty()
@@ -85,11 +94,11 @@ class AuxVariationDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEnum(VariationTypes)
-  type: VariationTypes
+  type: VariationTypes;
 
   @ApiProperty()
   @IsOptional()
-  size: VariationSizes
+  size: VariationSizes;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -135,10 +144,12 @@ class AuxProductDto {
   @ApiProperty()
   @IsNotEmpty()
   @ValidateNested({ each: true })
-  @Type(() => IntersectionType(
-    OmitType(UserDto, ['activationCode', 'password'] as const),
-    AuxUserDto
-  ))
+  @Type(() =>
+    IntersectionType(
+      OmitType(UserDto, ['activationCode', 'password'] as const),
+      AuxUserDto,
+    ),
+  )
   user: UserEntity;
 
   @ApiProperty()
@@ -150,10 +161,7 @@ class AuxProductDto {
   updated_at: string;
 }
 
-class ToUnitDto extends IntersectionType(
-  AuxProductDto,
-  ProductDto,
-) { }
+class ToUnitDto extends IntersectionType(AuxProductDto, ProductDto) {}
 
 export class OrderProductDto {
   @ApiProperty()
