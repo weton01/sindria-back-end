@@ -43,10 +43,18 @@ export class OrderStoreEntity {
   @OneToMany(() => OrderProductEntity, (order) => order.orderStore)
   products: OrderProductEntity[];
 
-  @ManyToOne(() => UserEntity, (variation) => variation.sales)
+  @ManyToOne(() => UserEntity, (variation) => variation.sales, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   store: UserEntity;
 
-  @ManyToOne(() => OrderEntity, (order) => order.ordersStore)
+  @ManyToOne(() => OrderEntity, (order) => order.ordersStore, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   order: OrderEntity;
 
   constructor(entity?: Partial<OrderStoreEntity>) {

@@ -38,7 +38,7 @@ if (envs.NODE_ENV == 'development') {
       new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
     );
 
-    await app.listen(3002);
+    await app.listen(3000);
   }
 
   bootstrap();

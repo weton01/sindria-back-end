@@ -10,6 +10,7 @@ import {
   IsInt,
   ValidateNested,
   IsUUID,
+  IsArray,
 } from 'class-validator';
 
 class AuxSingleDto {
@@ -32,20 +33,9 @@ export class MutationDto {
   stock: number;
 
   @ApiProperty()
-  @IsOptional()
+  @IsArray()
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)
-  color: VariationEntity;
-
-  @ApiProperty()
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => AuxSingleDto)
-  size: VariationEntity;
-
-  @ApiProperty()
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => AuxSingleDto)
-  variation: VariationEntity;
+  variations: VariationEntity[];
 }

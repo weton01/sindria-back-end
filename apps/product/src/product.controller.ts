@@ -56,6 +56,11 @@ export class ProductController {
     return { items, count };
   }
 
+  @Get('/creation/:id')
+  async findProductInCreationById(@Param('id') id: string): Promise<any> {
+    return await this.productService.findOnCreation(id);
+  }
+
   @Get('/single/:id')
   async findProductById(@Param('id') id: string): Promise<any> {
     return await this.productService.findById(id);

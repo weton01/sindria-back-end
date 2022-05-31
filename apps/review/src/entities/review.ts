@@ -31,16 +31,25 @@ export class ReviewEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.reviews)
+  @ManyToOne(() => UserEntity, (user) => user.reviews, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: UserEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.reviews)
+  @ManyToOne(() => ProductEntity, (product) => product.reviews, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   product: ProductEntity;
 
-  @ManyToOne(
-    () => OrderProductEntity,
-    (orderProductEntity) => orderProductEntity.reviews,
-  )
+  @ManyToOne(() => OrderProductEntity, (orderProductEntity) => orderProductEntity.reviews, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   orderProduct: OrderProductEntity;
 
   constructor(entity?: Partial<ReviewEntity>) {

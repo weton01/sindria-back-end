@@ -7,15 +7,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, TreeRepository } from 'typeorm';
 import { CreateCommentDto } from './dtos/create';
+import { FindCommentDto } from './dtos/find';
 import { CommentEntity } from './entities/comment';
+import { IsNull, Not } from "typeorm";
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(CommentEntity)
-    private readonly repository: Repository<CommentEntity>,
+    private readonly repository: TreeRepository<CommentEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(ProductEntity)
@@ -81,5 +83,24 @@ export class CommentService {
 
     await this.repository.delete(id);
     return {};
+  }
+
+  async find(query: FindCommentDto, productId: string): Promise<[CommentEntity[], number]> {
+    const { skip, take, orderBy, } = query;
+
+    const comments = await this.repository.findAndCount({
+      order: orderBy,
+      skip,
+      take,
+      where: {product: {id: productId}, parent: IsNull()}
+    });
+
+    const commentsChildrens = await Promise.all(
+      comments[0].map((category) =>
+        this.repository.findDescendantsTree(category),
+      ),
+    );
+
+     return [commentsChildrens, comments[1]]
   }
 }

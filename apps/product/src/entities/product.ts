@@ -58,56 +58,56 @@ export class ProductEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToMany(() => VariationEntity, (variation) => variation.product, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => VariationEntity, (variation) => variation.product)
   variations: VariationEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.product, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => CommentEntity, (comment) => comment.product)
   comments: CommentEntity[];
 
-  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product)
   orderProducts: OrderProductEntity[];
 
-  @OneToMany(() => ReviewEntity, (review) => review.product, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => MutationEntity, (mutation) => mutation.product)
+  mutations: OrderProductEntity[];
+
+  @OneToMany(() => ReviewEntity, (review) => review.product)
   reviews: ReviewEntity[];
 
-  @OneToMany(() => MutationEntity, (mution) => mution.product, {
+  @ManyToOne(() => UserEntity, (user) => user.products, {
     cascade: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  mutations: MutationEntity[];
-
-  @ManyToOne(() => UserEntity, (user) => user.products)
   user: UserEntity;
 
-  @ManyToOne(() => BrandEntity, (brand) => brand.products)
+  @ManyToOne(() => BrandEntity, (brand) => brand.products, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   brand: BrandEntity;
 
-  @ManyToMany(() => CategoryEntity, (category) => category.products)
+  @ManyToMany(() => CategoryEntity, (category) => category.products, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
   momCategories: CategoryEntity[];
 
-  @ManyToMany(() => CategoryEntity, (category) => category.products)
+  @ManyToMany(() => CategoryEntity, (category) => category.products, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
   categories: CategoryEntity[];
 
-  @ManyToMany(() => TagEntity, (tag) => tag.products)
+  @ManyToMany(() => TagEntity, (tag) => tag.products, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinTable()
   tags: TagEntity[];
 

@@ -23,11 +23,7 @@ export class TagEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToMany(() => ProductEntity, (product) => product.tags, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @ManyToMany(() => ProductEntity, (product) => product.tags)
   products: ProductEntity[];
 
   constructor(entity?: Partial<TagEntity>) {

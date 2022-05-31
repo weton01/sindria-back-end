@@ -45,7 +45,11 @@ export class AddressEntity {
   @OneToMany(() => OrderEntity, (order) => order.ordersStore)
   orders: OrderEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.addresses)
+  @ManyToOne(() => UserEntity, (user) => user.addresses, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: UserEntity;
 
   constructor(entity?: Partial<AddressEntity>) {

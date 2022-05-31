@@ -26,11 +26,7 @@ export class BrandEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToMany(() => ProductEntity, (product) => product.brand, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => ProductEntity, (product) => product.brand)
   products: ProductEntity;
 
   @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.brand)
