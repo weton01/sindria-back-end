@@ -1,6 +1,12 @@
 import { OrderStatus } from '@app/common/enums/order-status.';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsEnum, IsISO8601 } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsEnum,
+  IsISO8601,
+} from 'class-validator';
 
 export class ShippingProductDto {
   @ApiProperty()

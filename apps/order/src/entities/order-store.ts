@@ -21,19 +21,19 @@ export class OrderStoreEntity {
   @Column()
   totalAmount: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   trackingCode: string;
 
-  @Column({ 
-    type: "enum",
+  @Column({
+    type: 'enum',
     enum: OrderStatus,
-    default: OrderStatus.processed
-  }) 
+    default: OrderStatus.processed,
+  })
   trackingStatus: OrderStatus;
- 
-  @Column({nullable: true})
+
+  @Column({ nullable: true })
   trackingDate: string;
- 
+
   @CreateDateColumn()
   created_at?: Date;
 
@@ -43,10 +43,18 @@ export class OrderStoreEntity {
   @OneToMany(() => OrderProductEntity, (order) => order.orderStore)
   products: OrderProductEntity[];
 
-  @ManyToOne(() => UserEntity, (variation) => variation.sales)
+  @ManyToOne(() => UserEntity, (variation) => variation.sales, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   store: UserEntity;
 
-  @ManyToOne(() => OrderEntity, (order) => order.ordersStore)
+  @ManyToOne(() => OrderEntity, (order) => order.ordersStore, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   order: OrderEntity;
 
   constructor(entity?: Partial<OrderStoreEntity>) {

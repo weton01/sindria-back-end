@@ -14,6 +14,6 @@ import { BrandEntity } from './entities/brand';
     JwtConfig,
   ],
   controllers: [BrandController],
-  providers: [BrandService, JwtStrategy ],
+  providers: [BrandService, JwtStrategy],
 })
-export class BrandModule { }
+export class BrandModule {}

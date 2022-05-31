@@ -4,11 +4,22 @@ import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { ProductDto } from './product';
 
 enum Relations {
-  user, categories, brand, variations
+  user,
+  categories,
+  brand,
+  variations,
 }
 
 enum Fields {
-  id, name, description, active, grossAmount, netAmount, images, created_at, updated_at
+  id,
+  name,
+  description,
+  active,
+  grossAmount,
+  netAmount,
+  images,
+  created_at,
+  updated_at,
 }
 
 export class FindProductDto {
@@ -31,40 +42,48 @@ export class FindProductDto {
   @ApiProperty({
     example: 'relation,relation',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.split(',')
-    return []
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return [];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Relations, { each: true })
-  relations: string[]
+  relations: string[];
 
   @IsOptional()
-  @Transform(({ value }) => {
-    if (value)
-      return Object.fromEntries(new URLSearchParams(value))
-    return {}
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return Object.fromEntries(new URLSearchParams(value));
+      return {};
+    },
+    { toClassOnly: true },
+  )
   orderBy: any;
 
   @ApiProperty({
     example: 'field,field',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.split(',')
-    return ['id']
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return ['id'];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Fields, { each: true })
-  select: any
+  select: any;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    if (value)
-      return Object.fromEntries(new URLSearchParams(value))
-    return {}
-  }, { toClassOnly: true })
-  where: ProductDto
+  @Transform(
+    ({ value }) => {
+      if (value) return Object.fromEntries(new URLSearchParams(value));
+      return {};
+    },
+    { toClassOnly: true },
+  )
+  where: ProductDto;
 }

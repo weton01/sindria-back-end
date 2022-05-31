@@ -11,8 +11,9 @@ import { ProductEntity } from '@/product/entities/product';
 import { ReviewEntity } from '@/review/entities/review';
 import { TagEntity } from '@/tag/entities/tag';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { VariationEntity } from 'apps/inventory/src/entities/variation';
+import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { envs } from '.';
+import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -36,5 +37,6 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     OrderStoreEntity,
     OrderProductEntity,
     ReviewEntity,
+    MutationEntity,
   ],
 });

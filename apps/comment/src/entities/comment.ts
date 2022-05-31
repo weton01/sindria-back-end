@@ -26,7 +26,7 @@ export class CommentEntity {
   })
   @Column()
   description: string;
- 
+
   @TreeChildren()
   reply: CommentEntity;
 
@@ -40,11 +40,19 @@ export class CommentEntity {
   @ApiProperty()
   @UpdateDateColumn()
   updated_at?: Date;
- 
-  @ManyToOne(() => UserEntity, (user) => user.comments)
+
+  @ManyToOne(() => UserEntity, (user) => user.comments, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: UserEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.comments)
+  @ManyToOne(() => ProductEntity, (product) => product.comments, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   product: ProductEntity;
 
   constructor(entity?: Partial<CommentEntity>) {

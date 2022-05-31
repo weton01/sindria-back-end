@@ -14,12 +14,12 @@ import { ProductService } from './product.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-      UserEntity, 
-      ProductEntity, 
-      CategoryEntity, 
+      UserEntity,
+      ProductEntity,
+      CategoryEntity,
       OrderProductEntity,
       ReviewEntity,
-      ProductEntity
+      ProductEntity,
     ]),
     S3Module.forRoot({
       config: {
@@ -34,4 +34,4 @@ import { ProductService } from './product.service';
   controllers: [ProductController],
   providers: [ProductService, JwtStrategy],
 })
-export class ProductModule { }
+export class ProductModule {}

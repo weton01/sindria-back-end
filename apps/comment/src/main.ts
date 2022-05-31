@@ -7,7 +7,6 @@ import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
 import 'module-alias';
 import { CommentModule } from './comment.module';
- 
 
 let server: Handler;
 
@@ -26,7 +25,12 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('docs/comment.json', JSON.stringify(document), 'utf8', () => ({}));
+    fs.writeFile(
+      'docs/comment.json',
+      JSON.stringify(document),
+      'utf8',
+      () => ({}),
+    );
 
     SwaggerModule.setup('docs', app, document);
 

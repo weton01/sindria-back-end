@@ -5,15 +5,15 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { InventoryModule } from './inventory.module';
 import 'module-alias';
+import { MainModule } from './main.module';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(InventoryModule);
-  
+    const app = await NestFactory.create(MainModule);
+
     app.setGlobalPrefix('v1');
     app.enableCors();
 
@@ -25,7 +25,12 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('docs/inventory.json', JSON.stringify(document), 'utf8', () => ({}));
+    fs.writeFile(
+      'docs/inventory.json',
+      JSON.stringify(document),
+      'utf8',
+      () => ({}),
+    );
 
     SwaggerModule.setup('docs', app, document);
 
@@ -40,7 +45,7 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(InventoryModule);
+  const app = await NestFactory.create(MainModule);
 
   app.setGlobalPrefix('v1');
   app.enableCors();

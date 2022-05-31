@@ -14,7 +14,7 @@ export class TagEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   name: string;
 
   @CreateDateColumn()
@@ -23,12 +23,7 @@ export class TagEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToMany(() => ProductEntity, (product) => product.tags,  {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
-  })
-  @JoinTable()
+  @ManyToMany(() => ProductEntity, (product) => product.tags)
   products: ProductEntity[];
 
   constructor(entity?: Partial<TagEntity>) {

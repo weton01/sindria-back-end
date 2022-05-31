@@ -20,9 +20,9 @@ import { ReviewService } from './review.service';
         signatureVersion: 'v4',
       },
     }),
-    TypeormConfig
+    TypeormConfig,
   ],
   controllers: [ReviewController],
   providers: [ReviewService, JwtStrategy],
 })
-export class ReviewModule { }
+export class ReviewModule {}

@@ -12,9 +12,9 @@ import { CommentEntity } from './entities/comment';
   imports: [
     TypeOrmModule.forFeature([UserEntity, ProductEntity, CommentEntity]),
     TypeormConfig,
-    JwtConfig
+    JwtConfig,
   ],
   controllers: [CommentController],
   providers: [CommentService, JwtStrategy],
 })
-export class CommentModule { }
+export class CommentModule {}

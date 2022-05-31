@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { InventoryModule } from './../src/inventory.module';
+import { InventoryModule } from '../src/variation.module';
 
 describe('InventoryController (e2e)', () => {
   let app: INestApplication;

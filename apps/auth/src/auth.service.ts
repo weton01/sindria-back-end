@@ -41,7 +41,7 @@ export class AuthService {
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
@@ -131,8 +131,8 @@ export class AuthService {
 
       throw new BadRequestException({
         id: user.id,
-        active: false
-      })
+        active: false,
+      });
     }
 
     return await this.jwtService.sign({
@@ -181,14 +181,11 @@ export class AuthService {
     });
   }
 
-  async recoverPassword(
-    recoverPasswordDto: RecoverPasswordDto,
-  ): Promise<any> {
+  async recoverPassword(recoverPasswordDto: RecoverPasswordDto): Promise<any> {
     const user = await this.repository.findOne({
       where: { email: recoverPasswordDto.email },
       select: this.userSelect,
     });
-
 
     if (!user) throw new NotFoundException('e-mail não encontrado');
 
@@ -198,11 +195,11 @@ export class AuthService {
       subject: 'Recuperação de senha',
       template: '../templates/recover-password',
       context: {
-        token: this.jwtService.sign({ id: user.id })
+        token: this.jwtService.sign({ id: user.id }),
       },
     });
 
-    return true
+    return true;
   }
 
   async changePassword(id: string, password: string): Promise<any> {
@@ -232,7 +229,7 @@ export class AuthService {
   }
 
   async resendCode(id: string): Promise<any> {
-    const foundUser = await this.findOne({id})
+    const foundUser = await this.findOne({ id });
 
     if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
@@ -248,5 +245,4 @@ export class AuthService {
 
     return {};
   }
-
 }

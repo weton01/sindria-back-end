@@ -50,9 +50,13 @@ export class CreditCardEntity {
   updated_at?: Date;
 
   @OneToMany(() => OrderEntity, (order) => order.ordersStore)
-  orders: OrderEntity;
+  orders: OrderEntity[];
 
-  @ManyToOne(() => UserEntity, (user) => user.creditCards)
+  @ManyToOne(() => UserEntity, (user) => user.creditCards, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: UserEntity;
 
   constructor(entity?: Partial<CreditCardEntity>) {

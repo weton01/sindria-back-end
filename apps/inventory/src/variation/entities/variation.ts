@@ -1,6 +1,4 @@
- 
-import { OrderEntity } from '@/order/entities/order';
-import { OrderProductEntity } from '@/order/entities/order-product';
+import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { VariationSizes } from '@app/common/enums/variation-size';
 import { VariationTypes } from '@app/common/enums/variation-type';
@@ -9,7 +7,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -20,37 +17,31 @@ import {
 export class VariationEntity {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
-  
-  @Column()
-  grossAmount: number;
 
   @Column()
   netAmount: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   name?: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   color?: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   image?: string;
 
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: VariationSizes,
-    nullable: true
+    nullable: true,
   })
-  size?: VariationSizes
+  size?: VariationSizes;
 
   @Column({
-    type: "enum",
-    enum: VariationTypes
+    type: 'enum',
+    enum: VariationTypes,
   })
-  type: VariationTypes
-
-  @Column()
-  stock: number;
+  type: VariationTypes;
 
   @Column()
   weight: number;
@@ -67,8 +58,15 @@ export class VariationEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => ProductEntity, (product) => product.variations)
+  @ManyToOne(() => ProductEntity, (product) => product.variations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   product: ProductEntity;
+
+  @ManyToMany(() => MutationEntity, (mutation) => mutation.variations)
+  mutations: MutationEntity[];
 
   constructor(entity?: Partial<VariationEntity>) {
     this.id = entity?.id;

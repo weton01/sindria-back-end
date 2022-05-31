@@ -1,6 +1,7 @@
 import { UserEntity } from '@/auth/entities/user';
 import { BrandEntity } from '@/brand/entities/brand';
 import { CategoryEntity } from '@/category/entities/category';
+import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { ReviewEntity } from '@/review/entities/review';
 
@@ -31,37 +32,60 @@ export class OrderProductEntity {
   @Column()
   quantity: number;
 
-  @Column("simple-json")
-  freezeProduct: ProductEntity;
- 
+  @Column('simple-json')
+  freezeProduct: any;
+
   @CreateDateColumn()
   created_at?: Date;
 
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => OrderStoreEntity, (orderStore) => orderStore.products)
-  orderStore: OrderStoreEntity;
+  @OneToMany(() => ReviewEntity, (review) => review.orderProduct)
+  reviews: ReviewEntity[];
 
-  @ManyToOne(() => BrandEntity, (brand) => brand.orderProducts)
-  brand: BrandEntity;
-
-  @ManyToMany(() => CategoryEntity, (category) => category.orderProducts,  {
+  @ManyToOne(() => OrderStoreEntity, (orderStore) => orderStore.products, {
     cascade: true,
     onDelete: 'CASCADE',
-    onUpdate:'CASCADE'
+    onUpdate: 'CASCADE',
+  })
+  orderStore: OrderStoreEntity;
+
+  @ManyToOne(() => BrandEntity, (brand) => brand.orderProducts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  brand: BrandEntity;
+
+  @ManyToOne(() => ProductEntity, (product) => product.orderProducts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  product: ProductEntity;
+
+  @ManyToOne(() => MutationEntity, (mutation) => mutation.orderProducts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  mutation: MutationEntity;
+
+  @ManyToOne(() => UserEntity, (user) => user.productOrders, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  user: UserEntity;
+
+  @ManyToMany(() => CategoryEntity, (category) => category.orderProducts, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable()
   categories: CategoryEntity[];
-
-  @ManyToOne(() => ProductEntity, (product) => product.orderProducts)
-  product: ProductEntity
-
-  @ManyToOne(() => UserEntity, (user) => user.productOrders)
-  user: UserEntity;
-
-  @OneToMany(() => ReviewEntity, (user) => user.orderProduct)
-  reviews: ReviewEntity[];
 
   constructor(entity?: Partial<OrderProductEntity>) {
     this.id = entity?.id;

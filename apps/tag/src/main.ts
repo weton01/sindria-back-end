@@ -41,7 +41,7 @@ if (envs.NODE_ENV == 'development') {
 
 async function bootstrapHandler(): Promise<Handler> {
   const app = await NestFactory.create(TagModule);
-  
+
   app.enableCors();
   app.setGlobalPrefix('v1');
 
