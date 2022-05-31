@@ -1,4 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
+import { ProductEntity } from '@/product/entities/product';
 import { JwtStrategy } from '@app/utils';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +10,11 @@ import { MutationService } from './mutation.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, VariationEntity, MutationEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity, 
+      MutationEntity,
+      ProductEntity
+    ]),
   ],
   controllers: [MutationController],
   providers: [MutationService, JwtStrategy],

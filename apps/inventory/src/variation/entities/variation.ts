@@ -58,7 +58,11 @@ export class VariationEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => ProductEntity, (product) => product.variations)
+  @ManyToOne(() => ProductEntity, (product) => product.variations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   product: ProductEntity;
 
   @ManyToMany(() => MutationEntity, (mutation) => mutation.variations)

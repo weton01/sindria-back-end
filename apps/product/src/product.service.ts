@@ -30,9 +30,9 @@ export class ProductService {
     @InjectRepository(CategoryEntity)
     private readonly categoryRepository: TreeRepository<CategoryEntity>,
     @InjectRepository(OrderProductEntity)
-    private readonly orderProductRepository: TreeRepository<OrderProductEntity>,
+    private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(ReviewEntity)
-    private readonly reviewRepository: TreeRepository<ReviewEntity>,
+    private readonly reviewRepository: Repository<ReviewEntity>,
   ) {}
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
@@ -111,6 +111,21 @@ export class ProductService {
     return {};
   }
 
+  async findOnCreation(id: string): Promise<ProductEntity> {
+    const foundUser = await this.userRepository.findOne();
+
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
+
+    return await this.repository.findOne({
+      where: { id },
+      relations: [
+        'variations',
+        'user',
+        'mutations',
+      ],
+    });
+  }
+
   async findById(id: string): Promise<ProductEntity> {
     const foundUser = await this.userRepository.findOne();
 
@@ -123,12 +138,8 @@ export class ProductService {
         'tags',
         'user',
         'categories',
-        'brand',
-        'reviews',
-        'reviews.user',
-        'comments',
-        'comments.user',
-        'comments.reply',
+        'brand', 
+        'mutations'
       ],
     });
   }
@@ -145,11 +156,7 @@ export class ProductService {
       where,
     });
   }
-
-  async filter(): Promise<any> {
-    return;
-  }
-
+  
   async findHome(): Promise<any> {
     const [bestSalers, bestBrands, bestCategories, bestReviews] =
       await Promise.all([

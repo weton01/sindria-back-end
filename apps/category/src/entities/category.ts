@@ -24,7 +24,7 @@ export class CategoryEntity {
     description: 'the name of category',
     example: 'any_category',
   })
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @ApiProperty({

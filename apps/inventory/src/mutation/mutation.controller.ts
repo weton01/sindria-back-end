@@ -17,8 +17,14 @@ export class MutationController {
 
   @Post('/:productId')
   @UseGuards(JwtAuthGuard)
-  async createMutation(@Body() dto: MutationDto, @Param('productId') productId: string): Promise<any> {
-    return await this.mutationService.create(productId, dto);
+  async createMutation(
+    @Req() req, 
+    @Body() dto: MutationDto, 
+    @Param('productId') productId: string
+  ): Promise<any> {
+    const { user } = req;
+
+    return await this.mutationService.create(user.id, productId, dto);
   }
 
   @UseGuards(JwtAuthGuard)

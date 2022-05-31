@@ -33,17 +33,17 @@ export class CategoryService {
     dto: CreateSubCategoryDto,
   ): Promise<CategoryEntity> {
     const [foundSub, parent] = await Promise.all([
-      this.repository.findOne({ name: dto.name }),
+      this.repository.findOne({ name: dto.name, parent: { id } }),
       this.repository.findOne({ id, parent: null }),
     ]);
+
+    if (!parent)
+      throw new NotFoundException('categoria não encontrada ou inválida');
 
     if (foundSub)
       throw new ConflictException(
         'sub-categoria já cadastrada para essa categoria',
       );
-
-    if (!parent)
-      throw new NotFoundException('categoria não encontrada ou inválida');
 
     const newCategory = await this.repository.create({
       ...dto,

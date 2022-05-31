@@ -1,6 +1,7 @@
 import { AddressEntity } from '@/address/entities/address';
 import { CommentEntity } from '@/comment/entities/comment';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { OrderStoreEntity } from '@/order/entities/order-store';
@@ -74,61 +75,32 @@ export class UserEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToMany(() => AddressEntity, (address) => address.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => AddressEntity, (address) => address.user)
   addresses: AddressEntity[];
 
-  @OneToMany(() => CreditCardEntity, (address) => address.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => CreditCardEntity, (address) => address.user)
   creditCards: AddressEntity[];
 
-  @OneToMany(() => ProductEntity, (address) => address.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => ProductEntity, (address) => address.user)
   products: ProductEntity[];
 
-  @OneToMany(() => CommentEntity, (comment) => comment.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => CommentEntity, (comment) => comment.user)
   comments: CommentEntity[];
 
-  @OneToMany(() => OrderEntity, (comment) => comment.purchaser, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => OrderEntity, (orders) => orders.purchaser)
   orders: OrderEntity[];
 
-  @OneToMany(() => OrderStoreEntity, (orderStore) => orderStore.store, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => OrderStoreEntity, (orderStore) => orderStore.store)
   sales: OrderStoreEntity[];
 
-  @OneToMany(() => OrderProductEntity, (comment) => comment.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => OrderProductEntity, (productOrders) => productOrders.user)
   productOrders: OrderProductEntity[];
 
-  @OneToMany(() => ReviewEntity, (comment) => comment.user, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => ReviewEntity, (review) => review.user)
   reviews: ReviewEntity[];
+
+  @OneToMany(() => MutationEntity, (mutation) => mutation.user)
+  mutations: MutationEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;

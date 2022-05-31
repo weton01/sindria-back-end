@@ -1,4 +1,6 @@
+import { UserEntity } from '@/auth/entities/user';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
+import { OrderProductEntity } from '@/order/entities/order-product';
 import { ProductEntity } from '@/product/entities/product';
 
 import {
@@ -8,6 +10,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -26,7 +29,21 @@ export class MutationEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => ProductEntity, (product) => product.mutations)
+  @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.product)
+  orderProducts: OrderProductEntity[];
+
+  @ManyToOne(() => UserEntity, (user) => user.mutations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  user: UserEntity;
+
+  @ManyToOne(() => ProductEntity, (product) => product.mutations, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   product: ProductEntity;
 
   @ManyToMany(() => VariationEntity, (variation) => variation.mutations, {

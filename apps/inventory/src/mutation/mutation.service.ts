@@ -1,8 +1,7 @@
 import { UserEntity } from '@/auth/entities/user';
-import { VariationTypes } from '@app/common/enums/variation-type';
+import { ProductEntity } from '@/product/entities/product';
 import { MessageErrors } from '@app/utils/messages';
 import {
-  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -10,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { VariationEntity } from '../variation/entities/variation';
 import { MutationDto } from './dtos/mutation';
 import { MutationEntity } from './entities/mutation';
 
@@ -21,67 +19,37 @@ export class MutationService {
     private readonly repository: Repository<MutationEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-    @InjectRepository(VariationEntity)
-    private readonly variationRepository: Repository<VariationEntity>,
+    @InjectRepository(ProductEntity)
+    private readonly productRepository: Repository<ProductEntity>,
   ) { }
 
-  async create(productId: string, dto: MutationDto): Promise<MutationEntity> {
-    const [mutations, variations] = await Promise.all([
-      this.repository.find({
-        where: {
-          product: { id: productId },
-        },
-        relations: ['variations', 'product'],
-      }),
-      this.variationRepository.find({
-        where: [
-          { id: dto.color.id },
-          { id: dto.size.id },
-          { id: dto.variation.id },
-        ],
-      }),
-    ]);
 
-    const colorsCount = variations.filter(
-      (v) => v.type === VariationTypes.color,
-    );
-    const sizesCount = variations.filter(
-      (v) => v.type === VariationTypes.size
-    );
-    const variationsCount = variations.filter(
-      (v) => v.type === VariationTypes.default,
-    );
+  async create(userId: string, productId: string, dto: MutationDto): Promise<any> {
+    const ids = dto.variations.map(v => v.id)
+    const product = await this.productRepository.findOne({ id: productId })
 
-    if (
-      colorsCount.length > 1 ||
-      sizesCount.length > 1 ||
-      variationsCount.length > 1
-    )
-      throw new BadRequestException('você mandou tipos repiditos');
+    if (!product)
+      throw new NotFoundException('produto não encontrado')
 
-    mutations.forEach((element) => {
-      const color = element.variations.find(
-        (v) => dto.color.id === v.id
-      );
+    const mutations = await this.repository.find({ where: { product: { id: productId } }, relations: ['variations'] })
 
-      const size = element.variations.find(
-        (v) => dto.size.id === v.id
-      );
+    mutations.forEach((item) => {
+      const variations = item.variations.filter(item => ids.includes(item.id))
 
-      const variation = element.variations.find(
-        (v) => dto.variation.id === v.id,
-      );
-
-      if (color && size && variation)
-        throw new ConflictException('mutação de produto já cadastrada');
-    });
+      if (
+        variations.length === dto.variations.length &&
+        item.variations.length === variations.length
+      )
+        throw new ConflictException('mutação já existente')
+    })
 
     const tempMutation = this.repository.create({
-      stock: dto.stock,
-      variations: variations,
-      product: { id: productId }
-    });
-    return await this.repository.save(tempMutation);
+      ...dto,
+      product, 
+      user: {id: userId},
+    })
+
+    return await this.repository.save(tempMutation)
   }
 
   async delete(userId: string, id: string): Promise<any> {
@@ -89,7 +57,7 @@ export class MutationService {
       this.userRepository.findOne({ id: userId }),
       this.repository.findOne({
         where: { id },
-        relations: ['product', 'product.user'],
+        relations: ['user'],
       }),
     ]);
 
@@ -97,7 +65,7 @@ export class MutationService {
 
     if (!foundVariation) throw new NotFoundException('mutação não encontrada');
 
-    if (foundVariation.product.user.id !== userId)
+    if (foundVariation.user.id !== userId)
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
 
     await this.repository.delete(id);
