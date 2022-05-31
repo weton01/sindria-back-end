@@ -25,7 +25,12 @@ if (envs.NODE_ENV == 'development') {
 
     const document = SwaggerModule.createDocument(app, config);
 
-    fs.writeFile('docs/address.json', JSON.stringify(document), 'utf8', () => ({}));
+    fs.writeFile(
+      'docs/address.json',
+      JSON.stringify(document),
+      'utf8',
+      () => ({}),
+    );
 
     SwaggerModule.setup('docs', app, document);
 

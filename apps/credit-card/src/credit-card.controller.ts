@@ -46,10 +46,13 @@ export class CreditCardController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/')
-  async getCreditCards(@Query() query: FindCreditCardDto, @Req() req): Promise<any> {
+  async getCreditCards(
+    @Query() query: FindCreditCardDto,
+    @Req() req,
+  ): Promise<any> {
     const { user } = req;
 
     const [items, count] = await this.creditCardService.find(query, user.id);
-    return { items, count }
+    return { items, count };
   }
 }

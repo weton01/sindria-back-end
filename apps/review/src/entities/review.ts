@@ -19,27 +19,39 @@ export class ReviewEntity {
   @Column()
   description: string;
 
-  @Column("simple-array")
+  @Column('simple-array')
   image: string[];
 
   @Column()
   rating: number;
- 
+
   @CreateDateColumn()
   created_at?: Date;
 
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => UserEntity, (user) => user.reviews)
+  @ManyToOne(() => UserEntity, (user) => user.reviews, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: UserEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.reviews)
+  @ManyToOne(() => ProductEntity, (product) => product.reviews, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   product: ProductEntity;
 
-  @ManyToOne(() => OrderProductEntity, (orderProductEntity) => orderProductEntity.reviews)
+  @ManyToOne(() => OrderProductEntity, (orderProductEntity) => orderProductEntity.reviews, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   orderProduct: OrderProductEntity;
- 
+
   constructor(entity?: Partial<ReviewEntity>) {
     this.id = entity?.id;
   }

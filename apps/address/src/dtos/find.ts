@@ -1,15 +1,24 @@
 import { OrderBy } from '@app/common';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 import { AddressDto } from './adddress';
 
 enum Relations {
-  user
+  user,
 }
 
 enum Fields {
-  id, cep, state, city, number, neighborhood, street, complement, created_at, updated_at
+  id,
+  cep,
+  state,
+  city,
+  number,
+  neighborhood,
+  street,
+  complement,
+  created_at,
+  updated_at,
 }
 
 export class FindAddressDto {
@@ -32,39 +41,45 @@ export class FindAddressDto {
   @ApiProperty({
     example: 'relation,relation',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.split(',')
-    return []
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return [];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Relations, { each: true })
-  relations: string[]
+  relations: string[];
 
   @ApiProperty({
     example: 'DESC',
   })
   @IsOptional()
   @IsEnum(OrderBy)
-  orderBy: OrderBy
+  orderBy: OrderBy;
 
   @ApiProperty({
     example: 'field,field',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.split(',')
-    return ['id']
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return ['id'];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Fields, { each: true })
-  select: any
+  select: any;
 
   @IsOptional()
-  @Transform(({ value }) => {
-    if (value)
-      return  Object.fromEntries( new URLSearchParams(value) )
-    return {}
-  }, { toClassOnly: true })
-  where: AddressDto
+  @Transform(
+    ({ value }) => {
+      if (value) return Object.fromEntries(new URLSearchParams(value));
+      return {};
+    },
+    { toClassOnly: true },
+  )
+  where: AddressDto;
 }

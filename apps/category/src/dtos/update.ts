@@ -4,8 +4,7 @@ import { CategoryDto } from './category';
 class AuxDto extends OmitType(CategoryDto, [
   'parent',
   'subCategories',
-  'name'
+  'name',
 ] as const) {}
 
-
-export class UpdatetegoryDto extends  PartialType(AuxDto){}
+export class UpdatetegoryDto extends PartialType(AuxDto) {}

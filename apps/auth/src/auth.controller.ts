@@ -268,7 +268,7 @@ export class AuthController {
   @Get('/google')
   @UseGuards(AuthGuard('google'))
   async googleAuth() {
-    return
+    return;
   }
 
   @Get('/google/callback')
@@ -284,7 +284,7 @@ export class AuthController {
   @Get('/facebook')
   @UseGuards(AuthGuard('facebook'))
   async facebookAuth() {
-    return
+    return;
   }
 
   @Get('/facebook/callback')
@@ -299,6 +299,6 @@ export class AuthController {
 
   @Post('/resend-code/:id')
   async resendCodeEmail(@Param('id') id) {
-    return await this.authService.resendCode(id)
+    return await this.authService.resendCode(id);
   }
 }

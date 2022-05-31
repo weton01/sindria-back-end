@@ -1,5 +1,16 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dtos/create';
 import { FindBrandDto } from './dtos/find';
@@ -11,19 +22,20 @@ export class BrandController {
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
-  async createBrand(
-    @Req() req,
-    @Body() dto: CreateBrandDto,
-  ): Promise<any> {
+  async createBrand(@Req() req, @Body() dto: CreateBrandDto): Promise<any> {
     const { user } = req;
     return await this.brandService.create(user.id, dto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
-  async updateBrand(@Req() req, @Param('id') id, @Body() dto: UpdateBrandDto): Promise<any> {
+  async updateBrand(
+    @Req() req,
+    @Param('id') id,
+    @Body() dto: UpdateBrandDto,
+  ): Promise<any> {
     const { user } = req;
-    
+
     return await this.brandService.update(user.id, id, dto);
   }
 
@@ -44,6 +56,6 @@ export class BrandController {
   @Get('/')
   async getBrands(@Query() query: FindBrandDto): Promise<any> {
     const [items, count] = await this.brandService.find(query);
-    return { items, count }
+    return { items, count };
   }
 }

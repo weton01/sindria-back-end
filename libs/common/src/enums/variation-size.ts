@@ -1,4 +1,4 @@
-export enum VariationSizes { 
+export enum VariationSizes {
   PP = 'PP',
   P = 'P',
   M = 'M',

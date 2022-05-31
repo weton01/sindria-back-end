@@ -19,14 +19,14 @@ export class OrderEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column("simple-json")
+  @Column('simple-json')
   freezePurchaser: UserEntity;
 
-  @Column({ 
-    type: "enum",
+  @Column({
+    type: 'enum',
     enum: InvoiceTypes,
   })
-  invoiceType: InvoiceTypes
+  invoiceType: InvoiceTypes;
 
   @CreateDateColumn()
   created_at?: Date;
@@ -34,13 +34,25 @@ export class OrderEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @ManyToOne(() => AddressEntity, (address) => address.orders)
+  @ManyToOne(() => AddressEntity, (address) => address.orders, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   address: AddressEntity;
 
-  @ManyToOne(() => CreditCardEntity, (variation) => variation.orders)
+  @ManyToOne(() => CreditCardEntity, (creditCard) => creditCard.orders, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   creditCard: CreditCardEntity;
 
-  @ManyToOne(() => UserEntity, (variation) => variation.orders)
+  @ManyToOne(() => UserEntity, (user) => user.orders, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   purchaser: UserEntity;
 
   @OneToMany(() => OrderStoreEntity, (variation) => variation.order)

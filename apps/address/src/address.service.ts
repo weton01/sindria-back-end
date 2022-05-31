@@ -4,7 +4,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -20,7 +20,7 @@ export class AddressService {
     private readonly repository: Repository<AddressEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) { }
+  ) {}
 
   async create(userId: string, dto: CreateAddressDto): Promise<AddressEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
@@ -37,21 +37,26 @@ export class AddressService {
 
     const tempAddress = await this.repository.create({
       ...dto,
-      user: foundUser
+      user: foundUser,
     });
     return await this.repository.save(tempAddress);
   }
 
-  async update(userId: string, id: string, dto: UpdateAddressDto): Promise<AddressEntity> {
+  async update(
+    userId: string,
+    id: string,
+    dto: UpdateAddressDto,
+  ): Promise<AddressEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    const foundAddress = await this.repository.findOne({ where: { id }, relations: ['user'] });
+    const foundAddress = await this.repository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
-    if (!foundAddress)
-      throw new NotFoundException('endereço não encontrado');
+    if (!foundAddress) throw new NotFoundException('endereço não encontrado');
 
     if (foundAddress.user.id !== foundUser.id)
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
@@ -64,10 +69,12 @@ export class AddressService {
   async delete(userId: string, id: string): Promise<any> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    const foundAddress = await this.repository.findOne({ where: { id }, relations: ['user'] });
+    const foundAddress = await this.repository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
     if (!foundAddress) throw new NotFoundException('endereço não encontrado');
 
@@ -76,35 +83,42 @@ export class AddressService {
 
     await this.repository.delete(id);
 
-    return {}
+    return {};
   }
 
   async findById(userId: string, id: string): Promise<AddressEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
 
-    if (!foundUser)
-      throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    const foundAddress = await this.repository.findOne({ where: { id }, relations: ['user'] });
+    const foundAddress = await this.repository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
 
     if (foundAddress.user.id !== foundUser.id)
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
 
-    return foundAddress
+    return foundAddress;
   }
 
-  async find(query: FindAddressDto, userId: string): Promise<[AddressEntity[], number]> {
-    const { skip, take, relations, orderBy, select, where } = query
+  async find(
+    query: FindAddressDto,
+    userId: string,
+  ): Promise<[AddressEntity[], number]> {
+    const { skip, take, relations, orderBy, select, where } = query;
 
     const user = await this.userRepository.findOne({ id: userId });
 
-    if (!user)
-      throw new NotFoundException('usuário não encontrado');
+    if (!user) throw new NotFoundException('usuário não encontrado');
 
     return await this.repository.findAndCount({
       where: { ...where, user },
       order: { created_at: orderBy },
-      skip, take, relations, select
+      skip,
+      take,
+      relations,
+      select,
     });
   }
 }

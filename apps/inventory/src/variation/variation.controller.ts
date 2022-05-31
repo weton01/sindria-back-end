@@ -1,14 +1,23 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateVariationColorDto } from './dtos/create-color';
 import { CreateVariationDefaultDto } from './dtos/create-default';
 import { CreateVariationSizeDto } from './dtos/create-size';
 import { UpdateVariationDefaultDto } from './dtos/update-default';
-import { InventoryService } from './inventory.service';
+import { VariationsService } from './variation.service';
 
-@Controller()
-export class InventoryController {
-  constructor(private readonly inventoryService: InventoryService) { }
+@Controller('/variation')
+export class VariationController {
+  constructor(private readonly inventoryService: VariationsService) {}
 
   @Post('/default/:productId')
   @UseGuards(JwtAuthGuard)
@@ -18,7 +27,7 @@ export class InventoryController {
     @Param('productId') productId,
   ): Promise<any> {
     const { user } = req;
-    
+
     return await this.inventoryService.createDefault(user.id, productId, dto);
   }
 
@@ -84,7 +93,7 @@ export class InventoryController {
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
-  async deleteBrand(@Req() req, @Param('id') id): Promise<any> {
+  async deleteVariation(@Req() req, @Param('id') id): Promise<any> {
     const { user } = req;
 
     await this.inventoryService.delete(user.id, id);

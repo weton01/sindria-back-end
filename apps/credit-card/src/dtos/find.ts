@@ -4,7 +4,7 @@ import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 enum Relations {
-  user
+  user,
 }
 
 export class FindCreditCardDto {
@@ -27,19 +27,21 @@ export class FindCreditCardDto {
   @ApiProperty({
     example: 'relation,relation',
   })
-  @Transform(({ value }) => {
-    if(value)
-      return value.split(',')
-    return []
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return [];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Relations, { each: true })
-  relations: string[]
+  relations: string[];
 
   @ApiProperty({
     example: 'DESC',
   })
   @IsOptional()
   @IsEnum(OrderBy)
-  orderBy: OrderBy
+  orderBy: OrderBy;
 }

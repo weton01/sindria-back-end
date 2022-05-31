@@ -4,11 +4,16 @@ import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 enum Relations {
-  products
+  products,
 }
 
 enum Fields {
-  id, name, image, groupName, created_at, updated_at
+  id,
+  name,
+  image,
+  groupName,
+  created_at,
+  updated_at,
 }
 
 export class FindCategoryDto {
@@ -31,31 +36,35 @@ export class FindCategoryDto {
   @ApiProperty({
     example: 'relation,relation',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.split(',')
-    return []
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return [];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Relations, { each: true })
-  relations: string[]
+  relations: string[];
 
   @ApiProperty({
     example: 'DESC',
   })
   @IsOptional()
   @IsEnum(OrderBy)
-  orderBy: OrderBy
+  orderBy: OrderBy;
 
   @ApiProperty({
     example: 'field,field',
   })
-  @Transform(({ value }) => {
-    if (value)
-      return value.split(',')
-    return ['id']
-  }, { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (value) return value.split(',');
+      return ['id'];
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsEnum(Fields, { each: true })
-  select: any
+  select: any;
 }

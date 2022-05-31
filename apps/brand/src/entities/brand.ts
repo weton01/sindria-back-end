@@ -14,7 +14,7 @@ export class BrandEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({unique: true})
+  @Column({ unique: true })
   name: string;
 
   @Column()
@@ -25,12 +25,8 @@ export class BrandEntity {
 
   @UpdateDateColumn()
   updated_at?: Date;
-  
-  @OneToMany(() => ProductEntity, (product) => product.brand, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE'
-  })
+
+  @OneToMany(() => ProductEntity, (product) => product.brand)
   products: ProductEntity;
 
   @OneToMany(() => OrderProductEntity, (orderProduct) => orderProduct.brand)

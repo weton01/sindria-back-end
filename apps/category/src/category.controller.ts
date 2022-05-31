@@ -27,14 +27,14 @@ export class CategoryController {
   async findCategories(@Query() query: FindCategoryDto): Promise<any> {
     const [items, count] = await this.categoryService.findCategories(query);
 
-    return { items, count }
+    return { items, count };
   }
 
   @Get('/sub-category')
   async findSubCategories(@Query() query: FindCategoryDto): Promise<any> {
     const [items, count] = await this.categoryService.findSubCategories(query);
 
-    return { items, count }
+    return { items, count };
   }
 
   @Get('/:id')

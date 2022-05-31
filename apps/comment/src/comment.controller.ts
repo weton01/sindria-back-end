@@ -1,7 +1,18 @@
 import { JwtAuthGuard } from '@app/utils';
-import { Body, Controller, Delete, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dtos/create';
+import { FindCommentDto } from './dtos/find';
 
 @Controller()
 export class CommentController {
@@ -15,7 +26,7 @@ export class CommentController {
     @Body() dto: CreateCommentDto,
   ): Promise<any> {
     const { user } = req;
-    
+
     return await this.commentService.create(id, user.id, dto);
   }
 
@@ -28,9 +39,8 @@ export class CommentController {
   ): Promise<any> {
     const { user } = req;
 
-    return await this.commentService.reply(  id, user.id, dto);
+    return await this.commentService.reply(id, user.id, dto);
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Delete('/:id')
@@ -41,4 +51,10 @@ export class CommentController {
     return {};
   }
 
+  @Get('/:productId')
+  async findComment(@Query() dto: FindCommentDto,  @Param('productId') productId): Promise<any> {
+    const [items, count] = await this.commentService.find(dto, productId);
+
+    return { items, count };
+  }
 }
