@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/profe/test/jest-e2e.json",
-    "deploy": "nest build address && nest build auth && nest build brand && nest build category && nest build credit-card && nest build product && nest build tag && nest build inventory && nest build comment && nest build review && serverless deploy"
+    "deploy": "nest build address && nest build auth && nest build brand && nest build category && nest build credit-card && nest build product && nest build tag && nest build inventory && nest build comment && nest build review && nest build shipping && serverless deploy"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.1",
@@ -41,6 +41,7 @@
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
+    "correios-brasil": "^2.2.2",
     "credit-card-type": "^9.1.0",
     "module-alias": "^2.2.2",
     "mongodb": "^3.7.3",
@@ -48,6 +49,7 @@
     "mysql": "^2.18.1",
     "nestjs-s3": "^1.0.1",
     "nestjs-twilio": "^2.1.0",
+    "node-correios": "^3.0.2",
     "nodemailer": "^6.7.2",
     "offline": "0.0.1",
     "passport": "^0.5.2",

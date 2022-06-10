@@ -13,6 +13,7 @@ import {
   IsUUID,
   ValidateNested,
   ArrayNotEmpty,
+  Min,
 } from 'class-validator';
 
 class AuxSingleDto {
@@ -42,6 +43,30 @@ export class ProductDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({
+    example: 5,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  weight: number;
+
+  @ApiProperty({
+    example: 5,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  height: number;
+
+  @ApiProperty({
+    example: 5,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  width: number;
 
   @ApiProperty({
     example: 'lorem impsum dolent',
