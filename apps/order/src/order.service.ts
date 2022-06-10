@@ -1,7 +1,5 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
-import { BrandEntity } from '@/brand/entities/brand';
-import { CategoryEntity } from '@/category/entities/category';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
@@ -81,10 +79,19 @@ export class OrderService {
             throw new BadRequestException('mutação não encontrada')
 
           mutation.stock = mutation.stock - p.quantity;
+          product.salesQuantity = product.salesQuantity + p.quantity;
+
           await queryRunner.manager.save(mutation);
+          await queryRunner.manager.save(product);
 
           const newProduct = this.orderProductRepository.create({
-            ...product,
+            netAmount: p.netAmount,
+            grossAmount: p.grossAmount,
+            mutation: p.mutation,
+            quantity: p.quantity,
+            product: p.product,
+            brand: product.brand,
+            categories: product.categories,
             user: product.user,
             freezeProduct: {product, mutation}
           });

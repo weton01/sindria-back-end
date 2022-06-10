@@ -4,6 +4,8 @@ import { CategoryEntity } from '@/category/entities/category';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { ReviewEntity } from '@/review/entities/review';
+import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { Transform } from 'class-transformer';
 
 import {
   Column,
@@ -23,13 +25,28 @@ export class OrderProductEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   grossAmount: number;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   netAmount: number;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   quantity: number;
 
   @Column('simple-json')
