@@ -1,32 +1,32 @@
 import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { ProductModule } from './product.module';
 import 'module-alias';
+import { ShippingModule } from './shipping.module';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(ProductModule);
+    const app = await NestFactory.create(ShippingModule);
 
     app.setGlobalPrefix('v1');
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Product Service')
-      .setDescription(`The Product service only...`)
+      .setTitle('Shipping Service')
+      .setDescription(`The Shipping service only...`)
       .setVersion('1.0')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
 
     fs.writeFile(
-      'docs/product.json',
+      'docs/shipping.json',
       JSON.stringify(document),
       'utf8',
       () => ({}),
@@ -45,10 +45,10 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(ProductModule);
+  const app = await NestFactory.create(ShippingModule);
 
-  app.setGlobalPrefix('v1');
   app.enableCors();
+  app.setGlobalPrefix('v1');
 
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),

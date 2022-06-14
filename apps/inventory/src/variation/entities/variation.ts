@@ -2,6 +2,8 @@ import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { VariationSizes } from '@app/common/enums/variation-size';
 import { VariationTypes } from '@app/common/enums/variation-type';
+import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { Transform } from 'class-transformer';
 
 import {
   Column,
@@ -18,7 +20,12 @@ export class VariationEntity {
   @PrimaryGeneratedColumn('uuid')
   id?: string;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   netAmount: number;
 
   @Column({ nullable: true })
@@ -43,13 +50,28 @@ export class VariationEntity {
   })
   type: VariationTypes;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   weight: number;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   height: number;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   width: number;
 
   @CreateDateColumn()

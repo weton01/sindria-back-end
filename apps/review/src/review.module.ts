@@ -1,5 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { OrderProductEntity } from '@/order/entities/order-product';
+import { ProductEntity } from '@/product/entities/product';
 import { envs, TypeormConfig } from '@app/common';
 import { JwtStrategy } from '@app/utils';
 import { Module } from '@nestjs/common';
@@ -11,7 +12,12 @@ import { ReviewService } from './review.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, OrderProductEntity, ReviewEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity, 
+      OrderProductEntity, 
+      ReviewEntity, 
+      ProductEntity
+    ]),
     S3Module.forRoot({
       config: {
         accessKeyId: envs.AWS_KEY,
