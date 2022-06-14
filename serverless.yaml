@@ -148,14 +148,13 @@ functions:
       - http:
           method: ANY
           path: '/review/{proxy+}'
-
-  flat:
-    handler: ./dist/apps/flat/main.handler
+  shipping:
+    handler: ./dist/apps/shipping/main.handler
     events:
       - http:
           method: ANY
-          path: /flat
+          path: /shipping
       - http:
           method: ANY
-          path: '/flat/{proxy+}'
-    
+          path: '/shipping/{proxy+}'
+ 

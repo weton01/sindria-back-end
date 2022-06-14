@@ -26,7 +26,7 @@ export class ReviewService {
     private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
-  ) {}
+  ) { }
 
   private async updateReviewProduct(
     product: ProductEntity,
@@ -108,7 +108,7 @@ export class ReviewService {
     return {};
   }
 
-  async find(query: FindReviewDto): Promise<[ReviewEntity[], number]> {
+  async find(query: FindReviewDto, productId: string): Promise<[ReviewEntity[], number]> {
     const { skip, take, relations, orderBy, select, where } = query;
 
     return await this.repository.findAndCount({
@@ -117,7 +117,7 @@ export class ReviewService {
       take,
       relations,
       select,
-      where,
+      where: { ...where, product: { id: productId } },
     });
   }
 }

@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, TreeRepository } from 'typeorm';
+import { Like, Repository, TreeRepository } from 'typeorm';
 import { CreateProductDto } from './dtos/create';
 import { FindProductDto } from './dtos/find';
 import { UpdateProductDto } from './dtos/update';
@@ -33,7 +33,7 @@ export class ProductService {
     private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(ReviewEntity)
     private readonly reviewRepository: Repository<ReviewEntity>,
-  ) {}
+  ) { }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
     const foundUser = await this.userRepository.findOne({ id: userId });
@@ -112,10 +112,6 @@ export class ProductService {
   }
 
   async findOnCreation(id: string): Promise<ProductEntity> {
-    const foundUser = await this.userRepository.findOne();
-
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
-
     return await this.repository.findOne({
       where: { id },
       relations: [
@@ -126,22 +122,56 @@ export class ProductService {
     });
   }
 
-  async findById(id: string): Promise<ProductEntity> {
-    const foundUser = await this.userRepository.findOne();
-
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
-
-    return await this.repository.findOne({
+  async findById(id: string): Promise<any> {
+    const product = await this.repository.findOne({
       where: { id },
       relations: [
         'variations',
         'tags',
         'user',
         'categories',
-        'brand', 
-        'mutations'
+        'brand',
+        'mutations',
+        'mutations.variations'
       ],
     });
+
+    const splice = product.name.split(' ')[0]
+
+    const [bestSalersRelated, foundOrderProduct] = await Promise.all([
+      this.repository.find({
+        where: { name: Like(`%${splice}%`) },
+        order: { salesQuantity: 'DESC' },
+        skip: 0,
+        take: 3
+      }),
+      this.orderProductRepository.findOne({
+        where: { product },
+        relations: ['orderStore', 'orderStore.orderProducts']
+      })
+    ])
+
+    let relatedProducts
+
+    if (!foundOrderProduct) {
+      relatedProducts = []
+    } else {
+      if (!foundOrderProduct.orderStore) {
+        relatedProducts = []
+      } else {
+        if (!foundOrderProduct.orderStore.orderProducts) {
+          relatedProducts = []
+        } else {
+          relatedProducts = foundOrderProduct.orderStore.orderProducts
+        }
+      }
+    }
+
+    return {
+      product,
+      bestSalersRelated,
+      relatedProducts
+    }
   }
 
   async find(query: FindProductDto): Promise<[ProductEntity[], number]> {
@@ -156,7 +186,7 @@ export class ProductService {
       where,
     });
   }
-  
+
   async findHome(): Promise<any> {
     const [bestSalers, bestBrands, bestCategories, bestReviews] =
       await Promise.all([

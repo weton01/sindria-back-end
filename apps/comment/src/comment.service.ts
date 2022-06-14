@@ -92,7 +92,8 @@ export class CommentService {
       order: orderBy,
       skip,
       take,
-      where: {product: {id: productId}, parent: IsNull()}
+      where: {product: {id: productId}, parent: IsNull()},
+      relations: ['user']
     });
 
     const commentsChildrens = await Promise.all(

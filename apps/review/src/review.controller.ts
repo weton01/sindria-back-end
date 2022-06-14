@@ -38,10 +38,9 @@ export class ReviewController {
     return await this.reviewService.delete(user.id, id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/')
-  async findProduct(@Query() query: FindReviewDto): Promise<any> {
-    const [items, count] = await this.reviewService.find(query);
+  @Get('/:productId')
+  async findProduct(@Query() query: FindReviewDto, @Param('productId') productId): Promise<any> {
+    const [items, count] = await this.reviewService.find(query, productId);
     return { items, count };
   }
 }

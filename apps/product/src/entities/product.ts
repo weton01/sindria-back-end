@@ -7,6 +7,8 @@ import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
 import { TagEntity } from '@/tag/entities/tag';
+import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { Transform } from 'class-transformer';
 
 import {
   Column,
@@ -31,13 +33,52 @@ export class ProductEntity {
   @Column()
   description: string;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   grossAmount: number;
 
-  @Column()
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   netAmount: number;
 
-  @Column({ default: 0 })
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
+  weight: number;
+
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
+  height: number;
+
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
+  width: number;
+
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
   rating: number;
 
   @Column({ default: 0 })

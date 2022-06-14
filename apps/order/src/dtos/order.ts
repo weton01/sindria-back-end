@@ -4,15 +4,10 @@ import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsNotEmpty,
-  IsUUID,
-  IsArray,
-  ValidateNested,
-  IsOptional,
-  IsEnum,
+  IsArray, IsEnum, IsNotEmpty, IsOptional, IsUUID, ValidateNested
 } from 'class-validator';
-import { OrderProductEntity } from '../entities/order-product';
-import { OrderProductDto } from './order-product';
+import { OrderStoreEntity } from '../entities/order-store';
+import { OrderStoreDto } from './orderStore';
 
 class AuxSingleDto {
   @ApiProperty({
@@ -38,8 +33,8 @@ export class OrderDto {
   @ApiProperty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => OrderProductDto)
-  orderProducts: OrderProductEntity[];
+  @Type(() => OrderStoreDto)
+  orderStores: OrderStoreEntity[];
 
   @IsEnum(InvoiceTypes)
   @IsNotEmpty()

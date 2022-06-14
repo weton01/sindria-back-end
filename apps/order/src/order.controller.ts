@@ -15,7 +15,7 @@ import { OrderService } from './order.service';
 
 @Controller()
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(private readonly orderService: OrderService) { }
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
@@ -24,7 +24,8 @@ export class OrderController {
 
     if (dto.invoiceType === InvoiceTypes.credit)
       return await this.orderService.createCreditCardOrder(user.id, dto);
-    else return await this.orderService.createOrder(user.id, dto);
+    else 
+      return await this.orderService.createOrder(user.id, dto);
   }
 
   @Get('/')

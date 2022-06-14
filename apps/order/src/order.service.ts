@@ -1,14 +1,12 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
-import { BrandEntity } from '@/brand/entities/brand';
-import { CategoryEntity } from '@/category/entities/category';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { Connection, QueryRunner, Repository } from 'typeorm';
 
 import { FindOrderDto } from './dtos/find';
 import { OrderDto } from './dtos/order';
@@ -39,6 +37,78 @@ export class OrderService {
     private readonly productRepository: Repository<ProductEntity>
   ) { }
 
+  private createOrderProducts(
+    orderProducts: OrderProductEntity[],
+    queryRunner: QueryRunner
+  ) {
+    return orderProducts.map(async (p) => {
+      const product = await this.productRepository.findOne({
+        where: { id: p.product.id },
+        relations: ['user', 'tags', 'categories', 'brand']
+      })
+
+      if (!product)
+        throw new BadRequestException('produto não encontrado')
+
+      p.user = product.user
+
+      const mutation = await this.mutationRepository.findOne({
+        where: { id: p.mutation.id },
+        relations: ['variations']
+      })
+
+      if (!mutation) {
+        throw new BadRequestException('mutação não encontrada')
+      }
+
+      if ((mutation.stock - p.quantity) < 0) {
+        throw new BadRequestException('produto em estoque insuficiente')
+      }
+
+      mutation.stock = mutation.stock - p.quantity;
+      product.salesQuantity = product.salesQuantity + p.quantity;
+
+      await queryRunner.manager.save(mutation);
+      await queryRunner.manager.save(product);
+
+      const newProduct = this.orderProductRepository.create({
+        netAmount: p.netAmount,
+        grossAmount: p.grossAmount,
+        mutation: p.mutation,
+        quantity: p.quantity,
+        product: p.product,
+        brand: product.brand,
+        categories: product.categories,
+        user: product.user,
+        freezeProduct: { product, mutation }
+      });
+
+      return queryRunner.manager.save(newProduct);
+    })
+  }
+
+  private createOrderStores(
+    orderStores: OrderStoreEntity[],
+    queryRunner: QueryRunner
+  ) {
+    return orderStores.map(async (ost) => {
+
+      const orderProducts = await Promise.all(
+        this.createOrderProducts(
+          ost.orderProducts,
+          queryRunner
+        )
+      )
+
+      const newStore = this.orderStoreRepository.create({
+        ...ost,
+        orderProducts
+      });
+
+      return queryRunner.manager.save(newStore);
+    })
+  }
+
   async createCreditCardOrder(
     userId: string,
     dto: OrderDto,
@@ -60,71 +130,16 @@ export class OrderService {
     await queryRunner.startTransaction();
 
     try {
-      const newProducts = await Promise.all(
-        dto.orderProducts.map(async (p) => {
-          const product = await this.productRepository.findOne({
-            where: { id: p.product.id },
-            relations: ['user', 'tags', 'categories', 'brand']
-          })
-
-          if(!product)
-            throw new BadRequestException('produto não encontrado')
-
-          p.user = product.user
-
-          const mutation = await this.mutationRepository.findOne({
-            where: { id: p.mutation.id },
-            relations: ['variations']
-          })
-
-          if(!mutation)
-            throw new BadRequestException('mutação não encontrada')
-
-          mutation.stock = mutation.stock - p.quantity;
-          await queryRunner.manager.save(mutation);
-
-          const newProduct = this.orderProductRepository.create({
-            ...product,
-            user: product.user,
-            freezeProduct: {product, mutation}
-          });
-
-          return queryRunner.manager.save(newProduct);
-        })
+      const orderStores = await Promise.all(
+        this.createOrderStores(dto.orderStores, queryRunner)
       );
-
-      const userIds = newProducts.map((p) => p.user.id);
-      const uniqueIds = Array.from(new Set(userIds));
-
-      const newStores: OrderStoreEntity[] = [];
-
-      uniqueIds.map((userId, index) => {
-        newStores[index] = new OrderStoreEntity();
-        newStores[index].products = [];
-        newStores[index].totalAmount = 0;
-
-        newProducts.map((product) => {
-          if (product.user.id === userId) {
-            newStores[index].totalAmount += product.netAmount;
-            newStores[index].products.push(product);
-            newStores[index].store = product.user;
-          }
-        });
-      });
-
-      const newStoresCreated = await Promise.all(
-        newStores.map(async (p) => {
-          const newStore = this.orderStoreRepository.create(p);
-          return queryRunner.manager.save(newStore);
-        })
-      )
 
       const newOrder = this.repository.create({
         freezePurchaser: foundUser,
         invoiceType: InvoiceTypes.credit,
         address: foundAddress,
         creditCard: foundCreditCard,
-        ordersStore: newStoresCreated,
+        ordersStores: orderStores,
         purchaser: foundUser,
       });
 
@@ -145,56 +160,37 @@ export class OrderService {
       this.userRepository.findOne({ id: userId }),
       this.addressRepository.findOne({ id: dto.address.id }),
     ]);
-
     if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
     if (!foundAddress) throw new NotFoundException('endereço não encontrado');
 
-    const newProducts = await Promise.all(
-      dto.orderProducts.map(async (p) => {
-        const newProduct = this.orderProductRepository.create({
-          ...p,
-          freezeProduct: p,
-          user: p.product.user,
-        });
-        return await this.orderProductRepository.save(newProduct);
-      }),
-    );
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const userIds = newProducts.map((p) => p.user.id);
-    const uniqueIds = Array.from(new Set(userIds));
+    try {
+      const orderStores = await Promise.all(
+        this.createOrderStores(dto.orderStores, queryRunner)
+      );
 
-    const newStores: OrderStoreEntity[] = [];
-
-    uniqueIds.map((userId, index) => {
-      newStores[index] = new OrderStoreEntity();
-      newStores[index].products = [];
-      newStores[index].totalAmount = 0;
-      newProducts.map((product) => {
-        if (product.user.id === userId) {
-          newStores[index].totalAmount += product.netAmount;
-          newStores[index].products.push(product);
-          newStores[index].store = product.user;
-        }
+      const newOrder = this.repository.create({
+        freezePurchaser: foundUser,
+        invoiceType: InvoiceTypes.credit,
+        address: foundAddress,
+        ordersStores: orderStores,
+        purchaser: foundUser,
       });
-    });
 
-    const newStoresCreated = await Promise.all(
-      newStores.map(async (p) => {
-        const newProduct = this.orderStoreRepository.create(p);
-        return this.orderStoreRepository.save(newProduct);
-      }),
-    );
+      await queryRunner.manager.save(newOrder);
+      await queryRunner.commitTransaction();
 
-    const newOrder = this.repository.create({
-      freezePurchaser: foundUser,
-      invoiceType: InvoiceTypes.credit,
-      address: foundAddress,
-      ordersStore: newStoresCreated,
-      purchaser: foundUser,
-    });
-
-    return await this.repository.save(newOrder);
+      return newOrder
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async find(
