@@ -56,7 +56,7 @@ export class OrderEntity {
   purchaser: UserEntity;
 
   @OneToMany(() => OrderStoreEntity, (variation) => variation.order)
-  ordersStore: OrderStoreEntity[];
+  ordersStores: OrderStoreEntity[];
 
   constructor(entity?: Partial<OrderEntity>) {
     this.id = entity?.id;

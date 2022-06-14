@@ -21,6 +21,9 @@ export class OrderStoreEntity {
   @Column()
   totalAmount: number;
 
+  @Column()
+  shippingAmount: number;
+
   @Column({ nullable: true })
   trackingCode: string;
 
@@ -41,7 +44,7 @@ export class OrderStoreEntity {
   updated_at?: Date;
 
   @OneToMany(() => OrderProductEntity, (order) => order.orderStore)
-  products: OrderProductEntity[];
+  orderProducts: OrderProductEntity[];
 
   @ManyToOne(() => UserEntity, (variation) => variation.sales, {
     cascade: true,
@@ -50,7 +53,7 @@ export class OrderStoreEntity {
   })
   store: UserEntity;
 
-  @ManyToOne(() => OrderEntity, (order) => order.ordersStore, {
+  @ManyToOne(() => OrderEntity, (order) => order.ordersStores, {
     cascade: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

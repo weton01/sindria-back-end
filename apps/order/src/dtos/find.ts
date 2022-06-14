@@ -8,7 +8,7 @@ enum Relations {
   creditCard,
   purchaser,
   ordersStore,
-  'orderStore.products',
+  'orderStore.orderProducts',
 }
 
 enum Fields {
