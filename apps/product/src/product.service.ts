@@ -136,8 +136,6 @@ export class ProductService {
       ],
     });
 
-    console.log(product)
-
     const splice = product.name.split(' ')[0]
 
     const [bestSalersRelated, foundOrderProduct] = await Promise.all([
@@ -149,7 +147,7 @@ export class ProductService {
       }),
       this.orderProductRepository.findOne({
         where: { product },
-        relations: ['orderStore', 'orderStore.products']
+        relations: ['orderStore', 'orderStore.orderProducts']
       })
     ])
 
@@ -161,10 +159,10 @@ export class ProductService {
       if (!foundOrderProduct.orderStore) {
         relatedProducts = []
       } else {
-        if (!foundOrderProduct.orderStore.products) {
+        if (!foundOrderProduct.orderStore.orderProducts) {
           relatedProducts = []
         } else {
-          relatedProducts = foundOrderProduct.orderStore.products
+          relatedProducts = foundOrderProduct.orderStore.orderProducts
         }
       }
     }

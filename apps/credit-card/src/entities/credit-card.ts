@@ -49,7 +49,7 @@ export class CreditCardEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToMany(() => OrderEntity, (order) => order.ordersStore)
+  @OneToMany(() => OrderEntity, (order) => order.creditCard)
   orders: OrderEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.creditCards, {

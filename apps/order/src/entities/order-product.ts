@@ -61,7 +61,7 @@ export class OrderProductEntity {
   @OneToMany(() => ReviewEntity, (review) => review.orderProduct)
   reviews: ReviewEntity[];
 
-  @ManyToOne(() => OrderStoreEntity, (orderStore) => orderStore.products, {
+  @ManyToOne(() => OrderStoreEntity, (orderStore) => orderStore.orderProducts, {
     cascade: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

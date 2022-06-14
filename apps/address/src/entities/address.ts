@@ -42,7 +42,7 @@ export class AddressEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToMany(() => OrderEntity, (order) => order.ordersStore)
+  @OneToMany(() => OrderEntity, (order) => order.address)
   orders: OrderEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.addresses, {
