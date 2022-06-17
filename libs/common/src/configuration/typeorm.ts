@@ -14,6 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { envs } from '.';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
+import { StoreEntity } from '@/store/entities/store';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -38,5 +39,6 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     OrderProductEntity,
     ReviewEntity,
     MutationEntity,
+    StoreEntity
   ],
 });

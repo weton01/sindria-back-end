@@ -5,28 +5,28 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { ProductModule } from './product.module';
 import 'module-alias';
+import { StoreModule } from './store.module';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(ProductModule);
+    const app = await NestFactory.create(StoreModule);
 
     app.setGlobalPrefix('v1');
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Product Service')
-      .setDescription(`The Product service only...`)
+      .setTitle('Store Service')
+      .setDescription(`The Store service only...`)
       .setVersion('1.0')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
 
     fs.writeFile(
-      'docs/product.json',
+      'docs/store.json',
       JSON.stringify(document),
       'utf8',
       () => ({}),
@@ -38,14 +38,14 @@ if (envs.NODE_ENV == 'development') {
       new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
     );
 
-    await app.listen(3001);
+    await app.listen(3000);
   }
 
   bootstrap();
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(ProductModule);
+  const app = await NestFactory.create(StoreModule);
 
   app.setGlobalPrefix('v1');
   app.enableCors();

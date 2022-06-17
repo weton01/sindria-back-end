@@ -2,6 +2,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ProductEntity } from '@/product/entities/product';
+import { floatTransformer } from '@app/utils/transformes/entities/float';
 
 import {
   Column,
@@ -22,6 +23,14 @@ export class MutationEntity {
 
   @Column()
   stock: number;
+
+  @Column({
+    type: 'numeric', 
+    precision: 10, 
+    scale: 2, 
+    transformer: floatTransformer,
+  })
+  feeTotal: number;
 
   @CreateDateColumn()
   created_at?: Date;

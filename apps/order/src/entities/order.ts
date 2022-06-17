@@ -1,6 +1,7 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { StoreEntity } from '@/store/entities/store';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
 
 import {

@@ -53,6 +53,12 @@
       "@/review/*": [
         "apps/review/src/*"
       ],
+      "@/shipping/*": [
+        "apps/shipping/src/*"
+      ],
+      "@/store/*": [
+        "apps/store/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],
