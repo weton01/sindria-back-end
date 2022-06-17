@@ -157,4 +157,13 @@ functions:
       - http:
           method: ANY
           path: '/shipping/{proxy+}'
+  store:
+    handler: ./dist/apps/store/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /store
+      - http:
+          method: ANY
+          path: '/store/{proxy+}'
  

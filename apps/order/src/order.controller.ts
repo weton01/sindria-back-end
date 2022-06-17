@@ -4,6 +4,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Req,
@@ -35,5 +36,14 @@ export class OrderController {
 
     const [items, count] = await this.orderService.find(query, user.id);
     return { items, count };
+  }
+
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
+  async getOrderById(@Req() req, @Param('id') id): Promise<any> {
+    const { user } = req;
+
+    const order = await this.orderService.findById(user.id, id);
+    return order;
   }
 }

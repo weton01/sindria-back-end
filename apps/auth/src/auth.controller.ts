@@ -44,7 +44,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   @ApiCreatedResponse({
     type: UserEntity,
@@ -125,9 +125,9 @@ export class AuthController {
   @Post('/signin')
   @HttpCode(200)
   async signin(@Body() authDto: AuthUserDto): Promise<any> {
-    const token = await this.authService.auth(authDto);
+    const { token, user } = await this.authService.auth(authDto);
 
-    return { token };
+    return { token, user };
   }
 
   @ApiOkResponse({

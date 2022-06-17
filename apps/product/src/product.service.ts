@@ -142,12 +142,20 @@ export class ProductService {
       this.repository.find({
         where: { name: Like(`%${splice}%`) },
         order: { salesQuantity: 'DESC' },
+        relations: ['mutations', 'mutations.variations', 'user'],
         skip: 0,
         take: 3
       }),
       this.orderProductRepository.findOne({
         where: { product },
-        relations: ['orderStore', 'orderStore.orderProducts']
+        relations: [
+          'orderStore', 
+          'orderStore.orderProducts', 
+          'orderStore.orderProducts.product',
+          'orderStore.orderProducts.product.user',
+          'orderStore.orderProducts.mutation',
+          'orderStore.orderProducts.mutation.variations',
+        ]
       })
     ])
 

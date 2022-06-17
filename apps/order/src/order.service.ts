@@ -4,7 +4,8 @@ import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { MessageErrors } from '@app/utils/messages';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, QueryRunner, Repository } from 'typeorm';
 
@@ -210,5 +211,28 @@ export class OrderService {
       relations: [...relations],
       select,
     });
+  }
+
+  async findById(userId: string, id: string) {
+    const [foundUser, foundOrder] = await Promise.all([
+      this.userRepository.findOne({ id: userId }),
+      this.repository.findOne({
+        where: { id }, relations: [
+          'purchaser', 
+          'ordersStores', 
+          'ordersStores.orderProducts'
+        ]
+      })
+    ])
+
+    if (foundUser.id !== foundOrder.purchaser.id) {
+      throw new ForbiddenException(MessageErrors.forbidenToAccess)
+    }
+
+    if( !foundOrder){
+      throw new NotFoundException('compra não encontrada')
+    }
+
+    return foundOrder
   }
 }

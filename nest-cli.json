@@ -148,6 +148,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/shipping/tsconfig.app.json"
       }
+    },
+    "store": {
+      "type": "application",
+      "root": "apps/store",
+      "entryFile": "main",
+      "sourceRoot": "apps/store/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/store/tsconfig.app.json"
+      }
     }
   }
 }
