@@ -3,7 +3,6 @@ import { ProductEntity } from '@/product/entities/product';
 import { VariationSizes } from '@app/common/enums/variation-size';
 import { VariationTypes } from '@app/common/enums/variation-type';
 import { floatTransformer } from '@app/utils/transformes/entities/float';
-import { Transform } from 'class-transformer';
 
 import {
   Column,

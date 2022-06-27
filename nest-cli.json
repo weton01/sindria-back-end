@@ -157,6 +157,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/store/tsconfig.app.json"
       }
+    },
+    "coupon": {
+      "type": "application",
+      "root": "apps/coupon",
+      "entryFile": "main",
+      "sourceRoot": "apps/coupon/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/coupon/tsconfig.app.json"
+      }
     }
   }
 }

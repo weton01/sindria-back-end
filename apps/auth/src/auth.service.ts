@@ -33,7 +33,7 @@ export class AuthService {
     'password',
     'updated_at',
     'username',
-    'store'
+    'isStore'
   ];
 
   constructor(
@@ -144,7 +144,7 @@ export class AuthService {
 
     return { token, user: { 
       id: user.id, 
-      email: user.email, 
+      email: user.email,  
       isStore: user.isStore, 
       store: user.store
     } }

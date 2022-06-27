@@ -218,6 +218,7 @@ export class OrderService {
       this.userRepository.findOne({ id: userId }),
       this.repository.findOne({
         where: { id }, relations: [
+          'address',
           'purchaser', 
           'ordersStores', 
           'ordersStores.orderProducts'

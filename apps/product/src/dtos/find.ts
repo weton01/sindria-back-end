@@ -78,12 +78,6 @@ export class FindProductDto {
   select: any;
 
   @IsOptional()
-  @Transform(
-    ({ value }) => {
-      if (value) return Object.fromEntries(new URLSearchParams(value));
-      return {};
-    },
-    { toClassOnly: true },
-  )
-  where: ProductDto;
+ 
+  where: string;
 }
