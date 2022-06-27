@@ -1,25 +1,25 @@
 import { envs } from '@app/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import serverlessExpress from '@vendia/serverless-express';
 import { Callback, Context, Handler } from 'aws-lambda';
 import * as fs from 'fs';
-import { ProductModule } from './product.module';
 import 'module-alias';
+import { CouponModule } from './coupon.module';
 
 let server: Handler;
 
 if (envs.NODE_ENV == 'development') {
   async function bootstrap() {
-    const app = await NestFactory.create(ProductModule);
+    const app = await NestFactory.create(CouponModule);
 
     app.setGlobalPrefix('v1');
     app.enableCors();
 
     const config = new DocumentBuilder()
-      .setTitle('Product Service')
-      .setDescription(`The Product service only...`)
+      .setTitle('Coupon Service')
+      .setDescription(`The Coupon service only...`)
       .setVersion('1.0')
       .build();
 
@@ -45,7 +45,7 @@ if (envs.NODE_ENV == 'development') {
 }
 
 async function bootstrapHandler(): Promise<Handler> {
-  const app = await NestFactory.create(ProductModule);
+  const app = await NestFactory.create(CouponModule);
 
   app.setGlobalPrefix('v1');
   app.enableCors();

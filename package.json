@@ -37,6 +37,7 @@
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.1116.0",
     "aws-serverless-express": "^3.4.0",
+    "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -63,7 +64,8 @@
     "serverless": "^3.2.1",
     "swagger-ui-express": "^4.3.0",
     "typeorm": "^0.2.41",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

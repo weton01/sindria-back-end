@@ -1,7 +1,8 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
-import { JwtConfig, TypeormConfig } from '@app/common';
+import { envs, JwtConfig, TypeormConfig } from '@app/common';
 import { JwtStrategy } from '@app/utils';
+import { JunoEnvMode, JunoModule } from '@app/utils/adapters/juno/juno.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StoreEntity } from './entities/store';
@@ -14,7 +15,13 @@ import { StoreService } from './store.service';
       UserEntity, 
       AddressEntity,
       StoreEntity, 
-    ]),
+    ]), 
+    JunoModule.register({
+      CLIENT_ID: envs.JUNO_CLIENT_ID,
+      CLIENT_SECRET: envs.JUNO_CLIENT_SECRET,
+      MODE: JunoEnvMode.dev,
+      TOKEN: envs.JUNO_TOKEN,
+    }),
     TypeormConfig,
     JwtConfig,
   ],

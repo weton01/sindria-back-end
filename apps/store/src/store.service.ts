@@ -1,6 +1,7 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { MutationDto } from '@/inventory/mutation/dtos/mutation';
+import { JunoService } from '@app/utils/adapters/juno/juno.service';
 import { MessageErrors } from '@app/utils/messages';
 import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,6 +19,7 @@ export class StoreService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(AddressEntity)
     private readonly addressRepository: Repository<AddressEntity>,
+    private readonly junoService: JunoService,
   ) { }
 
   async create(userId: string, dto: StoreDto): Promise<StoreEntity> {
@@ -110,7 +112,9 @@ export class StoreService {
   }
 
   async find(): Promise<StoreEntity[]> {
-    return []
+    const token = await this.junoService.createAuthToken();
+    console.log(new Date(token?.data.expires_in))
+    return 
   }
 
 }

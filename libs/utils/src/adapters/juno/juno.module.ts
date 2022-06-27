@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { JunoService } from './juno.service';
 
-enum JunoEnvMode {
+export enum JunoEnvMode {
   dev = "dev",
   prod = "prod",
 }

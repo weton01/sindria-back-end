@@ -1,5 +1,6 @@
 import { AddressEntity } from '@/address/entities/address';
 import { CommentEntity } from '@/comment/entities/comment';
+import { CouponEntity } from '@/coupon/entities/coupon';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { OrderEntity } from '@/order/entities/order';
@@ -113,6 +114,9 @@ export class UserEntity {
 
   @OneToMany(() => MutationEntity, (mutation) => mutation.user)
   mutations: MutationEntity[];
+
+  @OneToMany(() => CouponEntity, (coupons) => coupons.user)
+  coupons: CouponEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;
