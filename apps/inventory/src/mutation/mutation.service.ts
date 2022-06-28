@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { VariationEntity } from '../variation/entities/variation';
 import { MutationDto } from './dtos/mutation';
 import { MutationEntity } from './entities/mutation';
 
@@ -21,17 +22,28 @@ export class MutationService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    @InjectRepository(VariationEntity)
+    private readonly variationRepository: Repository<VariationEntity>,
   ) { }
-
 
   async create(userId: string, productId: string, dto: MutationDto): Promise<any> {
     const ids = dto.variations.map(v => v.id)
     const product = await this.productRepository.findOne({ id: productId })
+    let feeTotal: number = 0.0;
 
     if (!product)
       throw new NotFoundException('produto não encontrado')
 
-    const mutations = await this.repository.find({ where: { product: { id: productId } }, relations: ['variations'] })
+    const mutations = await this.repository.find({
+      where: {
+        product: { id: productId }
+      },
+      relations: ['variations']
+    })
+
+    const foundVariations = await Promise.all(dto.variations.map(item =>
+      this.variationRepository.findOne({id: item.id})
+    ))
 
     mutations.forEach((item) => {
       const variations = item.variations.filter(item => ids.includes(item.id))
@@ -43,10 +55,15 @@ export class MutationService {
         throw new ConflictException('mutação já existente')
     })
 
+    foundVariations.forEach(item => {
+      feeTotal += item.netAmount
+    })
+
     const tempMutation = this.repository.create({
       ...dto,
-      product, 
-      user: {id: userId},
+      product,
+      feeTotal,
+      user: { id: userId },
     })
 
     return await this.repository.save(tempMutation)

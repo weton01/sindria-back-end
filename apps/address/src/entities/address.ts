@@ -1,11 +1,13 @@
 import { UserEntity } from '@/auth/entities/user';
 import { OrderEntity } from '@/order/entities/order';
+import { StoreEntity } from '@/store/entities/store';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -44,6 +46,9 @@ export class AddressEntity {
 
   @OneToMany(() => OrderEntity, (order) => order.address)
   orders: OrderEntity;
+
+  @OneToOne(() => StoreEntity, (store) => store.address)
+  store: OrderEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.addresses, {
     cascade: true,

@@ -4,7 +4,7 @@ import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsArray, IsEnum, IsNotEmpty, IsOptional, IsUUID, ValidateNested
+  IsArray, IsEnum, IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsUUID, ValidateNested
 } from 'class-validator';
 import { OrderStoreEntity } from '../entities/order-store';
 import { OrderStoreDto } from './orderStore';

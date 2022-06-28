@@ -51,9 +51,9 @@ export class ProductController {
 
   @Get('/')
   async findProduct(@Query() query: FindProductDto): Promise<any> {
-    const [items, count] = await this.productService.find(query);
+    const [items, count, filter] = await this.productService.filter(query);
 
-    return { items, count };
+    return { items, count, ...filter };
   }
 
   @Get('/creation/:id')

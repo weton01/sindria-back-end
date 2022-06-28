@@ -34,7 +34,7 @@ export class ReviewService {
     const newMean = await this.repository
       .createQueryBuilder('r')
       .select(['AVG(r.rating) as avgRating'])
-      .where(`r.productId = ${product.id}`)
+      .where(`r.product = '${product.id}'`)
       .getRawOne();
 
     product.reviewsQuantity += 1;

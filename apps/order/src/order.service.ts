@@ -4,7 +4,9 @@ import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { OrderStatus } from '@app/common/enums/order-status.';
+import { MessageErrors } from '@app/utils/messages';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, QueryRunner, Repository } from 'typeorm';
 
@@ -199,7 +201,7 @@ export class OrderService {
   ): Promise<[OrderEntity[], number]> {
     const { skip, take, relations, orderBy, select, where } = query;
 
-    return await this.repository.findAndCount({
+    const orders = await this.repository.findAndCount({
       where: {
         ...where,
         purchaser: { id: userId },
@@ -207,8 +209,51 @@ export class OrderService {
       order: orderBy,
       skip,
       take,
-      relations: [...relations],
+      relations: [ ...relations],
       select,
     });
+
+    const newOrders = orders[0].map(order => {
+      const isProccessed = order.ordersStores.find(os => os.trackingStatus === OrderStatus.processed)
+      const isShipped = order.ordersStores.find(os => os.trackingStatus === OrderStatus.shipped)
+      const isReceived = order.ordersStores.find(os => os.trackingStatus === OrderStatus.received)
+
+      if(isProccessed)
+        order.trackingStatus = OrderStatus.processed;
+      
+      if(isShipped)
+        order.trackingStatus = OrderStatus.shipped;
+      
+      if(isReceived)
+        order.trackingStatus = OrderStatus.received;
+      
+      return order
+    })
+    
+    return [newOrders, orders[1]]
+  }
+
+  async findById(userId: string, id: string) {
+    const [foundUser, foundOrder] = await Promise.all([
+      this.userRepository.findOne({ id: userId }),
+      this.repository.findOne({
+        where: { id }, relations: [
+          'address',
+          'purchaser', 
+          'ordersStores', 
+          'ordersStores.orderProducts'
+        ]
+      })
+    ])
+
+    if (foundUser.id !== foundOrder.purchaser.id) {
+      throw new ForbiddenException(MessageErrors.forbidenToAccess)
+    }
+
+    if( !foundOrder){
+      throw new NotFoundException('compra não encontrada')
+    }
+
+    return foundOrder
   }
 }

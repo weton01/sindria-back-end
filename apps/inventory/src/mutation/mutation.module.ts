@@ -13,7 +13,8 @@ import { MutationService } from './mutation.service';
     TypeOrmModule.forFeature([
       UserEntity, 
       MutationEntity,
-      ProductEntity
+      ProductEntity,
+      VariationEntity
     ]),
   ],
   controllers: [MutationController],
