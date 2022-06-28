@@ -4,8 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsISO8601,
   IsNotEmpty,
   IsNumber, 
+  IsOptional, 
   IsString, 
   IsUUID,
   Min,
@@ -31,7 +33,7 @@ export class OrderStoreDto {
   @ApiProperty()
   @IsNumber()
   @Min(0)
-  @IsNotEmpty()
+  @IsNotEmpty() 
   totalAmount: number;
 
   @ApiProperty()
@@ -39,6 +41,17 @@ export class OrderStoreDto {
   @Min(0)
   @IsNotEmpty()
   shippingAmount: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsISO8601()
+  trackingEstimated: Date;
+  
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  feeAmount: number;
   
   @ApiProperty()
   @IsNotEmpty()
