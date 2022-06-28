@@ -1,14 +1,17 @@
 import { AddressEntity } from '@/address/entities/address';
 import { CommentEntity } from '@/comment/entities/comment';
+import { CouponEntity } from '@/coupon/entities/coupon';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { OrderStoreEntity } from '@/order/entities/order-store';
+import { ProductEntity } from '@/product/entities/product';
 import { ReviewEntity } from '@/review/entities/review';
+import { StoreEntity } from '@/store/entities/store';
 import { UserTypes } from '@app/common/enums/user-type';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { ProductEntity } from 'apps/product/src/entities/product';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'; 
+
 
 import {
   Entity,
@@ -17,6 +20,8 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity({ name: 'users' })
@@ -60,6 +65,10 @@ export class UserEntity {
   isFacebook: boolean;
 
   @ApiHideProperty()
+  @Column({ default: false  })
+  isStore: boolean;
+
+  @ApiHideProperty()
   @Column({
     type: 'enum',
     enum: UserTypes,
@@ -75,13 +84,17 @@ export class UserEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
+  @OneToOne(() => StoreEntity, (store) => store.user)
+  @JoinColumn()
+  store: StoreEntity;
+
   @OneToMany(() => AddressEntity, (address) => address.user)
   addresses: AddressEntity[];
 
-  @OneToMany(() => CreditCardEntity, (address) => address.user)
-  creditCards: AddressEntity[];
+  @OneToMany(() => CreditCardEntity, (credit) => credit.user)
+  creditCards: CreditCardEntity[];
 
-  @OneToMany(() => ProductEntity, (address) => address.user)
+  @OneToMany(() => ProductEntity, (product) => product.user)
   products: ProductEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.user)
@@ -101,6 +114,9 @@ export class UserEntity {
 
   @OneToMany(() => MutationEntity, (mutation) => mutation.user)
   mutations: MutationEntity[];
+
+  @OneToMany(() => CouponEntity, (coupons) => coupons.user)
+  coupons: CouponEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;

@@ -33,6 +33,7 @@ export class AuthService {
     'password',
     'updated_at',
     'username',
+    'isStore'
   ];
 
   constructor(
@@ -41,7 +42,7 @@ export class AuthService {
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
@@ -104,12 +105,13 @@ export class AuthService {
     });
   }
 
-  async auth(authDto: AuthUserDto): Promise<string> {
+  async auth(authDto: AuthUserDto): Promise<any> {
     const { email, password } = authDto;
 
     const user = await this.repository.findOne({
       where: { email },
       select: this.userSelect,
+      relations: ['store']
     });
 
     if (!user) throw new NotFoundException('e-mail não encontrado');
@@ -135,10 +137,17 @@ export class AuthService {
       });
     }
 
-    return await this.jwtService.sign({
+    const token = await this.jwtService.sign({
       email: user.email,
       id: user.id,
     });
+
+    return { token, user: { 
+      id: user.id, 
+      email: user.email,  
+      isStore: user.isStore, 
+      store: user.store
+    } }
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
