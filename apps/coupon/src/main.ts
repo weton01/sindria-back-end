@@ -26,7 +26,7 @@ if (envs.NODE_ENV == 'development') {
     const document = SwaggerModule.createDocument(app, config);
 
     fs.writeFile(
-      'docs/product.json',
+      'docs/coupon.json',
       JSON.stringify(document),
       'utf8',
       () => ({}),

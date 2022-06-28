@@ -1,4 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
+import { UserTypes } from '@app/common';
 import { MessageErrors } from '@app/utils/messages';
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,11 +17,23 @@ export class CouponService {
     private readonly userRepository: Repository<UserEntity>,
   ) { }
 
-  async create(userId: string, dto: CouponDto): Promise<CouponEntity> {
-    const foundUser = await this.userRepository.findOne({ id: userId });
+  async create(userId: string, toId: string, dto: CouponDto,): Promise<CouponEntity> {
+    const [foundUser, foundAdmin] = await Promise.all([
+      this.userRepository.findOne({ id: toId }),
+      this.userRepository.findOne({ id: userId })
+    ])
 
-    if (!foundUser)
+    if (!foundUser) {
       throw new NotFoundException(MessageErrors.userNotFound);
+    }
+
+    if (!foundAdmin) {
+      throw new NotFoundException(MessageErrors.userNotFound);
+    }
+
+    if (foundAdmin.type !== UserTypes.admin) {
+      throw new ForbiddenException(MessageErrors.forbidenToAccess);
+    }
 
     const tempCoupon = this.repository.create({
       ...dto,
@@ -33,7 +46,7 @@ export class CouponService {
   async useCoupon(userId: string, id: string): Promise<CouponEntity> {
     const [foundUser, foundCoupon] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
-      this.repository.findOne({ id }),
+      this.repository.findOne({ where: {id}, relations: ['user'] }),
     ])
 
     if (!foundUser) {
@@ -43,8 +56,8 @@ export class CouponService {
     if (!foundCoupon) {
       throw new NotFoundException('cupom não encontrado');
     }
-
-    if (foundCoupon.user.id !== foundUser.id) {
+ 
+    if (foundCoupon?.user?.id !== foundUser.id) {
       throw new ForbiddenException(MessageErrors.forbidenToAccess)
     }
 
