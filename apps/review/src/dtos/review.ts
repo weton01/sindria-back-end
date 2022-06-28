@@ -6,6 +6,7 @@ import {
   Min,
   Max,
   IsString,
+  IsUrl,
 } from 'class-validator';
 
 export class ReviewDto {
