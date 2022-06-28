@@ -1,8 +1,8 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
-import { StoreEntity } from '@/store/entities/store';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
+import { OrderStatus } from '@app/common/enums/order-status.';
 
 import {
   Column,
@@ -28,6 +28,13 @@ export class OrderEntity {
     enum: InvoiceTypes,
   })
   invoiceType: InvoiceTypes;
+  
+  @Column({
+    type: 'enum',
+    enum: OrderStatus,
+    default: OrderStatus.processed,
+  })
+  trackingStatus: OrderStatus;
 
   @CreateDateColumn()
   created_at?: Date;
