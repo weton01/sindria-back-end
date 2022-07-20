@@ -2,11 +2,16 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BcryptAdapter, JwtStrategy } from '@app/utils';
-import { JwtConfig, MailerConfig, TypeormConfig } from '@app/common';
+import {
+  JwtConfig,
+  JwtStrategy,
+  MailerConfig,
+  TypeormConfig,
+} from '@app/common';
 import { UserEntity } from './entities/user';
-import { GoogleStrategy } from '@app/utils/passports/google';
-import { FacebookStrategy } from '@app/utils/passports/facebook';
+import { GoogleStrategy } from '@app/common/passports/google';
+import { FacebookStrategy } from '@app/common/passports/facebook';
+import { BcryptAdapter } from '@app/utils/bcrypt/bcrypt';
 
 @Module({
   imports: [

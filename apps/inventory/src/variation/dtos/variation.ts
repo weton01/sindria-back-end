@@ -1,6 +1,6 @@
 import { VariationSizes } from '@app/common/enums/variation-size';
 import { VariationTypes } from '@app/common/enums/variation-type';
-import { MessageErrors, RegexTypes } from '@app/utils/messages';
+import { MessageErrors, RegexTypes } from '@app/common/messages';
 import { ApiProperty } from '@nestjs/swagger';
 
 import {

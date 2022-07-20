@@ -1,7 +1,11 @@
 import { UserEntity } from '@/auth/entities/user';
 import { UserTypes } from '@app/common';
-import { MessageErrors } from '@app/utils/messages';
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { MessageErrors } from '@app/common/messages';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CouponDto } from './dtos/coupon';
@@ -15,13 +19,17 @@ export class CouponService {
     private readonly repository: Repository<CouponEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) { }
+  ) {}
 
-  async create(userId: string, toId: string, dto: CouponDto,): Promise<CouponEntity> {
+  async create(
+    userId: string,
+    toId: string,
+    dto: CouponDto,
+  ): Promise<CouponEntity> {
     const [foundUser, foundAdmin] = await Promise.all([
       this.userRepository.findOne({ id: toId }),
-      this.userRepository.findOne({ id: userId })
-    ])
+      this.userRepository.findOne({ id: userId }),
+    ]);
 
     if (!foundUser) {
       throw new NotFoundException(MessageErrors.userNotFound);
@@ -37,8 +45,8 @@ export class CouponService {
 
     const tempCoupon = this.repository.create({
       ...dto,
-      user: foundUser
-    })
+      user: foundUser,
+    });
 
     return await this.repository.save(tempCoupon);
   }
@@ -46,8 +54,8 @@ export class CouponService {
   async useCoupon(userId: string, id: string): Promise<CouponEntity> {
     const [foundUser, foundCoupon] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
-      this.repository.findOne({ where: {id}, relations: ['user'] }),
-    ])
+      this.repository.findOne({ where: { id }, relations: ['user'] }),
+    ]);
 
     if (!foundUser) {
       throw new NotFoundException(MessageErrors.userNotFound);
@@ -56,9 +64,9 @@ export class CouponService {
     if (!foundCoupon) {
       throw new NotFoundException('cupom não encontrado');
     }
- 
+
     if (foundCoupon?.user?.id !== foundUser.id) {
-      throw new ForbiddenException(MessageErrors.forbidenToAccess)
+      throw new ForbiddenException(MessageErrors.forbidenToAccess);
     }
 
     foundCoupon.used = true;
@@ -81,21 +89,24 @@ export class CouponService {
     }
 
     if (foundCoupon.user.id !== foundUser.id) {
-      throw new ForbiddenException(MessageErrors.forbidenToAccess)
+      throw new ForbiddenException(MessageErrors.forbidenToAccess);
     }
 
     return await this.repository.delete(id);
   }
 
-  async find(userId: string, query: FindCouponDto,): Promise<[CouponEntity[], number]> {
+  async find(
+    userId: string,
+    query: FindCouponDto,
+  ): Promise<[CouponEntity[], number]> {
     const { skip, take } = query;
 
     return this.repository.findAndCount({
       skip,
       take,
       where: {
-        user: { id: userId }
-      }
+        user: { id: userId },
+      },
     });
   }
 }

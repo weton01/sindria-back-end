@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
-import { TypeormConfig } from '@app/common';
-import { CypervModule, JwtStrategy } from '@app/utils';
+import { JwtStrategy, TypeormConfig } from '@app/common';
+import { CypervModule } from '@app/utils/cyperv/cyperv.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreditCardController } from './credit-card.controller';

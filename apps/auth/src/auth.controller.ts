@@ -1,5 +1,4 @@
-import { BcryptAdapter } from '@app/utils';
-import { JwtAuthGuard } from '@app/utils/guards';
+import { JwtAuthGuard } from '@app/common/guards';
 
 import {
   Body,
@@ -37,6 +36,7 @@ import { RecoverPasswordDto } from './dtos/recover-password.dto';
 import { UserEntity } from './entities/user';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
+import { BcryptAdapter } from '@app/utils/bcrypt/bcrypt';
 
 @Controller()
 export class AuthController {
@@ -44,7 +44,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   @ApiCreatedResponse({
     type: UserEntity,

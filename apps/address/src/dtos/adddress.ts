@@ -1,4 +1,4 @@
-import { MessageErrors, RegexTypes } from '@app/utils/messages';
+import { MessageErrors, RegexTypes } from '@app/common/messages';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsOptional, Matches } from 'class-validator';
 

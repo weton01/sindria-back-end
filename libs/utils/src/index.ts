@@ -1,3 +1,2 @@
-export * from './adapters';
-export * from './passports';
-export * from './guards';
+export * from '../../common/src/passports';
+export * from '../../common/src/guards';

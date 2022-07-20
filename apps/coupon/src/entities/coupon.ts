@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { CouponTypes } from '@app/common/enums/coupon-type';
-import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { floatTransformer } from '@app/common/transformers/float';
 import {
   Column,
   CreateDateColumn,
@@ -19,9 +19,9 @@ export class CouponEntity {
   description: string;
 
   @Column({
-    type: 'numeric', 
-    precision: 10, 
-    scale: 2, 
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
     transformer: floatTransformer,
   })
   discount: number;
@@ -31,15 +31,15 @@ export class CouponEntity {
     enum: CouponTypes,
     default: CouponTypes.percentage,
   })
-  type: CouponTypes
+  type: CouponTypes;
 
   @Column({
-    type: 'date'
+    type: 'date',
   })
   expiresAt: Date;
 
   @Column({
-    default: false
+    default: false,
   })
   used: boolean;
 
@@ -51,7 +51,7 @@ export class CouponEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.coupons)
   user: UserEntity;
- 
+
   constructor(entity?: Partial<CouponEntity>) {
     this.id = entity?.id;
   }

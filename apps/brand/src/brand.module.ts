@@ -1,6 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
-import { JwtConfig, TypeormConfig } from '@app/common';
-import { JwtStrategy } from '@app/utils';
+import { JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BrandController } from './brand.controller';

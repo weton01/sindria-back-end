@@ -2,7 +2,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ProductEntity } from '@/product/entities/product';
-import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { floatTransformer } from '@app/common/transformers/float';
 
 import {
   Column,
@@ -25,9 +25,9 @@ export class MutationEntity {
   stock: number;
 
   @Column({
-    type: 'numeric', 
-    precision: 10, 
-    scale: 2, 
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
     transformer: floatTransformer,
   })
   feeTotal: number;

@@ -1,5 +1,5 @@
 import { FilterDto } from '@app/common';
-import { BcryptAdapter } from '@app/utils';
+import { BcryptAdapter } from '@app/utils/bcrypt/bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
@@ -33,7 +33,7 @@ export class AuthService {
     'password',
     'updated_at',
     'username',
-    'isStore'
+    'isStore',
   ];
 
   constructor(
@@ -42,7 +42,7 @@ export class AuthService {
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
@@ -111,7 +111,7 @@ export class AuthService {
     const user = await this.repository.findOne({
       where: { email },
       select: this.userSelect,
-      relations: ['store']
+      relations: ['store'],
     });
 
     if (!user) throw new NotFoundException('e-mail não encontrado');
@@ -142,12 +142,15 @@ export class AuthService {
       id: user.id,
     });
 
-    return { token, user: { 
-      id: user.id, 
-      email: user.email,  
-      isStore: user.isStore, 
-      store: user.store
-    } }
+    return {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        isStore: user.isStore,
+        store: user.store,
+      },
+    };
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {

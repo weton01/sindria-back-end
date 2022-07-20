@@ -5,8 +5,13 @@ import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { OrderStatus } from '@app/common/enums/order-status.';
-import { MessageErrors } from '@app/utils/messages';
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { MessageErrors } from '@app/common/messages';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, QueryRunner, Repository } from 'typeorm';
 
@@ -36,35 +41,34 @@ export class OrderService {
     @InjectRepository(MutationEntity)
     private readonly mutationRepository: Repository<MutationEntity>,
     @InjectRepository(ProductEntity)
-    private readonly productRepository: Repository<ProductEntity>
-  ) { }
+    private readonly productRepository: Repository<ProductEntity>,
+  ) {}
 
   private createOrderProducts(
     orderProducts: OrderProductEntity[],
-    queryRunner: QueryRunner
+    queryRunner: QueryRunner,
   ) {
     return orderProducts.map(async (p) => {
       const product = await this.productRepository.findOne({
         where: { id: p.product.id },
-        relations: ['user', 'tags', 'categories', 'brand']
-      })
+        relations: ['user', 'tags', 'categories', 'brand'],
+      });
 
-      if (!product)
-        throw new BadRequestException('produto não encontrado')
+      if (!product) throw new BadRequestException('produto não encontrado');
 
-      p.user = product.user
+      p.user = product.user;
 
       const mutation = await this.mutationRepository.findOne({
         where: { id: p.mutation.id },
-        relations: ['variations']
-      })
+        relations: ['variations'],
+      });
 
       if (!mutation) {
-        throw new BadRequestException('mutação não encontrada')
+        throw new BadRequestException('mutação não encontrada');
       }
 
-      if ((mutation.stock - p.quantity) < 0) {
-        throw new BadRequestException('produto em estoque insuficiente')
+      if (mutation.stock - p.quantity < 0) {
+        throw new BadRequestException('produto em estoque insuficiente');
       }
 
       mutation.stock = mutation.stock - p.quantity;
@@ -82,39 +86,32 @@ export class OrderService {
         brand: product.brand,
         categories: product.categories,
         user: product.user,
-        freezeProduct: { product, mutation }
+        freezeProduct: { product, mutation },
       });
 
       return queryRunner.manager.save(newProduct);
-    })
+    });
   }
 
   private createOrderStores(
     orderStores: OrderStoreEntity[],
-    queryRunner: QueryRunner
+    queryRunner: QueryRunner,
   ) {
     return orderStores.map(async (ost) => {
-
       const orderProducts = await Promise.all(
-        this.createOrderProducts(
-          ost.orderProducts,
-          queryRunner
-        )
-      )
+        this.createOrderProducts(ost.orderProducts, queryRunner),
+      );
 
       const newStore = this.orderStoreRepository.create({
         ...ost,
-        orderProducts
+        orderProducts,
       });
 
       return queryRunner.manager.save(newStore);
-    })
+    });
   }
 
-  async createCreditCardOrder(
-    userId: string,
-    dto: OrderDto,
-  ): Promise<any> {
+  async createCreditCardOrder(userId: string, dto: OrderDto): Promise<any> {
     const [foundUser, foundCreditCard, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.creditCardRepository.findOne({ id: dto.creditCard.id }),
@@ -133,7 +130,7 @@ export class OrderService {
 
     try {
       const orderStores = await Promise.all(
-        this.createOrderStores(dto.orderStores, queryRunner)
+        this.createOrderStores(dto.orderStores, queryRunner),
       );
 
       const newOrder = this.repository.create({
@@ -148,10 +145,10 @@ export class OrderService {
       await queryRunner.manager.save(newOrder);
       await queryRunner.commitTransaction();
 
-      return newOrder
+      return newOrder;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw err
+      throw err;
     } finally {
       await queryRunner.release();
     }
@@ -172,7 +169,7 @@ export class OrderService {
 
     try {
       const orderStores = await Promise.all(
-        this.createOrderStores(dto.orderStores, queryRunner)
+        this.createOrderStores(dto.orderStores, queryRunner),
       );
 
       const newOrder = this.repository.create({
@@ -186,10 +183,10 @@ export class OrderService {
       await queryRunner.manager.save(newOrder);
       await queryRunner.commitTransaction();
 
-      return newOrder
+      return newOrder;
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw err
+      throw err;
     } finally {
       await queryRunner.release();
     }
@@ -209,51 +206,55 @@ export class OrderService {
       order: orderBy,
       skip,
       take,
-      relations: [ ...relations],
+      relations: [...relations],
       select,
     });
 
-    const newOrders = orders[0].map(order => {
-      const isProccessed = order.ordersStores.find(os => os.trackingStatus === OrderStatus.processed)
-      const isShipped = order.ordersStores.find(os => os.trackingStatus === OrderStatus.shipped)
-      const isReceived = order.ordersStores.find(os => os.trackingStatus === OrderStatus.received)
+    const newOrders = orders[0].map((order) => {
+      const isProccessed = order.ordersStores.find(
+        (os) => os.trackingStatus === OrderStatus.processed,
+      );
+      const isShipped = order.ordersStores.find(
+        (os) => os.trackingStatus === OrderStatus.shipped,
+      );
+      const isReceived = order.ordersStores.find(
+        (os) => os.trackingStatus === OrderStatus.received,
+      );
 
-      if(isProccessed)
-        order.trackingStatus = OrderStatus.processed;
-      
-      if(isShipped)
-        order.trackingStatus = OrderStatus.shipped;
-      
-      if(isReceived)
-        order.trackingStatus = OrderStatus.received;
-      
-      return order
-    })
-    
-    return [newOrders, orders[1]]
+      if (isProccessed) order.trackingStatus = OrderStatus.processed;
+
+      if (isShipped) order.trackingStatus = OrderStatus.shipped;
+
+      if (isReceived) order.trackingStatus = OrderStatus.received;
+
+      return order;
+    });
+
+    return [newOrders, orders[1]];
   }
 
   async findById(userId: string, id: string) {
     const [foundUser, foundOrder] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.repository.findOne({
-        where: { id }, relations: [
+        where: { id },
+        relations: [
           'address',
-          'purchaser', 
-          'ordersStores', 
-          'ordersStores.orderProducts'
-        ]
-      })
-    ])
+          'purchaser',
+          'ordersStores',
+          'ordersStores.orderProducts',
+        ],
+      }),
+    ]);
 
     if (foundUser.id !== foundOrder.purchaser.id) {
-      throw new ForbiddenException(MessageErrors.forbidenToAccess)
+      throw new ForbiddenException(MessageErrors.forbidenToAccess);
     }
 
-    if( !foundOrder){
-      throw new NotFoundException('compra não encontrada')
+    if (!foundOrder) {
+      throw new NotFoundException('compra não encontrada');
     }
 
-    return foundOrder
+    return foundOrder;
   }
 }

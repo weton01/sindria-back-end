@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { ProductEntity } from '@/product/entities/product';
-import { MessageErrors } from '@app/utils/messages';
+import { MessageErrors } from '@app/common/messages';
 import {
   ForbiddenException,
   Injectable,
@@ -11,7 +11,7 @@ import { Repository, TreeRepository } from 'typeorm';
 import { CreateCommentDto } from './dtos/create';
 import { FindCommentDto } from './dtos/find';
 import { CommentEntity } from './entities/comment';
-import { IsNull, Not } from "typeorm";
+import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class CommentService {
@@ -85,15 +85,18 @@ export class CommentService {
     return {};
   }
 
-  async find(query: FindCommentDto, productId: string): Promise<[CommentEntity[], number]> {
-    const { skip, take, orderBy, } = query;
+  async find(
+    query: FindCommentDto,
+    productId: string,
+  ): Promise<[CommentEntity[], number]> {
+    const { skip, take, orderBy } = query;
 
     const comments = await this.repository.findAndCount({
       order: orderBy,
       skip,
       take,
-      where: {product: {id: productId}, parent: IsNull()},
-      relations: ['user']
+      where: { product: { id: productId }, parent: IsNull() },
+      relations: ['user'],
     });
 
     const commentsChildrens = await Promise.all(
@@ -102,6 +105,6 @@ export class CommentService {
       ),
     );
 
-     return [commentsChildrens, comments[1]]
+    return [commentsChildrens, comments[1]];
   }
 }

@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { UserTypes } from '@app/common';
-import { MessageErrors } from '@app/utils/messages';
+import { MessageErrors } from '@app/common/messages';
 import {
   ConflictException,
   ForbiddenException,
