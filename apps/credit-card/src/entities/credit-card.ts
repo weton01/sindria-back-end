@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { OrderEntity } from '@/order/entities/order';
-import { RegexTypes } from '@app/utils/messages';
+import { RegexTypes } from '@app/common/messages';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { Matches } from 'class-validator';
 import {

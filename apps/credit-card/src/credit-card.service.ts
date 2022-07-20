@@ -1,5 +1,4 @@
 import { UserEntity } from '@/auth/entities/user';
-import { CypervService } from '@app/utils/adapters/cyperv/cyperv.service';
 import {
   ConflictException,
   Injectable,
@@ -11,6 +10,7 @@ import { CreateCreditCardDto } from './dtos/create';
 import { CreditCardEntity } from './entities/credit-card';
 import creditCardType from 'credit-card-type';
 import { FindCreditCardDto } from './dtos/find';
+import { CypervService } from '@app/utils/cyperv/cyperv.service';
 
 @Injectable()
 export class CreditCardService {

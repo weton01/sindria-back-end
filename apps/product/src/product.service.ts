@@ -1,5 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
-import { MessageErrors } from '@app/utils/messages';
+import { MessageErrors } from '@app/common/messages';
 import {
   ConflictException,
   ForbiddenException,
@@ -33,34 +33,34 @@ export class ProductService {
     private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(ReviewEntity)
     private readonly reviewRepository: Repository<ReviewEntity>,
-  ) { }
+  ) {}
 
-  private formatQueryString(prefix: string, str: string[], operator: string): string {
-    let newStr = ``
+  private formatQueryString(
+    prefix: string,
+    str: string[],
+    operator: string,
+  ): string {
+    let newStr = ``;
 
     str.forEach((s, index) => {
-      if (index === 0)
-        newStr += `${prefix} = '${s}'`
-      else
-        newStr += `${operator} ${prefix} = '${s}'`
-    })
+      if (index === 0) newStr += `${prefix} = '${s}'`;
+      else newStr += `${operator} ${prefix} = '${s}'`;
+    });
 
-    return newStr
+    return newStr;
   }
 
   private formatQueryArray(str: string[]): string {
-    let newStr = ``
+    let newStr = ``;
 
     str.forEach((s, index) => {
-      if (index === 0 || !newStr)
-        newStr += `${s}`
+      if (index === 0 || !newStr) newStr += `${s}`;
       else {
-        if (s)
-          newStr += `AND ${s}`
+        if (s) newStr += `AND ${s}`;
       }
-    })
+    });
 
-    return newStr
+    return newStr;
   }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
@@ -142,11 +142,7 @@ export class ProductService {
   async findOnCreation(id: string): Promise<ProductEntity> {
     return await this.repository.findOne({
       where: { id },
-      relations: [
-        'variations',
-        'user',
-        'mutations',
-      ],
+      relations: ['variations', 'user', 'mutations'],
     });
   }
 
@@ -160,11 +156,11 @@ export class ProductService {
         'categories',
         'brand',
         'mutations',
-        'mutations.variations'
+        'mutations.variations',
       ],
     });
 
-    const splice = product.name.split(' ')[0]
+    const splice = product.name.split(' ')[0];
 
     const [bestSalersRelated, foundOrderProduct] = await Promise.all([
       this.repository.find({
@@ -172,7 +168,7 @@ export class ProductService {
         order: { salesQuantity: 'DESC' },
         relations: ['mutations', 'mutations.variations', 'user'],
         skip: 0,
-        take: 3
+        take: 3,
       }),
       this.orderProductRepository.findOne({
         where: { product },
@@ -183,22 +179,22 @@ export class ProductService {
           'orderStore.orderProducts.product.user',
           'orderStore.orderProducts.mutation',
           'orderStore.orderProducts.mutation.variations',
-        ]
-      })
-    ])
+        ],
+      }),
+    ]);
 
-    let relatedProducts
+    let relatedProducts;
 
     if (!foundOrderProduct) {
-      relatedProducts = []
+      relatedProducts = [];
     } else {
       if (!foundOrderProduct.orderStore) {
-        relatedProducts = []
+        relatedProducts = [];
       } else {
         if (!foundOrderProduct.orderStore.orderProducts) {
-          relatedProducts = []
+          relatedProducts = [];
         } else {
-          relatedProducts = foundOrderProduct.orderStore.orderProducts
+          relatedProducts = foundOrderProduct.orderStore.orderProducts;
         }
       }
     }
@@ -206,8 +202,8 @@ export class ProductService {
     return {
       product,
       bestSalersRelated,
-      relatedProducts
-    }
+      relatedProducts,
+    };
   }
 
   async find(query: FindProductDto): Promise<[ProductEntity[], number]> {
@@ -225,112 +221,144 @@ export class ProductService {
 
   async filter(query: FindProductDto): Promise<[ProductEntity[], number, any]> {
     const { skip, take, orderBy, where } = query;
-    let qParams = new URLSearchParams(where)
+    const qParams = new URLSearchParams(where);
 
-    const hasName = qParams.has('p.name')
-    const hasMinAmount = qParams.has('p.minAmount')
-    const hasMaxAmount = qParams.has('p.maxAmount')
-    const hasCategories = qParams.has('p.category')
-    const hasTags = qParams.has('p.tag')
-    const hasVariations = qParams.has('p.variation')
-    const hasBrands = qParams.has('p.brand')
+    const hasName = qParams.has('p.name');
+    const hasMinAmount = qParams.has('p.minAmount');
+    const hasMaxAmount = qParams.has('p.maxAmount');
+    const hasCategories = qParams.has('p.category');
+    const hasTags = qParams.has('p.tag');
+    const hasVariations = qParams.has('p.variation');
+    const hasBrands = qParams.has('p.brand');
 
     const newQueryArray = [
-      hasCategories ?
-        this.formatQueryString('c.id', qParams.getAll('p.category'), 'OR') : ``,
-      hasTags ?
-        this.formatQueryString('t.id', qParams.getAll('p.tag'), 'OR') : ``,
-      hasVariations ?
-        this.formatQueryString('v.id', qParams.getAll('p.variation'), 'OR') : ``,
-      hasBrands ?
-        this.formatQueryString('b.id', qParams.getAll('p.brand'), 'OR') : ``,
-      hasName ?
-        `p.name LIKE '%${qParams.get('p.name')}%'` : ``,
-      hasMinAmount && hasMaxAmount ?
-        `p.netAmount >= ${qParams.get('p.minAmount')} AND 
-        p.netAmount <= ${qParams.get('p.maxAmount')}` : ``
-    ]
+      hasCategories
+        ? this.formatQueryString('c.id', qParams.getAll('p.category'), 'OR')
+        : ``,
+      hasTags
+        ? this.formatQueryString('t.id', qParams.getAll('p.tag'), 'OR')
+        : ``,
+      hasVariations
+        ? this.formatQueryString('v.id', qParams.getAll('p.variation'), 'OR')
+        : ``,
+      hasBrands
+        ? this.formatQueryString('b.id', qParams.getAll('p.brand'), 'OR')
+        : ``,
+      hasName ? `p.name LIKE '%${qParams.get('p.name')}%'` : ``,
+      hasMinAmount && hasMaxAmount
+        ? `p.netAmount >= ${qParams.get('p.minAmount')} AND 
+        p.netAmount <= ${qParams.get('p.maxAmount')}`
+        : ``,
+    ];
 
     const productQuery = [
-      hasCategories ?
-        this.formatQueryString('ProductEntity_ProductEntity__categories.categoriesId', qParams.getAll('p.category'), 'OR') : ``,
-      hasTags ?
-        this.formatQueryString('ProductEntity_ProductEntity__tags.tagsId', qParams.getAll('p.tag'), 'OR') : ``,
-      hasVariations ?
-        this.formatQueryString('ProductEntity__variations.id', qParams.getAll('p.variation'), 'OR') : ``,
-      hasBrands ?
-        this.formatQueryString('ProductEntity__brand.id', qParams.getAll('p.brand'), 'OR') : ``,
-      hasName ?
-        `ProductEntity.name LIKE '%${qParams.get('p.name')}%'` : ``,
-      hasMinAmount && hasMaxAmount ?
-        `ProductEntity.netAmount >= ${qParams.get('p.minAmount')} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}` : ``
-    ]
+      hasCategories
+        ? this.formatQueryString(
+            'ProductEntity_ProductEntity__categories.categoriesId',
+            qParams.getAll('p.category'),
+            'OR',
+          )
+        : ``,
+      hasTags
+        ? this.formatQueryString(
+            'ProductEntity_ProductEntity__tags.tagsId',
+            qParams.getAll('p.tag'),
+            'OR',
+          )
+        : ``,
+      hasVariations
+        ? this.formatQueryString(
+            'ProductEntity__variations.id',
+            qParams.getAll('p.variation'),
+            'OR',
+          )
+        : ``,
+      hasBrands
+        ? this.formatQueryString(
+            'ProductEntity__brand.id',
+            qParams.getAll('p.brand'),
+            'OR',
+          )
+        : ``,
+      hasName ? `ProductEntity.name LIKE '%${qParams.get('p.name')}%'` : ``,
+      hasMinAmount && hasMaxAmount
+        ? `ProductEntity.netAmount >= ${qParams.get(
+            'p.minAmount',
+          )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
+        : ``,
+    ];
 
-    const [products, minMax, categories, tags, sizes, brands] = await Promise.all([
-      this.repository.findAndCount({
-        where: (qb) => {
-          qb.where(this.formatQueryArray(productQuery))
-        },
-        skip,
-        take,
-        order: orderBy,
-        relations: ['categories', 'tags', 'brand', 'variations']
-      }),
-      this.repository
-        .createQueryBuilder('p')
-        .select(['MIN(p.netAmount) as minAmount', 'MAX(p.netAmount) as maxAmount'])
-        .leftJoin('p.categories', 'c')
-        .leftJoin('p.tags', 't')
-        .leftJoin('p.brand', 'b')
-        .leftJoin('p.variations', 'v')
-        .where(this.formatQueryArray(newQueryArray))
-        .getRawMany(),
-      this.categoryRepository
-        .createQueryBuilder('c')
-        .select(['c.name', 'p.id'])
-        .leftJoin('c.products', 'p')
-        .leftJoin('p.tags', 't')
-        .leftJoin('p.brand', 'b')
-        .leftJoin('p.variations', 'v')
-        .where(this.formatQueryArray(newQueryArray))
-        .groupBy('c.id')
-        .getRawMany(),
-      this.repository
-        .createQueryBuilder('p')
-        .select(['t.id', 't.name'])
-        .leftJoin('p.categories', 'c')
-        .leftJoin('p.tags', 't')
-        .leftJoin('p.brand', 'b')
-        .leftJoin('p.variations', 'v')
-        .where(this.formatQueryArray(newQueryArray))
-        .groupBy('t.id')
-        .getRawMany(),
-      this.repository
-        .createQueryBuilder('p')
-        .select(['v.id', 'v.size'])
-        .leftJoin('p.categories', 'c')
-        .leftJoin('p.tags', 't')
-        .leftJoin('p.brand', 'b')
-        .leftJoin('p.variations', 'v')
-        .where(this.formatQueryArray(newQueryArray))
-        .andWhere("v.type = 'size'")
-        .groupBy('v.id')
-        .getRawMany(),
-      this.repository
-        .createQueryBuilder('p')
-        .select(['b.id', 'b.name'])
-        .leftJoin('p.categories', 'c')
-        .leftJoin('p.tags', 't')
-        .leftJoin('p.brand', 'b')
-        .leftJoin('p.variations', 'v')
-        .where(this.formatQueryArray(newQueryArray))
-        .groupBy('b.id')
-        .getRawMany(),
-    ])
+    const [products, minMax, categories, tags, sizes, brands] =
+      await Promise.all([
+        this.repository.findAndCount({
+          where: (qb) => {
+            qb.where(this.formatQueryArray(productQuery));
+          },
+          skip,
+          take,
+          order: orderBy,
+          relations: ['categories', 'tags', 'brand', 'variations'],
+        }),
+        this.repository
+          .createQueryBuilder('p')
+          .select([
+            'MIN(p.netAmount) as minAmount',
+            'MAX(p.netAmount) as maxAmount',
+          ])
+          .leftJoin('p.categories', 'c')
+          .leftJoin('p.tags', 't')
+          .leftJoin('p.brand', 'b')
+          .leftJoin('p.variations', 'v')
+          .where(this.formatQueryArray(newQueryArray))
+          .getRawMany(),
+        this.categoryRepository
+          .createQueryBuilder('c')
+          .select(['c.name', 'p.id'])
+          .leftJoin('c.products', 'p')
+          .leftJoin('p.tags', 't')
+          .leftJoin('p.brand', 'b')
+          .leftJoin('p.variations', 'v')
+          .where(this.formatQueryArray(newQueryArray))
+          .groupBy('c.id')
+          .getRawMany(),
+        this.repository
+          .createQueryBuilder('p')
+          .select(['t.id', 't.name'])
+          .leftJoin('p.categories', 'c')
+          .leftJoin('p.tags', 't')
+          .leftJoin('p.brand', 'b')
+          .leftJoin('p.variations', 'v')
+          .where(this.formatQueryArray(newQueryArray))
+          .groupBy('t.id')
+          .getRawMany(),
+        this.repository
+          .createQueryBuilder('p')
+          .select(['v.id', 'v.size'])
+          .leftJoin('p.categories', 'c')
+          .leftJoin('p.tags', 't')
+          .leftJoin('p.brand', 'b')
+          .leftJoin('p.variations', 'v')
+          .where(this.formatQueryArray(newQueryArray))
+          .andWhere("v.type = 'size'")
+          .groupBy('v.id')
+          .getRawMany(),
+        this.repository
+          .createQueryBuilder('p')
+          .select(['b.id', 'b.name'])
+          .leftJoin('p.categories', 'c')
+          .leftJoin('p.tags', 't')
+          .leftJoin('p.brand', 'b')
+          .leftJoin('p.variations', 'v')
+          .where(this.formatQueryArray(newQueryArray))
+          .groupBy('b.id')
+          .getRawMany(),
+      ]);
 
-
-    return [products[0], products[1], {filter: {minMax, categories, tags, sizes, brands}}] 
-      
+    return [
+      products[0],
+      products[1],
+      { filter: { minMax, categories, tags, sizes, brands } },
+    ];
   }
 
   async findHome(): Promise<any> {

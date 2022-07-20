@@ -2,7 +2,7 @@ import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { VariationSizes } from '@app/common/enums/variation-size';
 import { VariationTypes } from '@app/common/enums/variation-type';
-import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { floatTransformer } from '@app/common/transformers/float';
 
 import {
   Column,
@@ -20,9 +20,9 @@ export class VariationEntity {
   id?: string;
 
   @Column({
-    type: 'numeric', 
-    precision: 10, 
-    scale: 2, 
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
     transformer: floatTransformer,
   })
   netAmount: number;
@@ -50,25 +50,25 @@ export class VariationEntity {
   type: VariationTypes;
 
   @Column({
-    type: 'numeric', 
-    precision: 10, 
-    scale: 2, 
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
     transformer: floatTransformer,
   })
   weight: number;
 
   @Column({
-    type: 'numeric', 
-    precision: 10, 
-    scale: 2, 
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
     transformer: floatTransformer,
   })
   height: number;
 
   @Column({
-    type: 'numeric', 
-    precision: 10, 
-    scale: 2, 
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
     transformer: floatTransformer,
   })
   width: number;

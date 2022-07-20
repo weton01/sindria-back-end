@@ -4,8 +4,7 @@ import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { ProductEntity } from '@/product/entities/product';
-import { JwtConfig, TypeormConfig } from '@app/common';
-import { JwtStrategy } from '@app/utils';
+import { JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -26,7 +25,7 @@ import { OrderService } from './order.service';
       OrderProductEntity,
       OrderStoreEntity,
       MutationEntity,
-      ProductEntity
+      ProductEntity,
     ]),
     TypeormConfig,
     JwtConfig,

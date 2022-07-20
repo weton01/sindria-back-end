@@ -1,5 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
-import { RegexTypes } from '@app/utils/messages';
+import { RegexTypes } from '@app/common/messages';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, Matches, IsOptional } from 'class-validator';
 

@@ -1,7 +1,7 @@
 import { UserEntity } from '@/auth/entities/user';
 import { ProductEntity } from '@/product/entities/product';
 import { VariationTypes } from '@app/common/enums/variation-type';
-import { MessageErrors } from '@app/utils/messages';
+import { MessageErrors } from '@app/common/messages';
 import {
   ConflictException,
   ForbiddenException,

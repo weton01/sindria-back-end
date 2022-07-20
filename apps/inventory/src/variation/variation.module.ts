@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { ProductEntity } from '@/product/entities/product';
-import { JwtStrategy } from '@app/utils';
+import { JwtStrategy } from '@app/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VariationEntity } from './entities/variation';

@@ -1,6 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
 import { OrderStatus } from '@app/common/enums/order-status.';
-import { floatTransformer } from '@app/utils/transformes/entities/float';
+import { floatTransformer } from '@app/common/transformers/float';
 
 import {
   Column,
@@ -29,7 +29,7 @@ export class OrderStoreEntity {
   trackingCode: string;
 
   @Column({
-    type: 'date'
+    type: 'date',
   })
   trackingEstimated: Date;
 

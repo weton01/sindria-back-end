@@ -1,7 +1,7 @@
 import { UserEntity } from '@/auth/entities/user';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ProductEntity } from '@/product/entities/product';
-import { MessageErrors } from '@app/utils/messages';
+import { MessageErrors } from '@app/common/messages';
 import {
   ConflictException,
   ForbiddenException,
@@ -26,7 +26,7 @@ export class ReviewService {
     private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
-  ) { }
+  ) {}
 
   private async updateReviewProduct(
     product: ProductEntity,
@@ -108,7 +108,10 @@ export class ReviewService {
     return {};
   }
 
-  async find(query: FindReviewDto, productId: string): Promise<[ReviewEntity[], number]> {
+  async find(
+    query: FindReviewDto,
+    productId: string,
+  ): Promise<[ReviewEntity[], number]> {
     const { skip, take, relations, orderBy, select, where } = query;
 
     return await this.repository.findAndCount({
