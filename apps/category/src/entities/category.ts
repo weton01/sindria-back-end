@@ -31,8 +31,8 @@ export class CategoryEntity {
     description: 'the url of image',
     example: 'name_of_icon',
   })
-  @Column()
-  image: string;
+  @Column('simple-array')
+  images: string[];
 
   @TreeChildren()
   subCategories: CategoryEntity[];
@@ -54,10 +54,7 @@ export class CategoryEntity {
   @ManyToMany(() => ProductEntity, (product) => product.categories)
   products: ProductEntity[];
 
-  @ManyToMany(
-    () => OrderProductEntity,
-    (orderProduct) => orderProduct.categories,
-  )
+  @ManyToMany(() => OrderProductEntity, (orderProduct) => orderProduct.categories)
   orderProducts: OrderProductEntity[];
 
   constructor(entity?: Partial<CategoryEntity>) {

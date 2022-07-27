@@ -1,3 +1,4 @@
+import { FindCategoryDto } from '@/category/dtos/find';
 import { JwtAuthGuard } from '@app/utils';
 import {
   Body,
@@ -7,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +18,7 @@ import { StoreService } from './store.service';
 
 @Controller()
 export class StoreController {
-  constructor(private readonly storeService: StoreService) {}
+  constructor(private readonly storeService: StoreService) { }
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
@@ -48,7 +50,15 @@ export class StoreController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async find(): Promise<any> {
-    return await this.storeService.find();
+  async find(@Query() query: FindCategoryDto): Promise<any> {
+    const [items, count] = await this.storeService.find(query);
+
+    return { items, count };
+  }
+
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
+  async findById(@Param('id') id: string): Promise<any> {
+    return await this.storeService.findById(id);
   }
 }
