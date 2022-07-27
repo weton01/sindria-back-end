@@ -147,8 +147,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        isStore: user.isStore,
-        store: user.store,
+        stores: user.stores,
       },
     };
   }

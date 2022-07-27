@@ -16,6 +16,7 @@ import { envs } from '.';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { StoreEntity } from '@/store/entities/store';
 import { CouponEntity } from '@/coupon/entities/coupon';
+import { IntegrationEntity } from '@/store/entities/integration';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -41,6 +42,7 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     ReviewEntity,
     MutationEntity,
     StoreEntity,
-    CouponEntity
+    CouponEntity,
+    IntegrationEntity
   ],
 });

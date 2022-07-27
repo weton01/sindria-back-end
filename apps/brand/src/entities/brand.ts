@@ -17,8 +17,8 @@ export class BrandEntity {
   @Column({ unique: true })
   name: string;
 
-  @Column()
-  image: string;
+  @Column('simple-array')
+  images: string[];
 
   @CreateDateColumn()
   created_at?: Date;

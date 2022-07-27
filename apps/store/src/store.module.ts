@@ -4,13 +4,14 @@ import { envs, JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
 import { JunoEnvMode, JunoModule } from '@app/utils/juno/juno.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { IntegrationEntity } from './entities/integration';
 import { StoreEntity } from './entities/store';
 import { StoreController } from './store.controller';
 import { StoreService } from './store.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, AddressEntity, StoreEntity]),
+    TypeOrmModule.forFeature([UserEntity, AddressEntity, StoreEntity, IntegrationEntity]),
     JunoModule.register({
       CLIENT_ID: envs.JUNO_CLIENT_ID,
       CLIENT_SECRET: envs.JUNO_CLIENT_SECRET,

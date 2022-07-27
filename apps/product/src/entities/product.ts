@@ -6,7 +6,9 @@ import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
+import { StoreEntity } from '@/store/entities/store';
 import { TagEntity } from '@/tag/entities/tag';
+import { UnitMeasurement } from '@app/common/enums/unit-measurement';
 import { floatTransformer } from '@app/common/transformers/float';
 import { Transform } from 'class-transformer';
 
@@ -73,6 +75,15 @@ export class ProductEntity {
   })
   width: number;
 
+  @Column()
+  minSale: number;
+
+  @Column({
+    type: 'enum',
+    enum: UnitMeasurement,
+  })
+  unitMeasurement: UnitMeasurement;
+
   @Column({
     type: 'numeric',
     precision: 10,
@@ -128,6 +139,13 @@ export class ProductEntity {
   })
   brand: BrandEntity;
 
+  @ManyToOne(() => StoreEntity, (store) => store.products, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  store: StoreEntity;
+
   @ManyToMany(() => CategoryEntity, (category) => category.products, {
     cascade: true,
     onDelete: 'CASCADE',
@@ -151,6 +169,7 @@ export class ProductEntity {
   })
   @JoinTable()
   tags: TagEntity[];
+  
 
   constructor(entity?: Partial<ProductEntity>) {
     this.id = entity?.id;
