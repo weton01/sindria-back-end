@@ -65,10 +65,6 @@ export class UserEntity {
   isFacebook: boolean;
 
   @ApiHideProperty()
-  @Column({ default: false  })
-  isStore: boolean;
-
-  @ApiHideProperty()
   @Column({
     type: 'enum',
     enum: UserTypes,
@@ -86,7 +82,7 @@ export class UserEntity {
 
   @OneToOne(() => StoreEntity, (store) => store.user)
   @JoinColumn()
-  store: StoreEntity;
+  stores: StoreEntity[];
 
   @OneToMany(() => AddressEntity, (address) => address.user)
   addresses: AddressEntity[];

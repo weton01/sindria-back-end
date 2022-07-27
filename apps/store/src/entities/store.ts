@@ -1,5 +1,6 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
+import { ProductEntity } from '@/product/entities/product';
 import { floatTransformer } from '@app/common/transformers/float';
 
 import {
@@ -7,10 +8,13 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IntegrationEntity } from './integration';
 
 @Entity({ name: 'stores' })
 export class StoreEntity {
@@ -29,7 +33,14 @@ export class StoreEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToOne(() => UserEntity, (user) => user.store)
+  @OneToMany(() => ProductEntity, (product) => product.store)
+  products: ProductEntity[]
+
+  @ManyToOne(() => UserEntity, (user) => user.stores, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: UserEntity;
 
   @OneToOne(() => AddressEntity, (address) => address.store, {
@@ -39,6 +50,14 @@ export class StoreEntity {
   })
   @JoinColumn()
   address: AddressEntity;
+
+  @OneToOne(() => IntegrationEntity, (integration) => integration.store, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn()
+  paymentIntegration: IntegrationEntity;
 
   constructor(entity?: Partial<StoreEntity>) {
     this.id = entity?.id;
