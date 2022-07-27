@@ -2,6 +2,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { CategoryEntity } from '@/category/entities/category';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
+import { StoreEntity } from '@/store/entities/store';
 import { envs, JwtStrategy, TypeormConfig } from '@app/common';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,6 +20,7 @@ import { ProductService } from './product.service';
       OrderProductEntity,
       ReviewEntity,
       ProductEntity,
+      StoreEntity
     ]),
     S3Module.forRoot({
       config: {

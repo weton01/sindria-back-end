@@ -2,7 +2,7 @@ import { Safe2PayMerchantSplit } from './safe2pay-merchant';
 import { Safe2PayBankAccount } from '../safe2pay-bankaccount';
 
 export interface Safe2PaySubAccount {
-  Id: number;
+  Id?: number;
   Name: string;
   CommercialName: string;
   Identity: string;

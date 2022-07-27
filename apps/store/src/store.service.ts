@@ -8,26 +8,36 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
+import { FindStoreDto } from './dtos/find';
 import { StoreDto } from './dtos/store';
 import { UpdateStoreDto } from './dtos/update';
+import { IntegrationEntity } from './entities/integration';
 import { StoreEntity } from './entities/store';
 
 @Injectable()
 export class StoreService {
   constructor(
+    private connection: Connection,
+
     @InjectRepository(StoreEntity)
     private readonly repository: Repository<StoreEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(AddressEntity)
     private readonly addressRepository: Repository<AddressEntity>,
-    private readonly junoService: JunoService,
-  ) {}
+    @InjectRepository(IntegrationEntity)
+    private readonly integrationRepository: Repository<IntegrationEntity>,
+  ) { }
 
   async create(userId: string, dto: StoreDto): Promise<StoreEntity> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     const [foundStore, foundUser, foundAddress] = await Promise.all([
       this.repository.findOne({ name: dto.name }),
       this.userRepository.findOne({ where: { id: userId } }),
@@ -42,13 +52,12 @@ export class StoreService {
       throw new BadRequestException(MessageErrors.userNotFound);
     }
 
-    if (foundUser.isStore) {
-      throw new BadRequestException('usuário já possui uma loja');
-    }
-
     if (!foundAddress) {
       throw new BadRequestException('endereço não encontrado');
     }
+
+    const tempDto = { ...dto }
+    delete tempDto.meta
 
     const tempStore = this.repository.create({
       ...dto,
@@ -56,11 +65,27 @@ export class StoreService {
       user: foundUser,
     });
 
-    foundUser.isStore = true;
-    foundUser.store = tempStore;
-    const store = await this.repository.save(tempStore);
-    await this.userRepository.save(foundUser);
-    return store;
+    const tempIntegration = this.integrationRepository.create({
+      meta: dto.meta
+    });
+
+    try {
+      const store = await queryRunner.manager.save(tempStore);
+      tempIntegration.name = dto?.meta?.Name;
+      tempIntegration.store = store;
+      tempIntegration.identity = '';
+      tempIntegration.token = '';
+
+      await queryRunner.manager.save(tempIntegration);
+      await queryRunner.commitTransaction();
+
+      return { ...store, paymentIntegration: tempIntegration };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async update(
@@ -69,10 +94,10 @@ export class StoreService {
     dto: UpdateStoreDto,
   ): Promise<StoreEntity> {
     const [foundStore, foundUser, foundAddress] = await Promise.all([
-      this.repository.findOne({ where: { id: id } }),
+      this.repository.findOne({ where: { id: id }, relations: ['user'] }),
       this.userRepository.findOne({
         where: { id: userId },
-        relations: ['store'],
+        relations: ['stores'],
       }),
       this.addressRepository.findOne({ id: dto.address.id }),
     ]);
@@ -85,7 +110,7 @@ export class StoreService {
       throw new BadRequestException(MessageErrors.userNotFound);
     }
 
-    if (foundUser?.store.id !== foundStore.id) {
+    if (foundUser?.id !== foundStore.user.id) {
       throw new BadRequestException(MessageErrors.forbidenToAccess);
     }
 
@@ -100,14 +125,12 @@ export class StoreService {
 
   async delete(userId: string, id: string): Promise<any> {
     const [foundStore, foundUser] = await Promise.all([
-      this.repository.findOne({ where: { id } }),
+      this.repository.findOne({ where: { id }, relations: ['user'] }),
       this.userRepository.findOne({
         where: { id: userId },
         relations: ['store'],
       }),
     ]);
-
-    console.log(foundUser);
 
     if (!foundUser) {
       throw new BadRequestException(MessageErrors.userNotFound);
@@ -117,8 +140,8 @@ export class StoreService {
       throw new BadRequestException('loja não encontrada');
     }
 
-    if (foundUser?.store?.id !== foundStore.id) {
-      throw new ForbiddenException(MessageErrors.forbidenToAccess);
+    if (foundUser?.id !== foundStore.user.id) {
+      throw new BadRequestException(MessageErrors.forbidenToAccess);
     }
 
     await this.repository.delete({ id });
@@ -126,8 +149,24 @@ export class StoreService {
     return {};
   }
 
-  async find(): Promise<StoreEntity[]> {
-    const token = await this.junoService.createAuthToken();
-    return;
+  async find(query: FindStoreDto): Promise<[StoreEntity[], number]> {
+    const { skip, take, relations, orderBy } = query;
+
+    return this.repository.findAndCount({
+      order: { created_at: orderBy },
+      skip,
+      take,
+      relations,
+    });
+  }
+
+  async findById(id: string): Promise<StoreEntity> {
+    const store = await this.repository.findOne({ id });
+
+    if (!store) {
+      throw new NotFoundException('loja não encontrada')
+    }
+
+    return store
   }
 }

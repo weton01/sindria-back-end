@@ -18,6 +18,7 @@ import { envs } from '@app/common';
 import { CategoryEntity } from '@/category/entities/category';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
+import { StoreEntity } from '@/store/entities/store';
 
 @Injectable()
 export class ProductService {
@@ -33,7 +34,9 @@ export class ProductService {
     private readonly orderProductRepository: Repository<OrderProductEntity>,
     @InjectRepository(ReviewEntity)
     private readonly reviewRepository: Repository<ReviewEntity>,
-  ) {}
+    @InjectRepository(StoreEntity)
+    private readonly storeRepository: Repository<StoreEntity>,
+  ) { }
 
   private formatQueryString(
     prefix: string,
@@ -64,19 +67,29 @@ export class ProductService {
   }
 
   async create(userId: string, dto: CreateProductDto): Promise<ProductEntity> {
-    const foundUser = await this.userRepository.findOne({ id: userId });
+    const [foundUser, foundProduct, foundStore] = await Promise.all([
+      this.userRepository.findOne({ id: userId }),
+      this.repository.findOne({ name: dto.name }),
+      this.storeRepository.findOne({ where: { id: dto.store.id }, relations: ['user'] })
+    ]);
 
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
+
+    if (!foundStore) {
+      throw new NotFoundException('loja não encontrado');
+    }
+
+    if (foundStore.user.id !== userId) {
+      throw new ForbiddenException("você não tem permissão para acessar este recurso")
+    }
 
     const momCategories = await Promise.all(
       dto.categories.map((category) =>
         this.categoryRepository.findAncestors(category),
       ),
     );
-
-    const foundProduct = await this.repository.findOne({
-      name: dto.name,
-    });
 
     if (foundProduct)
       throw new ConflictException(
@@ -86,6 +99,7 @@ export class ProductService {
     const tempProduct = await this.repository.create({
       ...dto,
       user: foundUser,
+      store: foundStore,
       momCategories: momCategories.map((item) => item[1]),
     });
 
@@ -254,37 +268,37 @@ export class ProductService {
     const productQuery = [
       hasCategories
         ? this.formatQueryString(
-            'ProductEntity_ProductEntity__categories.categoriesId',
-            qParams.getAll('p.category'),
-            'OR',
-          )
+          'ProductEntity_ProductEntity__categories.categoriesId',
+          qParams.getAll('p.category'),
+          'OR',
+        )
         : ``,
       hasTags
         ? this.formatQueryString(
-            'ProductEntity_ProductEntity__tags.tagsId',
-            qParams.getAll('p.tag'),
-            'OR',
-          )
+          'ProductEntity_ProductEntity__tags.tagsId',
+          qParams.getAll('p.tag'),
+          'OR',
+        )
         : ``,
       hasVariations
         ? this.formatQueryString(
-            'ProductEntity__variations.id',
-            qParams.getAll('p.variation'),
-            'OR',
-          )
+          'ProductEntity__variations.id',
+          qParams.getAll('p.variation'),
+          'OR',
+        )
         : ``,
       hasBrands
         ? this.formatQueryString(
-            'ProductEntity__brand.id',
-            qParams.getAll('p.brand'),
-            'OR',
-          )
+          'ProductEntity__brand.id',
+          qParams.getAll('p.brand'),
+          'OR',
+        )
         : ``,
       hasName ? `ProductEntity.name LIKE '%${qParams.get('p.name')}%'` : ``,
       hasMinAmount && hasMaxAmount
         ? `ProductEntity.netAmount >= ${qParams.get(
-            'p.minAmount',
-          )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
+          'p.minAmount',
+        )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
         : ``,
     ];
 
@@ -340,7 +354,7 @@ export class ProductService {
           .leftJoin('p.variations', 'v')
           .where(this.formatQueryArray(newQueryArray))
           .andWhere("v.type = 'size'")
-          .groupBy('v.id')
+          .groupBy('v.size')
           .getRawMany(),
         this.repository
           .createQueryBuilder('p')

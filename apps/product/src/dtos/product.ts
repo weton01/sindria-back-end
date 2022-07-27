@@ -1,5 +1,7 @@
 import { CategoryEntity } from '@/category/entities/category';
+import { StoreEntity } from '@/store/entities/store';
 import { TagEntity } from '@/tag/entities/tag';
+import { UnitMeasurement } from '@app/common/enums/unit-measurement';
 import { ApiProperty } from '@nestjs/swagger';
 import { BrandEntity } from 'apps/brand/src/entities/brand';
 import { Transform, Type } from 'class-transformer';
@@ -14,6 +16,8 @@ import {
   ValidateNested,
   ArrayNotEmpty,
   Min,
+  IsInt,
+  IsEnum,
 } from 'class-validator';
 
 class AuxSingleDto {
@@ -79,6 +83,17 @@ export class ProductDto {
   @IsOptional()
   active: boolean;
 
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @IsInt()
+  minSale: number;
+
+  @ApiProperty()
+  @IsEnum(UnitMeasurement) 
+  @IsNotEmpty()
+  unitMeasurement: UnitMeasurement;
+
   @ApiProperty({
     example: 'lorem impsum dolent',
   })
@@ -103,6 +118,11 @@ export class ProductDto {
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)
   brand: BrandEntity;
+
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => AuxSingleDto)
+  store: StoreEntity;
 
   @IsArray()
   @ArrayNotEmpty()
