@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+
 import {
   ActiveUserDto,
   AuthUserDto,
@@ -19,6 +19,7 @@ import {
   UpdateUserDto,
 } from './dtos';
 import { UserEntity } from './entities/user';
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,6 @@ export class AuthService {
     'password',
     'updated_at',
     'username',
-    'isStore',
   ];
 
   constructor(
@@ -42,7 +42,7 @@ export class AuthService {
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
@@ -111,7 +111,7 @@ export class AuthService {
     const user = await this.repository.findOne({
       where: { email },
       select: this.userSelect,
-      relations: ['store'],
+      relations: ['stores'],
     });
 
     if (!user) throw new NotFoundException('e-mail não encontrado');
