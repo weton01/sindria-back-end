@@ -27,6 +27,12 @@ export class StoreEntity {
   @Column('simple-array')
   images: string[];
 
+  @Column({
+    default: true,
+    type: 'boolean'
+  })
+  active: boolean;
+
   @CreateDateColumn()
   created_at?: Date;
 
