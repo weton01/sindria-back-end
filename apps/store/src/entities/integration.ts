@@ -1,5 +1,5 @@
 
-import { Safe2PaySubAccount } from '@app/utils/safe2pay/interfaces/subaccount/safe2pay-subaccount';
+import { AsaasCreateDigitalCCOutput } from '@app/utils/asaas/outputs/create-digitalcc';
 import {
   Column,
   Entity,
@@ -19,11 +19,8 @@ export class IntegrationEntity {
   @Column()
   identity: string;
 
-  @Column()
-  token: string;
-
   @Column('simple-json')
-  meta: Safe2PaySubAccount;
+  meta: any;
 
   @OneToOne(() => StoreEntity, (store) => store.paymentIntegration)
   store: StoreEntity;

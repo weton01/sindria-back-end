@@ -1,12 +1,10 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
-import { MutationDto } from '@/inventory/mutation/dtos/mutation';
 import { MessageErrors } from '@app/common/messages';
-import { JunoService } from '@app/utils/juno/juno.service';
+import { AsaasService } from '@app/utils/asaas/asaas.service';
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -31,6 +29,7 @@ export class StoreService {
     private readonly addressRepository: Repository<AddressEntity>,
     @InjectRepository(IntegrationEntity)
     private readonly integrationRepository: Repository<IntegrationEntity>,
+    private readonly asaasService: AsaasService,
   ) { }
 
   async create(userId: string, dto: StoreDto): Promise<StoreEntity> {
@@ -38,51 +37,55 @@ export class StoreService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const [foundStore, foundUser, foundAddress] = await Promise.all([
-      this.repository.findOne({ name: dto.name }),
-      this.userRepository.findOne({ where: { id: userId } }),
-      this.addressRepository.findOne({ id: dto.address.id }),
-    ]);
-
-    if (foundStore) {
-      throw new ConflictException('já existe uma loja com esse nome');
-    }
-
-    if (!foundUser) {
-      throw new BadRequestException(MessageErrors.userNotFound);
-    }
-
-    if (!foundAddress) {
-      throw new BadRequestException('endereço não encontrado');
-    }
-
-    const tempDto = { ...dto }
-    delete tempDto.meta
-
-    const tempStore = this.repository.create({
-      ...dto,
-      address: foundAddress,
-      user: foundUser,
-    });
-
-    const tempIntegration = this.integrationRepository.create({
-      meta: dto.meta
-    });
-
     try {
+      const [foundStore, foundUser, foundAddress] = await Promise.all([
+        this.repository.findOne({ name: dto.name }),
+        this.userRepository.findOne({ where: { id: userId } }),
+        this.addressRepository.findOne({ id: dto.address.id }),
+      ]);
+
+      if (foundStore) {
+        throw new ConflictException('já existe uma loja com esse nome');
+      }
+
+      if (!foundUser) {
+        throw new BadRequestException(MessageErrors.userNotFound);
+      }
+
+      if (!foundAddress) {
+        throw new BadRequestException('endereço não encontrado');
+      }
+
+      const meta = await this
+        .asaasService
+        .digitalAccount
+        .createDigitalAccount(dto.meta)
+
+      const tempDto = { ...dto }
+      delete tempDto.meta
+
+      const tempStore = this.repository.create({
+        ...dto,
+        address: foundAddress,
+        user: foundUser,
+      });
+
+      const tempIntegration = this.integrationRepository.create({
+        meta: meta
+      });
+
       const store = await queryRunner.manager.save(tempStore);
-      tempIntegration.name = dto?.meta?.Name;
-      tempIntegration.store = store;
-      tempIntegration.identity = '';
-      tempIntegration.token = '';
+
+      tempIntegration.store = store; 
 
       await queryRunner.manager.save(tempIntegration);
+
       await queryRunner.commitTransaction();
 
       return { ...store, paymentIntegration: tempIntegration };
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw err;
+      throw new BadRequestException(err?.response?.data)
     } finally {
       await queryRunner.release();
     }
@@ -161,7 +164,7 @@ export class StoreService {
   }
 
   async findById(id: string): Promise<StoreEntity> {
-    const store = await this.repository.findOne({ id });
+    const store = await this.repository.findOne({ where: {id}, relations: ['paymentIntegration']});
 
     if (!store) {
       throw new NotFoundException('loja não encontrada')
