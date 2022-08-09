@@ -1,6 +1,8 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { envs, JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
+import { AsaasModule } from '@app/utils/asaas/asaas.module';
+import { AsaasMode } from '@app/utils/asaas/enums/asaas-mode';
 import { JunoEnvMode, JunoModule } from '@app/utils/juno/juno.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,11 +14,9 @@ import { StoreService } from './store.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity, AddressEntity, StoreEntity, IntegrationEntity]),
-    JunoModule.register({
-      CLIENT_ID: envs.JUNO_CLIENT_ID,
-      CLIENT_SECRET: envs.JUNO_CLIENT_SECRET,
-      MODE: JunoEnvMode.dev,
-      TOKEN: envs.JUNO_TOKEN,
+    AsaasModule.register({
+      MODE: AsaasMode.dev,
+      X_API_KEY: envs.ASAAS_TOKEN
     }),
     TypeormConfig,
     JwtConfig,

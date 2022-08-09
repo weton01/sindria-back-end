@@ -1,7 +1,8 @@
 import { AddressEntity } from '@/address/entities/address';
+import { AsaasCompanyType } from '@app/utils/asaas/enums/company-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsISO8601, IsNotEmpty, IsString, IsUrl, IsUUID, ValidateNested } from 'class-validator';
 
 class AuxSingleDto {
   @ApiProperty({
@@ -12,106 +13,67 @@ class AuxSingleDto {
   id: string;
 }
 
-class AuxCodeDto {
-  @ApiProperty({
-    example: '1',
-  })
-  @IsString()
-  @IsNotEmpty()
-  Code: string;
-}
-
-class Safe2PayBankAccountDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => AuxCodeDto)
-  Bank: AuxCodeDto;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => AuxCodeDto)
-  AccountType: AuxCodeDto
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  BankAgency: string;
-  
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  BankAgencyDigit: string;
-  
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  BankAccount: string;
-  
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  BankAccountDigit: string;
-}
-
 class Meta {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  Name: string;
-  
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  CommercialName: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  Identity: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  ResponsibleName: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  ResponsibleIdentity: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  ResponsiblePhone: string;
-  Email: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  TechName: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  TechIdentity: string;
+  name: string
 
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  TechEmail: string;
+  email: string
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  TechPhone: string;
+  cpfCnpj: string
 
   @ApiProperty()
+  @IsISO8601()
   @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => Safe2PayBankAccountDto)
-  BankData: Safe2PayBankAccountDto;
+  birthDate: string
+
+  @ApiProperty()
+  @IsEnum(AsaasCompanyType)
+  @IsNotEmpty()
+  companyType: AsaasCompanyType
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  phone: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  mobilePhone: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  address: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  addressNumber: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  complement: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  province: string
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  postalCode: string
 }
 
 export class StoreDto {
@@ -127,7 +89,7 @@ export class StoreDto {
   name: string; 
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => Meta)
   meta: Meta;
