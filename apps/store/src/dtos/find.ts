@@ -4,10 +4,10 @@ import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 enum Relations {
+  paymentIntegration,
   products,
   user,
   address,
-  paymentIntegration
 }
 
 export class FindStoreDto {
@@ -47,5 +47,5 @@ export class FindStoreDto {
   @IsOptional()
   @IsEnum(OrderBy)
   orderBy: OrderBy;
-  
+
 }

@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import axios from 'axios';
 import { AsaasCreateDigitalCC } from '../inputs/create-digitalcc';
 import { AsaasOptions } from '../option';
@@ -15,16 +16,20 @@ export class AsaasAccEntity {
   public async createDigitalAccount(
     body: AsaasCreateDigitalCC
   ): Promise<AsaasCreateDigitalCCOutput> {
-    const { data }: { data: AsaasCreateDigitalCCOutput } = await axios.post(
-      `${this.URL}/api/v3/accounts`,
-      body,
-      {
-        headers: {
-          access_token: this.X_API_KEY
+    try {
+      const { data }: { data: AsaasCreateDigitalCCOutput } = await axios.post(
+        `${this.URL}/api/v3/accounts`,
+        body,
+        {
+          headers: {
+            access_token: this.X_API_KEY
+          }
         }
-      }
-    );
-
-    return data;
+      );
+  
+      return data;
+    } catch (err) { 
+      throw new BadRequestException(err?.response?.data)
+    }
   }
 }
