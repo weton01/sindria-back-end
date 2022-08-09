@@ -1,4 +1,3 @@
-import { FindCategoryDto } from '@/category/dtos/find';
 import { JwtAuthGuard } from '@app/utils';
 import {
   Body,
@@ -12,6 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { FindStoreDto } from './dtos/find';
 import { StoreDto } from './dtos/store';
 import { UpdateStoreDto } from './dtos/update';
 import { StoreService } from './store.service';
@@ -50,7 +50,7 @@ export class StoreController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async find(@Query() query: FindCategoryDto): Promise<any> {
+  async find(@Query() query: FindStoreDto): Promise<any> {
     const [items, count] = await this.storeService.find(query);
 
     return { items, count };

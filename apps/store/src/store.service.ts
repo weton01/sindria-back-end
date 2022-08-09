@@ -76,7 +76,7 @@ export class StoreService {
 
       const store = await queryRunner.manager.save(tempStore);
 
-      tempIntegration.store = store; 
+      tempIntegration.store = store;
 
       await queryRunner.manager.save(tempIntegration);
 
@@ -85,7 +85,8 @@ export class StoreService {
       return { ...store, paymentIntegration: tempIntegration };
     } catch (err) {
       await queryRunner.rollbackTransaction();
-      throw new BadRequestException(err?.response?.data)
+      throw err
+
     } finally {
       await queryRunner.release();
     }
@@ -131,7 +132,7 @@ export class StoreService {
       this.repository.findOne({ where: { id }, relations: ['user'] }),
       this.userRepository.findOne({
         where: { id: userId },
-        relations: ['store'],
+        relations: ['stores'],
       }),
     ]);
 
@@ -147,7 +148,7 @@ export class StoreService {
       throw new BadRequestException(MessageErrors.forbidenToAccess);
     }
 
-    await this.repository.delete({ id });
+    await this.repository.update({ id }, { active: false });
 
     return {};
   }
@@ -164,7 +165,7 @@ export class StoreService {
   }
 
   async findById(id: string): Promise<StoreEntity> {
-    const store = await this.repository.findOne({ where: {id}, relations: ['paymentIntegration']});
+    const store = await this.repository.findOne({ where: { id }, relations: ['paymentIntegration'] });
 
     if (!store) {
       throw new NotFoundException('loja não encontrada')
