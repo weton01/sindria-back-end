@@ -3,6 +3,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
+import { StoreEntity } from '@/store/entities/store';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { OrderStatus } from '@app/common/enums/order-status.';
 import { MessageErrors } from '@app/common/messages';
@@ -42,6 +43,8 @@ export class OrderService {
     private readonly mutationRepository: Repository<MutationEntity>,
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    @InjectRepository(StoreEntity)
+    private readonly storeRepository: Repository<StoreEntity>,
   ) {}
 
   private createOrderProducts(
@@ -98,6 +101,15 @@ export class OrderService {
     queryRunner: QueryRunner,
   ) {
     return orderStores.map(async (ost) => {
+      const store = await this.storeRepository.findOne({
+        where: { id: ost.store.id },
+        relations: ['paymentIntegration'],
+      });
+
+      if (!store) {
+        throw new NotFoundException('loja não encontrado');
+      }
+
       const orderProducts = await Promise.all(
         this.createOrderProducts(ost.orderProducts, queryRunner),
       );
@@ -114,15 +126,27 @@ export class OrderService {
   async createCreditCardOrder(userId: string, dto: OrderDto): Promise<any> {
     const [foundUser, foundCreditCard, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
-      this.creditCardRepository.findOne({ id: dto.creditCard.id }),
-      this.addressRepository.findOne({ id: dto.address.id }),
+      this.creditCardRepository.findOne({
+        id: dto.creditCard.id,
+        user: { id: userId },
+      }),
+      this.addressRepository.findOne({
+        id: dto.address.id,
+        user: { id: userId },
+      }),
     ]);
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    if (!foundCreditCard)
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
+
+    if (!foundCreditCard) {
       throw new NotFoundException('cartão de crédito não encontrado');
+    }
 
-    if (!foundAddress) throw new NotFoundException('endereço não encontrado');
+    if (!foundAddress) {
+      throw new NotFoundException('endereço não encontrado');
+    }
 
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -135,7 +159,7 @@ export class OrderService {
 
       const newOrder = this.repository.create({
         freezePurchaser: foundUser,
-        invoiceType: InvoiceTypes.credit,
+        invoiceType: dto.invoiceType,
         address: foundAddress,
         creditCard: foundCreditCard,
         ordersStores: orderStores,
@@ -174,7 +198,7 @@ export class OrderService {
 
       const newOrder = this.repository.create({
         freezePurchaser: foundUser,
-        invoiceType: InvoiceTypes.credit,
+        invoiceType: dto.invoiceType,
         address: foundAddress,
         ordersStores: orderStores,
         purchaser: foundUser,
@@ -214,9 +238,11 @@ export class OrderService {
       const isProccessed = order.ordersStores.find(
         (os) => os.trackingStatus === OrderStatus.processed,
       );
+
       const isShipped = order.ordersStores.find(
         (os) => os.trackingStatus === OrderStatus.shipped,
       );
+
       const isReceived = order.ordersStores.find(
         (os) => os.trackingStatus === OrderStatus.received,
       );

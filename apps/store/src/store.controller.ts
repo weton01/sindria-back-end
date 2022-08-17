@@ -50,8 +50,10 @@ export class StoreController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async find(@Query() query: FindStoreDto): Promise<any> {
-    const [items, count] = await this.storeService.find(query);
+  async find(@Req() req, @Query() query: FindStoreDto): Promise<any> {
+    const { user } = req;
+
+    const [items, count] = await this.storeService.find(query, user.id);
 
     return { items, count };
   }

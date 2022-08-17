@@ -30,7 +30,7 @@ export class StoreService {
     @InjectRepository(IntegrationEntity)
     private readonly integrationRepository: Repository<IntegrationEntity>,
     private readonly asaasService: AsaasService,
-  ) { }
+  ) {}
 
   async create(userId: string, dto: StoreDto): Promise<StoreEntity> {
     const queryRunner = this.connection.createQueryRunner();
@@ -56,13 +56,26 @@ export class StoreService {
         throw new BadRequestException('endereço não encontrado');
       }
 
-      const meta = await this
-        .asaasService
-        .digitalAccount
-        .createDigitalAccount(dto.meta)
+      const digitalAccount =
+        await this.asaasService.digitalAccount.createDigitalAccount(dto.meta);
 
-      const tempDto = { ...dto }
-      delete tempDto.meta
+      const customer = await this.asaasService.customer.createCustomer({
+        name: dto.meta.name,
+        email: dto.meta.email,
+        cpfCnpj: dto.meta.cpfCnpj,
+        phone: dto.meta.phone,
+        mobilePhone: dto.meta.mobilePhone,
+        address: dto.meta.address,
+        addressNumber: dto.meta.addressNumber,
+        complement: dto.meta.complement,
+        postalCode: dto.meta.postalCode,
+        observations: "there isn't observations",
+        externalReference: "null",
+        notificationDisabled: true
+      });
+
+      const tempDto = { ...dto };
+      delete tempDto.meta;
 
       const tempStore = this.repository.create({
         ...dto,
@@ -71,7 +84,10 @@ export class StoreService {
       });
 
       const tempIntegration = this.integrationRepository.create({
-        meta: meta
+        meta: {
+          digitalAccount,
+          customer,
+        },
       });
 
       const store = await queryRunner.manager.save(tempStore);
@@ -84,9 +100,9 @@ export class StoreService {
 
       return { ...store, paymentIntegration: tempIntegration };
     } catch (err) {
+      console.error(JSON.stringify(err));
       await queryRunner.rollbackTransaction();
-      throw err
-
+      throw err;
     } finally {
       await queryRunner.release();
     }
@@ -129,7 +145,10 @@ export class StoreService {
 
   async delete(userId: string, id: string): Promise<any> {
     const [foundStore, foundUser] = await Promise.all([
-      this.repository.findOne({ where: { id }, relations: ['user'] }),
+      this.repository.findOne({
+        where: { id },
+        relations: ['user', 'address'],
+      }),
       this.userRepository.findOne({
         where: { id: userId },
         relations: ['stores'],
@@ -153,10 +172,14 @@ export class StoreService {
     return {};
   }
 
-  async find(query: FindStoreDto): Promise<[StoreEntity[], number]> {
+  async find(
+    query: FindStoreDto,
+    id: string,
+  ): Promise<[StoreEntity[], number]> {
     const { skip, take, relations, orderBy } = query;
 
     return this.repository.findAndCount({
+      where: { user: { id } },
       order: { created_at: orderBy },
       skip,
       take,
@@ -165,12 +188,15 @@ export class StoreService {
   }
 
   async findById(id: string): Promise<StoreEntity> {
-    const store = await this.repository.findOne({ where: { id }, relations: ['paymentIntegration'] });
+    const store = await this.repository.findOne({
+      where: { id },
+      relations: ['paymentIntegration', 'address', 'user'],
+    });
 
     if (!store) {
-      throw new NotFoundException('loja não encontrada')
+      throw new NotFoundException('loja não encontrada');
     }
 
-    return store
+    return store;
   }
 }
