@@ -61,11 +61,7 @@ export class StoreEntity {
   @JoinColumn()
   address: AddressEntity;
 
-  @OneToOne(() => IntegrationEntity, (integration) => integration.store, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @OneToOne(() => IntegrationEntity, (integration) => integration.store)
   @JoinColumn()
   paymentIntegration: IntegrationEntity;
 

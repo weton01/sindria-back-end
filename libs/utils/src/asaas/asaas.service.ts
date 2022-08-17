@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { AsaasChargeEntity } from './entities/charge';
 import { AsaasCustomerEntity } from './entities/customer';
 import { AsaasAccEntity } from './entities/digitalcc';
+import { AsaasWebookEntity } from './entities/webhook';
 import { AsaasOptions } from './option';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class AsaasService {
   public digitalAccount: AsaasAccEntity;
   public charge: AsaasChargeEntity;
   public customer: AsaasCustomerEntity;
+  public webhook: AsaasWebookEntity;
 
   constructor(
     @Inject('CONFIG_OPTIONS')
@@ -30,5 +32,6 @@ export class AsaasService {
     this.digitalAccount = new AsaasAccEntity(options);
     this.charge = new AsaasChargeEntity(options);
     this.customer = new AsaasCustomerEntity(options);
+    this.webhook = new AsaasWebookEntity(options);
   }
 }
