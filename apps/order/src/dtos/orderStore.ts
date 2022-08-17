@@ -1,4 +1,3 @@
-import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -7,7 +6,6 @@ import {
   IsISO8601,
   IsNotEmpty,
   IsNumber, 
-  IsOptional, 
   IsString, 
   IsUUID,
   Min,

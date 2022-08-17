@@ -47,7 +47,7 @@ export class AddressEntity {
   @OneToMany(() => OrderEntity, (order) => order.address)
   orders: OrderEntity;
 
-  @OneToOne(() => StoreEntity, (store) => store.address)
+  @OneToMany(() => StoreEntity, (store) => store.address)
   store: OrderEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.addresses, {

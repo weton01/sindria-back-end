@@ -3,6 +3,7 @@ import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { OrderStatus } from '@app/common/enums/order-status.';
+import { AsaasBillingType } from '@app/utils/asaas/enums/charge';
 
 import {
   Column,
@@ -25,9 +26,10 @@ export class OrderEntity {
 
   @Column({
     type: 'enum',
-    enum: InvoiceTypes,
+    enum: AsaasBillingType,
+    nullable: false
   })
-  invoiceType: InvoiceTypes;
+  invoiceType: AsaasBillingType;
   
   @Column({
     type: 'enum',

@@ -99,7 +99,7 @@ export class UserEntity {
   @OneToMany(() => OrderEntity, (orders) => orders.purchaser)
   orders: OrderEntity[];
 
-  @OneToMany(() => OrderStoreEntity, (orderStore) => orderStore.store)
+  @OneToMany(() => OrderStoreEntity, (orderStore) => orderStore.user)
   sales: OrderStoreEntity[];
 
   @OneToMany(() => OrderProductEntity, (productOrders) => productOrders.user)

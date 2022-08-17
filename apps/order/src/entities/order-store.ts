@@ -1,4 +1,5 @@
 import { UserEntity } from '@/auth/entities/user';
+import { StoreEntity } from '@/store/entities/store';
 import { OrderStatus } from '@app/common/enums/order-status.';
 import { floatTransformer } from '@app/common/transformers/float';
 
@@ -60,12 +61,19 @@ export class OrderStoreEntity {
   @OneToMany(() => OrderProductEntity, (order) => order.orderStore)
   orderProducts: OrderProductEntity[];
 
+  @ManyToOne(() => StoreEntity, (variation) => variation.sales, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  store: StoreEntity;
+
   @ManyToOne(() => UserEntity, (variation) => variation.sales, {
     cascade: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  store: UserEntity;
+  user: UserEntity;
 
   @ManyToOne(() => OrderEntity, (order) => order.ordersStores, {
     cascade: true,

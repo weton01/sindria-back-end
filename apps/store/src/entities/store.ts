@@ -1,5 +1,6 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
+import { OrderStoreEntity } from '@/order/entities/order-store';
 import { ProductEntity } from '@/product/entities/product';
 import { floatTransformer } from '@app/common/transformers/float';
 
@@ -42,6 +43,9 @@ export class StoreEntity {
   @OneToMany(() => ProductEntity, (product) => product.store)
   products: ProductEntity[]
 
+  @OneToMany(() => OrderStoreEntity, (product) => product.store)
+  sales: OrderStoreEntity[]
+
   @ManyToOne(() => UserEntity, (user) => user.stores, {
     cascade: true,
     onDelete: 'CASCADE',
@@ -49,7 +53,7 @@ export class StoreEntity {
   })
   user: UserEntity;
 
-  @OneToOne(() => AddressEntity, (address) => address.store, {
+  @ManyToOne(() => AddressEntity, (address) => address.store, {
     cascade: true,
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

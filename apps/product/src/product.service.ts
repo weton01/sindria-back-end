@@ -19,6 +19,7 @@ import { CategoryEntity } from '@/category/entities/category';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
 import { StoreEntity } from '@/store/entities/store';
+import { TagEntity } from '@/tag/entities/tag';
 
 @Injectable()
 export class ProductService {
@@ -36,7 +37,9 @@ export class ProductService {
     private readonly reviewRepository: Repository<ReviewEntity>,
     @InjectRepository(StoreEntity)
     private readonly storeRepository: Repository<StoreEntity>,
-  ) { }
+    @InjectRepository(TagEntity)
+    private readonly tagRepository: Repository<TagEntity>,
+  ) {}
 
   private formatQueryString(
     prefix: string,
@@ -70,8 +73,23 @@ export class ProductService {
     const [foundUser, foundProduct, foundStore] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.repository.findOne({ name: dto.name }),
-      this.storeRepository.findOne({ where: { id: dto.store.id }, relations: ['user'] })
+      this.storeRepository.findOne({
+        where: { id: dto.store.id },
+        relations: ['user'],
+      }),
     ]);
+
+    const foundTags = await Promise.all(
+      dto.tags.map((tag) =>
+        this.tagRepository.findOne({ where: { id: tag.id } }),
+      ),
+    );
+
+    const foundCategories = await Promise.all(
+      dto.categories.map((category) =>
+        this.categoryRepository.findOne({ where: { id: category.id } }),
+      ),
+    );
 
     if (!foundUser) {
       throw new NotFoundException('usuário não encontrado');
@@ -81,8 +99,18 @@ export class ProductService {
       throw new NotFoundException('loja não encontrado');
     }
 
+    if ((foundTags.findIndex(item => item === undefined)) >= 0){
+      throw new NotFoundException('alguma tag não foi encontrada');
+    }
+
+    if ((foundCategories.findIndex(item => item === undefined)) >= 0){
+      throw new NotFoundException('alguma categoria não foi encontrada');
+    }
+
     if (foundStore.user.id !== userId) {
-      throw new ForbiddenException("você não tem permissão para acessar este recurso")
+      throw new ForbiddenException(
+        'você não tem permissão para acessar este recurso',
+      );
     }
 
     const momCategories = await Promise.all(
@@ -100,6 +128,8 @@ export class ProductService {
       ...dto,
       user: foundUser,
       store: foundStore,
+      categories: foundCategories,
+      tags: foundTags,
       momCategories: momCategories.map((item) => item[1]),
     });
 
@@ -171,6 +201,7 @@ export class ProductService {
         'brand',
         'mutations',
         'mutations.variations',
+        'store',
       ],
     });
 
@@ -268,37 +299,37 @@ export class ProductService {
     const productQuery = [
       hasCategories
         ? this.formatQueryString(
-          'ProductEntity_ProductEntity__categories.categoriesId',
-          qParams.getAll('p.category'),
-          'OR',
-        )
+            'ProductEntity_ProductEntity__categories.categoriesId',
+            qParams.getAll('p.category'),
+            'OR',
+          )
         : ``,
       hasTags
         ? this.formatQueryString(
-          'ProductEntity_ProductEntity__tags.tagsId',
-          qParams.getAll('p.tag'),
-          'OR',
-        )
+            'ProductEntity_ProductEntity__tags.tagsId',
+            qParams.getAll('p.tag'),
+            'OR',
+          )
         : ``,
       hasVariations
         ? this.formatQueryString(
-          'ProductEntity__variations.id',
-          qParams.getAll('p.variation'),
-          'OR',
-        )
+            'ProductEntity__variations.id',
+            qParams.getAll('p.variation'),
+            'OR',
+          )
         : ``,
       hasBrands
         ? this.formatQueryString(
-          'ProductEntity__brand.id',
-          qParams.getAll('p.brand'),
-          'OR',
-        )
+            'ProductEntity__brand.id',
+            qParams.getAll('p.brand'),
+            'OR',
+          )
         : ``,
       hasName ? `ProductEntity.name LIKE '%${qParams.get('p.name')}%'` : ``,
       hasMinAmount && hasMaxAmount
         ? `ProductEntity.netAmount >= ${qParams.get(
-          'p.minAmount',
-        )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
+            'p.minAmount',
+          )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
         : ``,
     ];
 
