@@ -1,0 +1,32 @@
+export interface AsaasCreateCustomerOutput {
+  object: string;
+  id: string;
+  dateCreated:  string;
+  name: string;
+  email: string;
+  company: null;
+  phone: string;
+  mobilePhone: string;
+  address: string;
+  addressNumber: string;
+  complement: string;
+  province: string;
+  postalCode: string;
+  cpfCnpj: string;
+  personType: string;
+  deleted: boolean;
+  additionalEmails: string;
+  externalReference: string;
+  notificationDisabled: boolean;
+  observations: string;
+  municipalInscription: string;
+  stateInscription: string;
+  canDelete: boolean;
+  cannotBeDeletedReason: string;
+  canEdit: boolean;
+  cannotEditReason: string;
+  foreignCustomer: boolean;
+  city: number;
+  state: string;
+  country: string;
+}
