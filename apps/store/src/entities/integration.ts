@@ -22,7 +22,14 @@ export class IntegrationEntity {
   @Column('simple-json')
   meta: any;
 
-  @OneToOne(() => StoreEntity, (store) => store.paymentIntegration)
+  @Column('simple-json')
+  webhook: any;
+
+  @OneToOne(() => StoreEntity, (store) => store.paymentIntegration, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   store: StoreEntity;
 
   constructor(entity?: Partial<IntegrationEntity>) {

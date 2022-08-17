@@ -1,5 +1,6 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
+import { envs } from '@app/common';
 import { MessageErrors } from '@app/common/messages';
 import { AsaasService } from '@app/utils/asaas/asaas.service';
 import {
@@ -70,9 +71,18 @@ export class StoreService {
         complement: dto.meta.complement,
         postalCode: dto.meta.postalCode,
         observations: "there isn't observations",
-        externalReference: "null",
-        notificationDisabled: true
+        externalReference: 'null',
+        notificationDisabled: true,
       });
+
+      const webhook = await this.asaasService.webhook.createWebhook({
+        apiVersion: 3,
+        authToken: digitalAccount.apiKey,
+        email: digitalAccount.email,
+        enabled: true,
+        interrupted: false,
+        url: `${envs.PROD_URL}/payment/v1/charge/webhook`
+      })
 
       const tempDto = { ...dto };
       delete tempDto.meta;
@@ -88,14 +98,12 @@ export class StoreService {
           digitalAccount,
           customer,
         },
+        webhook
       });
 
       const store = await queryRunner.manager.save(tempStore);
-
       tempIntegration.store = store;
-
       await queryRunner.manager.save(tempIntegration);
-
       await queryRunner.commitTransaction();
 
       return { ...store, paymentIntegration: tempIntegration };
