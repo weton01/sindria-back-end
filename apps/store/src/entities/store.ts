@@ -30,7 +30,7 @@ export class StoreEntity {
 
   @Column({
     default: true,
-    type: 'boolean'
+    type: 'boolean',
   })
   active: boolean;
 
@@ -41,10 +41,10 @@ export class StoreEntity {
   updated_at?: Date;
 
   @OneToMany(() => ProductEntity, (product) => product.store)
-  products: ProductEntity[]
+  products: ProductEntity[];
 
   @OneToMany(() => OrderStoreEntity, (product) => product.store)
-  sales: OrderStoreEntity[]
+  sales: OrderStoreEntity[];
 
   @ManyToOne(() => UserEntity, (user) => user.stores, {
     cascade: true,
@@ -61,7 +61,10 @@ export class StoreEntity {
   @JoinColumn()
   address: AddressEntity;
 
-  @OneToOne(() => IntegrationEntity, (integration) => integration.store)
+  @OneToOne(() => IntegrationEntity, (integration) => integration.store, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   paymentIntegration: IntegrationEntity;
 

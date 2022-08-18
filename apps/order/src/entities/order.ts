@@ -1,7 +1,7 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
-import { InvoiceTypes } from '@app/common/enums/invoice-types';
+import { PaymentEntity } from '@/payment/entities/payment';
 import { OrderStatus } from '@app/common/enums/order-status.';
 import { AsaasBillingType } from '@app/utils/asaas/enums/charge';
 
@@ -11,6 +11,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -67,6 +68,12 @@ export class OrderEntity {
 
   @OneToMany(() => OrderStoreEntity, (variation) => variation.order)
   ordersStores: OrderStoreEntity[];
+  
+  @OneToOne(() => PaymentEntity, (variation) => variation.order, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  payment: PaymentEntity[];
 
   constructor(entity?: Partial<OrderEntity>) {
     this.id = entity?.id;

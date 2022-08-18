@@ -84,6 +84,8 @@ export class StoreService {
         url: `${envs.PROD_URL}/payment/v1/charge/webhook`
       })
 
+      console.log('webhook', webhook)
+
       const tempDto = { ...dto };
       delete tempDto.meta;
 

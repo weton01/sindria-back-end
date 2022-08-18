@@ -1,3 +1,4 @@
+import { PaymentService } from '@/payment/payment.service';
 import { JwtAuthGuard } from '@app/utils';
 import { AsaasBillingType } from '@app/utils/asaas/enums/charge';
 import {
@@ -16,15 +17,21 @@ import { OrderService } from './order.service';
 
 @Controller()
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly paymentService: PaymentService
+  ) {}
 
   @Post('/')
   @UseGuards(JwtAuthGuard)
   async createOrder(@Req() req, @Body() dto: OrderDto): Promise<any> {
     const { user } = req;
 
-    if (dto.invoiceType === AsaasBillingType.CREDIT_CARD)
-      return await this.orderService.createCreditCardOrder(user.id, dto);
+    if (dto.invoiceType === AsaasBillingType.CREDIT_CARD){
+      const order = await this.orderService.createCreditCardOrder(user.id, dto);
+      await this.paymentService.createCreditCardCharge(order, dto.extraCreditCard)
+      return order
+    }
     else return await this.orderService.createOrder(user.id, dto);
   }
 
