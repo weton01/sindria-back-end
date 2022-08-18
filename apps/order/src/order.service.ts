@@ -52,12 +52,15 @@ export class OrderService {
     queryRunner: QueryRunner,
   ) {
     return orderProducts.map(async (p) => {
+      console.log('here')
       const product = await this.productRepository.findOne({
         where: { id: p.product.id },
         relations: ['user', 'tags', 'categories', 'brand'],
       });
+      console.log('here')
 
       if (!product) throw new BadRequestException('produto não encontrado');
+      console.log('here')
 
       p.user = product.user;
 
@@ -65,6 +68,7 @@ export class OrderService {
         where: { id: p.mutation.id },
         relations: ['variations'],
       });
+      console.log('here')
 
       if (!mutation) {
         throw new BadRequestException('mutação não encontrada');
@@ -79,6 +83,8 @@ export class OrderService {
 
       await queryRunner.manager.save(mutation);
       await queryRunner.manager.save(product);
+
+      console.log(product, mutation)
 
       const newProduct = this.orderProductRepository.create({
         netAmount: p.netAmount,
@@ -96,19 +102,23 @@ export class OrderService {
     });
   }
 
-  private createOrderStores(
+  private  createOrderStores(
     orderStores: OrderStoreEntity[],
     queryRunner: QueryRunner,
   ) {
     return orderStores.map(async (ost) => {
+      console.log('here')
+
       const store = await this.storeRepository.findOne({
         where: { id: ost.store.id },
         relations: ['paymentIntegration'],
       });
+      console.log('here')
 
       if (!store) {
         throw new NotFoundException('loja não encontrado');
       }
+      console.log('here')
 
       const orderProducts = await Promise.all(
         this.createOrderProducts(ost.orderProducts, queryRunner),
@@ -116,14 +126,17 @@ export class OrderService {
 
       const newStore = this.orderStoreRepository.create({
         ...ost,
+        store,
         orderProducts,
       });
+
+      console.log('chegou aqui')
 
       return queryRunner.manager.save(newStore);
     });
   }
 
-  async createCreditCardOrder(userId: string, dto: OrderDto): Promise<any> {
+  public async createCreditCardOrder(userId: string, dto: OrderDto): Promise<any> {
     const [foundUser, foundCreditCard, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.creditCardRepository.findOne({
@@ -135,6 +148,11 @@ export class OrderService {
         user: { id: userId },
       }),
     ]);
+    console.log('chegou aqui')
+
+    if (!dto.extraCreditCard) {
+      throw new BadRequestException('informações do cartão são obrigatórias');
+    }
 
     if (!foundUser) {
       throw new NotFoundException('usuário não encontrado');
@@ -151,11 +169,13 @@ export class OrderService {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    console.log('chegou aqui')
 
     try {
       const orderStores = await Promise.all(
         this.createOrderStores(dto.orderStores, queryRunner),
       );
+      console.log('chegou aqui')
 
       const newOrder = this.repository.create({
         freezePurchaser: foundUser,
@@ -165,6 +185,7 @@ export class OrderService {
         ordersStores: orderStores,
         purchaser: foundUser,
       });
+      console.log('chegou aqui')
 
       await queryRunner.manager.save(newOrder);
       await queryRunner.commitTransaction();
@@ -178,7 +199,7 @@ export class OrderService {
     }
   }
 
-  async createOrder(userId: string, dto: OrderDto): Promise<OrderEntity> {
+  public async createOrder(userId: string, dto: OrderDto): Promise<OrderEntity> {
     const [foundUser, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.addressRepository.findOne({ id: dto.address.id }),
@@ -216,7 +237,7 @@ export class OrderService {
     }
   }
 
-  async find(
+  public async find(
     query: FindOrderDto,
     userId: string,
   ): Promise<[OrderEntity[], number]> {
@@ -259,7 +280,7 @@ export class OrderService {
     return [newOrders, orders[1]];
   }
 
-  async findById(userId: string, id: string) {
+  public async findById(userId: string, id: string) {
     const [foundUser, foundOrder] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.repository.findOne({

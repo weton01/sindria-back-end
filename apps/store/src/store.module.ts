@@ -13,10 +13,15 @@ import { StoreService } from './store.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, AddressEntity, StoreEntity, IntegrationEntity]),
+    TypeOrmModule.forFeature([
+      UserEntity,
+      AddressEntity,
+      StoreEntity,
+      IntegrationEntity,
+    ]),
     AsaasModule.register({
       MODE: AsaasMode.dev,
-      X_API_KEY: envs.ASAAS_TOKEN
+      X_API_KEY: envs.ASAAS_TOKEN,
     }),
     TypeormConfig,
     JwtConfig,

@@ -62,6 +62,9 @@
       "@/coupon/*": [
         "apps/coupon/src/*"
       ],
+      "@/payment/*": [
+        "apps/payment/src/*"
+      ],
       "@app/foggy-common": [
         "libs/foggy-common/src"
       ],

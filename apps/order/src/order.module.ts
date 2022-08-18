@@ -3,9 +3,14 @@ import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
+import { PaymentEntity } from '@/payment/entities/payment';
+import { PaymentService } from '@/payment/payment.service';
 import { ProductEntity } from '@/product/entities/product';
 import { StoreEntity } from '@/store/entities/store';
-import { JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
+import { envs, JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
+import { AsaasModule } from '@app/utils/asaas/asaas.module';
+import { AsaasService } from '@app/utils/asaas/asaas.service';
+import { AsaasMode } from '@app/utils/asaas/enums/asaas-mode';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -27,12 +32,17 @@ import { OrderService } from './order.service';
       OrderStoreEntity,
       MutationEntity,
       ProductEntity,
-      StoreEntity
+      StoreEntity,
+      PaymentEntity
     ]),
     TypeormConfig,
     JwtConfig,
+    AsaasModule.register({
+      MODE: AsaasMode.dev,
+      X_API_KEY: envs.ASAAS_TOKEN,
+    }),
   ],
   controllers: [OrderController],
-  providers: [OrderService, JwtStrategy],
+  providers: [OrderService, PaymentService, JwtStrategy],
 })
 export class OrderModule {}

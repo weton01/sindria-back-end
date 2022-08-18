@@ -1,11 +1,4 @@
-
-import { AsaasCreateDigitalCCOutput } from '@app/utils/asaas/outputs/create-digitalcc';
-import {
-  Column,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { StoreEntity } from './store';
 
 @Entity({ name: 'integrations' })
@@ -26,9 +19,7 @@ export class IntegrationEntity {
   webhook: any;
 
   @OneToOne(() => StoreEntity, (store) => store.paymentIntegration, {
-    cascade: true,
     onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
   })
   store: StoreEntity;
 
