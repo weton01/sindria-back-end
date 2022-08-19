@@ -63,6 +63,14 @@ export class VariationEntity {
     scale: 2,
     transformer: floatTransformer,
   })
+  length: number;
+
+  @Column({
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    transformer: floatTransformer,
+  })
   height: number;
 
   @Column({

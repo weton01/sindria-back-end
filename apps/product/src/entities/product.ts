@@ -73,6 +73,14 @@ export class ProductEntity {
     scale: 2,
     transformer: floatTransformer,
   })
+  length: number;
+
+  @Column({
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    transformer: floatTransformer,
+  })
   width: number;
 
   @Column()

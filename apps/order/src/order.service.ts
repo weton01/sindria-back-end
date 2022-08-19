@@ -52,15 +52,12 @@ export class OrderService {
     queryRunner: QueryRunner,
   ) {
     return orderProducts.map(async (p) => {
-      console.log('here')
       const product = await this.productRepository.findOne({
         where: { id: p.product.id },
         relations: ['user', 'tags', 'categories', 'brand'],
       });
-      console.log('here')
 
       if (!product) throw new BadRequestException('produto não encontrado');
-      console.log('here')
 
       p.user = product.user;
 
@@ -68,7 +65,6 @@ export class OrderService {
         where: { id: p.mutation.id },
         relations: ['variations'],
       });
-      console.log('here')
 
       if (!mutation) {
         throw new BadRequestException('mutação não encontrada');
@@ -84,7 +80,6 @@ export class OrderService {
       await queryRunner.manager.save(mutation);
       await queryRunner.manager.save(product);
 
-      console.log(product, mutation)
 
       const newProduct = this.orderProductRepository.create({
         netAmount: p.netAmount,
@@ -107,18 +102,15 @@ export class OrderService {
     queryRunner: QueryRunner,
   ) {
     return orderStores.map(async (ost) => {
-      console.log('here')
 
       const store = await this.storeRepository.findOne({
         where: { id: ost.store.id },
         relations: ['paymentIntegration'],
       });
-      console.log('here')
 
       if (!store) {
         throw new NotFoundException('loja não encontrado');
       }
-      console.log('here')
 
       const orderProducts = await Promise.all(
         this.createOrderProducts(ost.orderProducts, queryRunner),
@@ -130,7 +122,6 @@ export class OrderService {
         orderProducts,
       });
 
-      console.log('chegou aqui')
 
       return queryRunner.manager.save(newStore);
     });
@@ -148,7 +139,6 @@ export class OrderService {
         user: { id: userId },
       }),
     ]);
-    console.log('chegou aqui')
 
     if (!dto.extraCreditCard) {
       throw new BadRequestException('informações do cartão são obrigatórias');
@@ -169,13 +159,11 @@ export class OrderService {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    console.log('chegou aqui')
 
     try {
       const orderStores = await Promise.all(
         this.createOrderStores(dto.orderStores, queryRunner),
       );
-      console.log('chegou aqui')
 
       const newOrder = this.repository.create({
         freezePurchaser: foundUser,
@@ -185,7 +173,6 @@ export class OrderService {
         ordersStores: orderStores,
         purchaser: foundUser,
       });
-      console.log('chegou aqui')
 
       await queryRunner.manager.save(newOrder);
       await queryRunner.commitTransaction();

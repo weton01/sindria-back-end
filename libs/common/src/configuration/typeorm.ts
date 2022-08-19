@@ -25,7 +25,7 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   port: parseInt(envs.DB_CONNECTION_PORT),
   username: envs.DB_CONNECTION_USERNAME,
   password: envs.DB_CONNECTION_PASSWORD,
-  database: process.env.NODE_ENV,
+  database: 'production',
   synchronize: true,
   entities: [
     UserEntity,

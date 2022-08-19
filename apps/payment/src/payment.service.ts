@@ -34,7 +34,7 @@ export class PaymentService {
 
     const split: AsaasSplit[] = order.ordersStores.map((os) => ({
       walletId: os?.store?.paymentIntegration?.meta?.digitalAccount?.walletId,
-      fixedValue: os.totalAmount - ((os.totalAmount * 1.99) + 0.49)
+      fixedValue: os.totalAmount - ((os.totalAmount * 0.0199) + 0.49)
     }));
 
     try {
