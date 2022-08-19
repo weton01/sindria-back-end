@@ -44,6 +44,14 @@ export class VariationDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(0)
+  length: number;
+
+  @ApiProperty({
+    example: 5,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
   height: number;
 
   @ApiProperty({

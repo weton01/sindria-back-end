@@ -73,6 +73,14 @@ export class ProductDto {
   width: number;
 
   @ApiProperty({
+    example: 5,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(0)
+  length: number;
+
+  @ApiProperty({
     example: 'lorem impsum dolent',
   })
   @IsString()
