@@ -6,26 +6,26 @@ import { AsaasCreateWebhookCbOutput } from '@app/utils/asaas/outputs/create-webh
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Connection, Repository } from 'typeorm';
-import { PaymentEntity } from './entities/payment';
+import { BillEntity } from './entities/bill';
 
 @Injectable()
 export class PaymentService {
   constructor(
     private connection: Connection,
     private readonly asaasService: AsaasService,
-    @InjectRepository(PaymentEntity)
-    private readonly repository: Repository<PaymentEntity>,
+    @InjectRepository(BillEntity)
+    private readonly repository: Repository<BillEntity>,
   ) {}
 
   async createCreditCardCharge(
     order: OrderEntity,
     creditCardHolderInfo: ExtraCreditCard,
-  ) { 
+  ) {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    let totalAmount: number = 0;
+    let totalAmount = 0;
     const dueDate: Date = new Date();
 
     order.ordersStores.forEach((os) => {
@@ -34,7 +34,7 @@ export class PaymentService {
 
     const split: AsaasSplit[] = order.ordersStores.map((os) => ({
       walletId: os?.store?.paymentIntegration?.meta?.digitalAccount?.walletId,
-      fixedValue: os.totalAmount - ((os.totalAmount * 0.0199) + 0.49)
+      fixedValue: os.totalAmount - (os.totalAmount * 0.0199 + 0.49),
     }));
 
     try {
@@ -57,7 +57,7 @@ export class PaymentService {
         externalReference: 'null',
       });
 
-      const payment = this.repository.create({
+      const bill = this.repository.create({
         billingType: charge.billingType,
         extenalId: charge.id,
         status: charge.status,
@@ -66,10 +66,10 @@ export class PaymentService {
         order,
       });
 
-      await queryRunner.manager.save(payment);
+      await queryRunner.manager.save(bill);
       await queryRunner.commitTransaction();
 
-      return payment;
+      return bill;
     } catch (err) {
       await queryRunner.rollbackTransaction();
       throw err;

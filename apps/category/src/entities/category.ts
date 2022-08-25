@@ -54,7 +54,10 @@ export class CategoryEntity {
   @ManyToMany(() => ProductEntity, (product) => product.categories)
   products: ProductEntity[];
 
-  @ManyToMany(() => OrderProductEntity, (orderProduct) => orderProduct.categories)
+  @ManyToMany(
+    () => OrderProductEntity,
+    (orderProduct) => orderProduct.categories,
+  )
   orderProducts: OrderProductEntity[];
 
   constructor(entity?: Partial<CategoryEntity>) {

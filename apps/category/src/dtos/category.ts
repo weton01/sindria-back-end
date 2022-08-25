@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsArray } from 'class-validator';
 import { CategoryEntity } from '../entities/category';
 
 export class CategoryDto {
@@ -15,9 +15,10 @@ export class CategoryDto {
     description: 'the url of image',
     example: 'https://any_image.com',
   })
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   @IsNotEmpty()
-  image: string;
+  images: string[];
 
   @IsString()
   @IsOptional()

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsUUID, IsUrl } from 'class-validator';
 
 export class BrandDto {
   @ApiProperty({
@@ -12,7 +12,15 @@ export class BrandDto {
   @ApiProperty({
     example: 'image_icon',
   })
+  @IsString({ each: true })
+  @IsArray()
+  @IsNotEmpty()
+  images: string[];
+
+  @ApiProperty({
+    example: 'image_icon',
+  })
   @IsString()
   @IsNotEmpty()
-  image: string;
+  icon: string;
 }

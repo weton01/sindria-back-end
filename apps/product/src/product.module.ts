@@ -22,7 +22,7 @@ import { ProductService } from './product.service';
       ReviewEntity,
       ProductEntity,
       StoreEntity,
-      TagEntity
+      TagEntity,
     ]),
     S3Module.forRoot({
       config: {

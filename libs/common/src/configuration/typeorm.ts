@@ -18,6 +18,7 @@ import { StoreEntity } from '@/store/entities/store';
 import { CouponEntity } from '@/coupon/entities/coupon';
 import { IntegrationEntity } from '@/store/entities/integration';
 import { PaymentEntity } from '@/payment/entities/payment';
+import { BillEntity } from '@/payment/entities/bill';
 
 export const TypeormConfig = TypeOrmModule.forRoot({
   type: 'mysql',
@@ -25,7 +26,7 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   port: parseInt(envs.DB_CONNECTION_PORT),
   username: envs.DB_CONNECTION_USERNAME,
   password: envs.DB_CONNECTION_PASSWORD,
-  database: 'production',
+  database: envs.NODE_ENV,
   synchronize: true,
   entities: [
     UserEntity,
@@ -46,5 +47,6 @@ export const TypeormConfig = TypeOrmModule.forRoot({
     CouponEntity,
     IntegrationEntity,
     PaymentEntity,
+    BillEntity,
   ],
 });

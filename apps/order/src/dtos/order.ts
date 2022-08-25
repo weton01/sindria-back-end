@@ -77,7 +77,7 @@ export class OrderDto {
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)
   creditCard: CreditCardEntity;
- 
+
   @ApiProperty()
   @ValidateNested({ each: true })
   @Type(() => ExtraCreditCard)

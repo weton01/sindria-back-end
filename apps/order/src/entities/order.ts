@@ -1,6 +1,7 @@
 import { AddressEntity } from '@/address/entities/address';
 import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
+import { BillEntity } from '@/payment/entities/bill';
 import { PaymentEntity } from '@/payment/entities/payment';
 import { OrderStatus } from '@app/common/enums/order-status.';
 import { AsaasBillingType } from '@app/utils/asaas/enums/charge';
@@ -28,10 +29,10 @@ export class OrderEntity {
   @Column({
     type: 'enum',
     enum: AsaasBillingType,
-    nullable: false
+    nullable: false,
   })
   invoiceType: AsaasBillingType;
-  
+
   @Column({
     type: 'enum',
     enum: OrderStatus,
@@ -68,12 +69,12 @@ export class OrderEntity {
 
   @OneToMany(() => OrderStoreEntity, (variation) => variation.order)
   ordersStores: OrderStoreEntity[];
-  
-  @OneToOne(() => PaymentEntity, (variation) => variation.order, {
+
+  @OneToOne(() => BillEntity, (variation) => variation.order, {
     eager: true,
     onDelete: 'CASCADE',
   })
-  payment: PaymentEntity[];
+  bill: BillEntity[];
 
   constructor(entity?: Partial<OrderEntity>) {
     this.id = entity?.id;

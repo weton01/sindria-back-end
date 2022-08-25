@@ -3,13 +3,13 @@ import { UserEntity } from '@/auth/entities/user';
 import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
+import { BillEntity } from '@/payment/entities/bill';
 import { PaymentEntity } from '@/payment/entities/payment';
 import { PaymentService } from '@/payment/payment.service';
 import { ProductEntity } from '@/product/entities/product';
 import { StoreEntity } from '@/store/entities/store';
 import { envs, JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
 import { AsaasModule } from '@app/utils/asaas/asaas.module';
-import { AsaasService } from '@app/utils/asaas/asaas.service';
 import { AsaasMode } from '@app/utils/asaas/enums/asaas-mode';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -33,7 +33,7 @@ import { OrderService } from './order.service';
       MutationEntity,
       ProductEntity,
       StoreEntity,
-      PaymentEntity
+      BillEntity,
     ]),
     TypeormConfig,
     JwtConfig,
