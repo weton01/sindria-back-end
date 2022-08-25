@@ -47,5 +47,4 @@ export class FindStoreDto {
   @IsOptional()
   @IsEnum(OrderBy)
   orderBy: OrderBy;
-
 }

@@ -14,8 +14,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity({ name: 'payments' })
-export class PaymentEntity {
+@Entity({ name: 'bills' })
+export class BillEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -58,7 +58,7 @@ export class PaymentEntity {
   })
   order: OrderEntity;
 
-  constructor(entity?: Partial<PaymentEntity>) {
+  constructor(entity?: Partial<BillEntity>) {
     this.id = entity?.id;
   }
 }

@@ -1,11 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import axios from 'axios';
-import {
-  AsaasCreateChargeCredit,
-} from '../inputs/create-charge';
 import { AsaasCreateWebhook } from '../inputs/create-webhook';
 import { AsaasOptions } from '../option';
-import { AsaasCreateChargeOutput } from '../outputs/create-charge';
 import { AsaasCreateWebhookOutput } from '../outputs/create-webhook';
 
 export class AsaasWebookEntity {
@@ -19,22 +15,33 @@ export class AsaasWebookEntity {
 
   public async createWebhook(
     body: AsaasCreateWebhook,
-  ): Promise<AsaasCreateWebhookOutput> {
+  ): Promise<AsaasCreateWebhookOutput[]> {
     try {
-      const { data }: { data: AsaasCreateWebhookOutput } = await axios.post(
-        `${this.URL}/api/v3/webhook`,
-        body,
-        {
+      const [p1, p2, p3]: [
+        { data: AsaasCreateWebhookOutput },
+        { data: AsaasCreateWebhookOutput },
+        { data: AsaasCreateWebhookOutput },
+      ] = await Promise.all([
+        axios.post(`${this.URL}/api/v3/webhook`, body, {
           headers: {
             access_token: this.X_API_KEY,
           },
-        },
-      );
-
-      return data;
+        }),
+        axios.post(`${this.URL}/api/v3/webhook/transfer`, body, {
+          headers: {
+            access_token: this.X_API_KEY,
+          },
+        }),
+        axios.post(`${this.URL}/api/v3/webhook/invoice`, body, {
+          headers: {
+            access_token: this.X_API_KEY,
+          },
+        }),
+      ]);
+      return [p1.data, p2.data, p3.data];
     } catch (err) {
+      console.log(err);
       throw new BadRequestException(err?.response?.data);
     }
   }
- 
 }

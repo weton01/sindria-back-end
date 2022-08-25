@@ -20,6 +20,9 @@ export class BrandEntity {
   @Column('simple-array')
   images: string[];
 
+  @Column()
+  icon: string;
+
   @CreateDateColumn()
   created_at?: Date;
 
