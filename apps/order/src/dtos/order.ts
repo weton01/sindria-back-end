@@ -8,12 +8,15 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
+  IsInt,
   IsISO8601,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { OrderStoreEntity } from '../entities/order-store';
@@ -82,6 +85,13 @@ export class OrderDto {
   @ValidateNested({ each: true })
   @Type(() => ExtraCreditCard)
   extraCreditCard: ExtraCreditCard;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(12)
+  installments: number;
 
   @ApiProperty()
   @IsArray()

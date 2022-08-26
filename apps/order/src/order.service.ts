@@ -4,7 +4,6 @@ import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { ProductEntity } from '@/product/entities/product';
 import { StoreEntity } from '@/store/entities/store';
-import { InvoiceTypes } from '@app/common/enums/invoice-types';
 import { OrderStatus } from '@app/common/enums/order-status.';
 import { MessageErrors } from '@app/common/messages';
 import {
@@ -26,7 +25,6 @@ import { OrderStoreEntity } from './entities/order-store';
 export class OrderService {
   constructor(
     private connection: Connection,
-
     @InjectRepository(OrderEntity)
     private readonly repository: Repository<OrderEntity>,
     @InjectRepository(UserEntity)
@@ -57,7 +55,9 @@ export class OrderService {
         relations: ['user', 'tags', 'categories', 'brand'],
       });
 
-      if (!product) throw new BadRequestException('produto não encontrado');
+      if (!product) {
+        throw new BadRequestException('produto não encontrado');
+      }
 
       p.user = product.user;
 
@@ -80,7 +80,6 @@ export class OrderService {
       await queryRunner.manager.save(mutation);
       await queryRunner.manager.save(product);
 
-
       const newProduct = this.orderProductRepository.create({
         netAmount: p.netAmount,
         grossAmount: p.grossAmount,
@@ -97,12 +96,11 @@ export class OrderService {
     });
   }
 
-  private  createOrderStores(
+  private createOrderStores(
     orderStores: OrderStoreEntity[],
     queryRunner: QueryRunner,
   ) {
     return orderStores.map(async (ost) => {
-
       const store = await this.storeRepository.findOne({
         where: { id: ost.store.id },
         relations: ['paymentIntegration'],
@@ -122,12 +120,14 @@ export class OrderService {
         orderProducts,
       });
 
-
       return queryRunner.manager.save(newStore);
     });
   }
 
-  public async createCreditCardOrder(userId: string, dto: OrderDto): Promise<any> {
+  public async createCreditCardOrder(
+    userId: string,
+    dto: OrderDto,
+  ): Promise<any> {
     const [foundUser, foundCreditCard, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.creditCardRepository.findOne({
@@ -139,6 +139,10 @@ export class OrderService {
         user: { id: userId },
       }),
     ]);
+
+    if (!dto.installments) {
+      throw new BadRequestException('numero de parcelas são obrigatórias');
+    }
 
     if (!dto.extraCreditCard) {
       throw new BadRequestException('informações do cartão são obrigatórias');
@@ -186,7 +190,106 @@ export class OrderService {
     }
   }
 
-  public async createOrder(userId: string, dto: OrderDto): Promise<OrderEntity> {
+  public async createBoletoOrder(userId: string, dto: OrderDto): Promise<any> {
+    const [foundUser, foundAddress] = await Promise.all([
+      this.userRepository.findOne({ id: userId }),
+      this.addressRepository.findOne({
+        id: dto.address.id,
+        user: { id: userId },
+      }),
+    ]);
+
+    if (!dto.installments) {
+      throw new BadRequestException('numero de parcelas são obrigatórias');
+    }
+
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
+
+    if (!foundAddress) {
+      throw new NotFoundException('endereço não encontrado');
+    }
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const orderStores = await Promise.all(
+        this.createOrderStores(dto.orderStores, queryRunner),
+      );
+
+      const newOrder = this.repository.create({
+        freezePurchaser: foundUser,
+        invoiceType: dto.invoiceType,
+        address: foundAddress,
+        ordersStores: orderStores,
+        purchaser: foundUser,
+      });
+
+      await queryRunner.manager.save(newOrder);
+      await queryRunner.commitTransaction();
+
+      return newOrder;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  public async createPixOrder(userId: string, dto: OrderDto): Promise<any> {
+    const [foundUser, foundAddress] = await Promise.all([
+      this.userRepository.findOne({ id: userId }),
+      this.addressRepository.findOne({
+        id: dto.address.id,
+        user: { id: userId },
+      }),
+    ]);
+
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
+
+    if (!foundAddress) {
+      throw new NotFoundException('endereço não encontrado');
+    }
+
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const orderStores = await Promise.all(
+        this.createOrderStores(dto.orderStores, queryRunner),
+      );
+
+      const newOrder = this.repository.create({
+        freezePurchaser: foundUser,
+        invoiceType: dto.invoiceType,
+        address: foundAddress,
+        ordersStores: orderStores,
+        purchaser: foundUser,
+      });
+
+      await queryRunner.manager.save(newOrder);
+      await queryRunner.commitTransaction();
+
+      return newOrder;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  public async createOrder(
+    userId: string,
+    dto: OrderDto,
+  ): Promise<OrderEntity> {
     const [foundUser, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.addressRepository.findOne({ id: dto.address.id }),

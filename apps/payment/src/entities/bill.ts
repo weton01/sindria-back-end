@@ -42,10 +42,24 @@ export class BillEntity {
   value: number;
 
   @Column()
+  installmentCount: number;
+
+  @Column({
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    transformer: floatTransformer,
+  })
+  installmentValue: number;
+
+  @Column()
   extenalId: string;
 
   @Column()
   dueDate: Date;
+
+  @Column('simple-json')
+  meta: any;
 
   @CreateDateColumn()
   created_at?: Date;
@@ -53,7 +67,7 @@ export class BillEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToOne(() => OrderEntity, (order) => order.bill, {
+  @OneToOne(() => OrderEntity, (order) => order.bills, {
     onDelete: 'CASCADE',
   })
   order: OrderEntity;

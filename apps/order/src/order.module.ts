@@ -4,13 +4,13 @@ import { CreditCardEntity } from '@/credit-card/entities/credit-card';
 import { MutationEntity } from '@/inventory/mutation/entities/mutation';
 import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { BillEntity } from '@/payment/entities/bill';
-import { PaymentEntity } from '@/payment/entities/payment';
 import { PaymentService } from '@/payment/payment.service';
 import { ProductEntity } from '@/product/entities/product';
 import { StoreEntity } from '@/store/entities/store';
 import { envs, JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
 import { AsaasModule } from '@app/utils/asaas/asaas.module';
 import { AsaasMode } from '@app/utils/asaas/enums/asaas-mode';
+import { CypervModule } from '@app/utils/cyperv/cyperv.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -37,6 +37,12 @@ import { OrderService } from './order.service';
     ]),
     TypeormConfig,
     JwtConfig,
+    CypervModule.register({
+      ALGORITHM: 'aes-256-cbc',
+      ENCODING: 'hex',
+      IV_LENGTH: 16,
+      KEY: '123qwe1231231231'!,
+    }),
     AsaasModule.register({
       MODE: AsaasMode.dev,
       X_API_KEY: envs.ASAAS_TOKEN,

@@ -74,7 +74,7 @@ export class OrderEntity {
     eager: true,
     onDelete: 'CASCADE',
   })
-  bill: BillEntity[];
+  bills: BillEntity[];
 
   constructor(entity?: Partial<OrderEntity>) {
     this.id = entity?.id;
