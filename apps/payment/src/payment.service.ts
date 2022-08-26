@@ -1,81 +1,158 @@
 import { ExtraCreditCard } from '@/order/dtos/order';
 import { OrderEntity } from '@/order/entities/order';
+import { OrderStoreEntity } from '@/order/entities/order-store';
 import { AsaasService } from '@app/utils/asaas/asaas.service';
 import { AsaasSplit } from '@app/utils/asaas/inputs/create-charge';
 import { AsaasCreateWebhookCbOutput } from '@app/utils/asaas/outputs/create-webhookcb';
+import { CypervService } from '@app/utils/cyperv/cyperv.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Connection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { BillEntity } from './entities/bill';
 
 @Injectable()
 export class PaymentService {
   constructor(
-    private connection: Connection,
     private readonly asaasService: AsaasService,
+    private readonly cypervService: CypervService,
     @InjectRepository(BillEntity)
     private readonly repository: Repository<BillEntity>,
   ) {}
 
-  async createCreditCardCharge(
-    order: OrderEntity,
-    creditCardHolderInfo: ExtraCreditCard,
-  ) {
-    const queryRunner = this.connection.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
+  private calculateTotalAmount(orderStores: OrderStoreEntity[]): number {
     let totalAmount = 0;
-    const dueDate: Date = new Date();
 
-    order.ordersStores.forEach((os) => {
+    orderStores.forEach((os) => {
       totalAmount += os.totalAmount;
     });
 
-    const split: AsaasSplit[] = order.ordersStores.map((os) => ({
+    return totalAmount;
+  }
+
+  private createSplits(
+    orderStores: OrderStoreEntity[],
+    installments,
+  ): AsaasSplit[] {
+    return orderStores.map((os) => ({
       walletId: os?.store?.paymentIntegration?.meta?.digitalAccount?.walletId,
-      fixedValue: os.totalAmount - (os.totalAmount * 0.0199 + 0.49),
+      fixedValue:
+        (os.totalAmount - (os.totalAmount * 0.0199 + 0.49)) / installments,
     }));
+  }
 
-    try {
-      const charge = await this.asaasService.charge.createChargeCredit({
-        creditCard: {
-          ccv: order.creditCard.cvc,
-          expiryMonth: order.creditCard.expirationDate.split('/')[0],
-          expiryYear: order.creditCard.expirationDate.split('/')[1],
-          holderName: order.creditCard.name,
-          number: order.creditCard.number,
-        },
-        creditCardHolderInfo,
-        billingType: order.invoiceType,
-        customer:
-          order.ordersStores[0].store.paymentIntegration.meta.customer.id,
-        description: '',
-        dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
-        split,
-        value: totalAmount,
-        externalReference: 'null',
-      });
+  async createCreditCardBill(
+    order: OrderEntity,
+    creditCardHolderInfo: ExtraCreditCard,
+    installments: number,
+  ) {
+    const dueDate: Date = new Date();
 
-      const bill = this.repository.create({
-        billingType: charge.billingType,
-        extenalId: charge.id,
-        status: charge.status,
-        dueDate: charge.dueDate,
-        value: charge.value,
-        order,
-      });
+    const totalAmount = this.calculateTotalAmount(order.ordersStores);
+    const split = this.createSplits(order.ordersStores, installments);
 
-      await queryRunner.manager.save(bill);
-      await queryRunner.commitTransaction();
+    const charge = await this.asaasService.charge.createChargeCredit({
+      creditCard: {
+        ccv: this.cypervService.decrypt(order.creditCard.cvc),
+        expiryMonth: order.creditCard.expirationDate.split('/')[0],
+        expiryYear: order.creditCard.expirationDate.split('/')[1],
+        holderName: order.creditCard.name,
+        number: this.cypervService.decrypt(order.creditCard.number),
+      },
+      creditCardHolderInfo,
+      billingType: order.invoiceType,
+      customer: order.ordersStores[0].store.paymentIntegration.meta.customer.id,
+      description: '',
+      dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
+      split,
+      value: totalAmount,
+      externalReference: 'null',
+      installmentCount: installments,
+      installmentValue: totalAmount / installments,
+    });
 
-      return bill;
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    const bill = this.repository.create({
+      billingType: charge.billingType,
+      extenalId: charge.id,
+      status: charge.status,
+      dueDate: charge.dueDate,
+      value: charge.value,
+      installmentCount: installments,
+      installmentValue: totalAmount / installments,
+      order,
+      meta: {},
+    });
+
+    return await this.repository.save(bill);
+  }
+
+  async createBoletoBill(order: OrderEntity, installments: number) {
+    const dueDate: Date = new Date();
+
+    const totalAmount = this.calculateTotalAmount(order.ordersStores);
+    const split = this.createSplits(order.ordersStores, installments);
+
+    const charge = await this.asaasService.charge.createChargeBoleto({
+      billingType: order.invoiceType,
+      customer: order.ordersStores[0].store.paymentIntegration.meta.customer.id,
+      description: '',
+      dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
+      split,
+      value: totalAmount,
+      externalReference: 'null',
+      installmentCount: installments,
+      installmentValue: totalAmount / installments,
+      postalService: false,
+    });
+
+    const meta = await this.asaasService.charge.getBoletoBarcode(charge.id);
+
+    const bill = this.repository.create({
+      billingType: charge.billingType,
+      extenalId: charge.id,
+      status: charge.status,
+      dueDate: charge.dueDate,
+      value: charge.value,
+      installmentCount: installments,
+      installmentValue: totalAmount / installments,
+      order,
+      meta,
+    });
+
+    return await this.repository.save(bill);
+  }
+
+  async createPixBill(order: OrderEntity) {
+    const dueDate: Date = new Date();
+
+    const totalAmount = this.calculateTotalAmount(order.ordersStores);
+    const split = this.createSplits(order.ordersStores, 1);
+
+    const charge = await this.asaasService.charge.createChargePix({
+      billingType: order.invoiceType,
+      customer: order.ordersStores[0].store.paymentIntegration.meta.customer.id,
+      description: '',
+      dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
+      split,
+      value: totalAmount,
+      externalReference: 'null',
+      postalService: false,
+    });
+
+    const meta = await this.asaasService.charge.getPixQRCode(charge.id);
+
+    const bill = this.repository.create({
+      billingType: charge.billingType,
+      extenalId: charge.id,
+      status: charge.status,
+      dueDate: charge.dueDate,
+      value: charge.value,
+      installmentCount: 1,
+      installmentValue: totalAmount / 1,
+      order,
+      meta,
+    });
+
+    return await this.repository.save(bill);
   }
 
   async chargeWebhook(data: AsaasCreateWebhookCbOutput) {

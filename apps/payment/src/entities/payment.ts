@@ -53,7 +53,7 @@ export class PaymentEntity {
   @UpdateDateColumn()
   updated_at?: Date;
 
-  @OneToOne(() => OrderEntity, (order) => order.bill, {
+  @OneToOne(() => OrderEntity, (order) => order.bills, {
     onDelete: 'CASCADE',
   })
   order: OrderEntity;

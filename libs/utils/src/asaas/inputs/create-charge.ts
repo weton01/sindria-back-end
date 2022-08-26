@@ -1,4 +1,4 @@
-import { AsaasBillingType, AsaasDiscountType } from "../enums/charge";
+import { AsaasBillingType, AsaasDiscountType } from '../enums/charge';
 
 export interface AsaasSplit {
   walletId: string;
@@ -18,19 +18,23 @@ interface AsaasChargeDefault {
   discount?: {
     value: number;
     dueDateLimitDays: number;
-    type: AsaasDiscountType
-  }
+    type: AsaasDiscountType;
+  };
   interest?: {
     value: number;
-  }
+  };
   fine?: {
     value: number;
-  }
-  split?: AsaasSplit[]
+  };
+  split?: AsaasSplit[];
 }
 
 export interface AsaasCreateChargeBoleto extends AsaasChargeDefault {
-  postalService: boolean;
+  postalService?: boolean;
+}
+
+export interface AsaasCreateChargePix extends AsaasChargeDefault {
+  postalService?: boolean;
 }
 
 export interface AsaasCreateChargeCredit extends AsaasChargeDefault {
@@ -46,7 +50,7 @@ export interface AsaasCreateChargeCredit extends AsaasChargeDefault {
     email?: string;
     cpfCnpj?: string;
     postalCode?: string;
-    addressNumber?:  string;
+    addressNumber?: string;
     phone?: string;
     mobilePhone?: string;
   };
