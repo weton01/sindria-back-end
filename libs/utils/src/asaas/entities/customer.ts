@@ -29,7 +29,10 @@ export class AsaasCustomerEntity {
 
       return data;
     } catch (err) {
-      throw new BadRequestException(err?.response?.data);
+      if (err?.response?.data)
+        throw new BadRequestException(err?.response?.data);
+      else if (err?.response) throw new BadRequestException(err?.response);
+      else throw new BadRequestException(err);
     }
   }
 }

@@ -6,6 +6,7 @@ import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { BillEntity } from '@/payment/entities/bill';
 import { PaymentService } from '@/payment/payment.service';
 import { ProductEntity } from '@/product/entities/product';
+import { IntegrationEntity } from '@/store/entities/integration';
 import { StoreEntity } from '@/store/entities/store';
 import { envs, JwtConfig, JwtStrategy, TypeormConfig } from '@app/common';
 import { AsaasModule } from '@app/utils/asaas/asaas.module';
@@ -34,6 +35,7 @@ import { OrderService } from './order.service';
       ProductEntity,
       StoreEntity,
       BillEntity,
+      IntegrationEntity,
     ]),
     TypeormConfig,
     JwtConfig,

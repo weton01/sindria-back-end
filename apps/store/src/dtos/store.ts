@@ -2,7 +2,17 @@ import { AddressEntity } from '@/address/entities/address';
 import { AsaasCompanyType } from '@app/utils/asaas/enums/company-type';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEmail, IsEnum, IsISO8601, IsNotEmpty, IsString, IsUrl, IsUUID, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsEnum,
+  IsISO8601,
+  IsNotEmpty,
+  IsString,
+  IsUrl,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 
 class AuxSingleDto {
   @ApiProperty({
@@ -14,79 +24,78 @@ class AuxSingleDto {
 }
 
 class Meta {
-
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  name: string
+  name: string;
 
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  email: string
+  email: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  cpfCnpj: string
+  cpfCnpj: string;
 
   @ApiProperty()
   @IsISO8601()
   @IsNotEmpty()
-  birthDate: string
+  birthDate: string;
 
   @ApiProperty()
   @IsEnum(AsaasCompanyType)
   @IsNotEmpty()
-  companyType: AsaasCompanyType
+  companyType: AsaasCompanyType;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  phone: string
+  phone: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  mobilePhone: string
+  mobilePhone: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  address: string
+  address: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  addressNumber: string
+  addressNumber: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  complement: string
+  complement: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  province: string
+  province: string;
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  postalCode: string
+  postalCode: string;
 }
 
 export class StoreDto {
   @ApiProperty()
   @IsArray()
-  @IsUrl({}, {each: true})
+  @IsUrl({}, { each: true })
   @IsNotEmpty()
   images: string[];
 
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  name: string; 
+  name: string;
 
   @ApiProperty()
   @IsNotEmpty()

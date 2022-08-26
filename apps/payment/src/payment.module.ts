@@ -1,3 +1,5 @@
+import { UserEntity } from '@/auth/entities/user';
+import { IntegrationEntity } from '@/store/entities/integration';
 import { envs, TypeormConfig } from '@app/common';
 import { AsaasModule } from '@app/utils/asaas/asaas.module';
 import { AsaasMode } from '@app/utils/asaas/enums/asaas-mode';
@@ -10,7 +12,7 @@ import { PaymentService } from './payment.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BillEntity]),
+    TypeOrmModule.forFeature([BillEntity, UserEntity]),
     AsaasModule.register({
       MODE: AsaasMode.dev,
       X_API_KEY: envs.ASAAS_TOKEN,

@@ -40,8 +40,10 @@ export class AsaasWebookEntity {
       ]);
       return [p1.data, p2.data, p3.data];
     } catch (err) {
-      console.log(err);
-      throw new BadRequestException(err?.response?.data);
+      if (err?.response?.data)
+        throw new BadRequestException(err?.response?.data);
+      else if (err?.response) throw new BadRequestException(err?.response);
+      else throw new BadRequestException(err);
     }
   }
 }
