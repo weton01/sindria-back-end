@@ -1,6 +1,9 @@
+import { UserEntity } from '@/auth/entities/user';
 import { ExtraCreditCard } from '@/order/dtos/order';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderStoreEntity } from '@/order/entities/order-store';
+import { IntegrationEntity } from '@/store/entities/integration';
+import { envs, UserTypes } from '@app/common';
 import { AsaasService } from '@app/utils/asaas/asaas.service';
 import { AsaasSplit } from '@app/utils/asaas/inputs/create-charge';
 import { AsaasCreateWebhookCbOutput } from '@app/utils/asaas/outputs/create-webhookcb';
@@ -17,6 +20,9 @@ export class PaymentService {
     private readonly cypervService: CypervService,
     @InjectRepository(BillEntity)
     private readonly repository: Repository<BillEntity>,
+
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   private calculateTotalAmount(orderStores: OrderStoreEntity[]): number {
@@ -31,13 +37,41 @@ export class PaymentService {
 
   private createSplits(
     orderStores: OrderStoreEntity[],
-    installments,
+    installments: number,
+    walletId: string,
   ): AsaasSplit[] {
-    return orderStores.map((os) => ({
-      walletId: os?.store?.paymentIntegration?.meta?.digitalAccount?.walletId,
-      fixedValue:
-        (os.totalAmount - (os.totalAmount * 0.0199 + 0.49)) / installments,
-    }));
+    const systemFee = parseFloat(envs.PAYMENT_FEE);
+    const splits = orderStores.map(
+      (os): AsaasSplit => ({
+        walletId: os?.store?.paymentIntegration?.meta?.digitalAccount?.walletId,
+        fixedValue:
+          (os.totalAmount - (os.totalAmount * (0.0199 + systemFee) + 0.49)) /
+          installments,
+      }),
+    );
+    splits.push({
+      walletId: walletId,
+      percentualValue: systemFee * 100,
+    });
+
+    return splits;
+  }
+
+  private async getCustomerId(): Promise<{
+    walletId: string;
+    customer: string;
+  }> {
+    const user = await this.userRepository.findOne({
+      where: { type: 'admin' },
+      relations: ['integrations'],
+    });
+
+    const { meta } = user.integrations[0];
+
+    return {
+      walletId: meta.digitalAccount.walletId,
+      customer: meta.customer.id,
+    };
   }
 
   async createCreditCardBill(
@@ -48,7 +82,9 @@ export class PaymentService {
     const dueDate: Date = new Date();
 
     const totalAmount = this.calculateTotalAmount(order.ordersStores);
-    const split = this.createSplits(order.ordersStores, installments);
+    const { customer, walletId } = await this.getCustomerId();
+
+    const split = this.createSplits(order.ordersStores, installments, walletId);
 
     const charge = await this.asaasService.charge.createChargeCredit({
       creditCard: {
@@ -60,7 +96,7 @@ export class PaymentService {
       },
       creditCardHolderInfo,
       billingType: order.invoiceType,
-      customer: order.ordersStores[0].store.paymentIntegration.meta.customer.id,
+      customer: customer,
       description: '',
       dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
       split,
@@ -89,11 +125,13 @@ export class PaymentService {
     const dueDate: Date = new Date();
 
     const totalAmount = this.calculateTotalAmount(order.ordersStores);
-    const split = this.createSplits(order.ordersStores, installments);
+    const { customer, walletId } = await this.getCustomerId();
+
+    const split = this.createSplits(order.ordersStores, installments, walletId);
 
     const charge = await this.asaasService.charge.createChargeBoleto({
       billingType: order.invoiceType,
-      customer: order.ordersStores[0].store.paymentIntegration.meta.customer.id,
+      customer,
       description: '',
       dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
       split,
@@ -125,11 +163,13 @@ export class PaymentService {
     const dueDate: Date = new Date();
 
     const totalAmount = this.calculateTotalAmount(order.ordersStores);
-    const split = this.createSplits(order.ordersStores, 1);
+    const { customer, walletId } = await this.getCustomerId();
+
+    const split = this.createSplits(order.ordersStores, 1, walletId);
 
     const charge = await this.asaasService.charge.createChargePix({
       billingType: order.invoiceType,
-      customer: order.ordersStores[0].store.paymentIntegration.meta.customer.id,
+      customer,
       description: '',
       dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
       split,

@@ -37,6 +37,9 @@ import { UserEntity } from './entities/user';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { BcryptAdapter } from '@app/utils/bcrypt/bcrypt';
+import { AsaasCreateDigitalCC } from '@app/utils/asaas/inputs/create-digitalcc';
+import { AsaasCompanyType } from '@app/utils/asaas/enums/company-type';
+import { envs } from '@app/common';
 
 @Controller()
 export class AuthController {
@@ -71,6 +74,33 @@ export class AuthController {
     const user = await this.authService.create({
       ...userDto,
     });
+
+    delete user.password;
+    delete user.activationCode;
+
+    return user;
+  }
+
+  @Post('/signup/admin/:password')
+  async signupAdmin(
+    @Param('password') password: string,
+    @Body() userDto: CreateUserDto,
+  ): Promise<any> {
+    const dt: AsaasCreateDigitalCC = {
+      name: envs.ASAAS_NAME,
+      email: envs.ASAAS_EMAIL,
+      cpfCnpj: envs.ASAAS_CPFCNPJ,
+      companyType: AsaasCompanyType[envs.ASAAS_COMPANY_TYPE],
+      birthDate: envs.ASAAS_BIRTHDATE,
+      phone: envs.ASAAS_PHONE,
+      mobilePhone: envs.ASAAS_MOBILE_PHONE,
+      address: envs.ASAAS_ADDRESS,
+      addressNumber: envs.ASAAS_ADDRESS_NUMBER,
+      complement: envs.ASAAS_COMPLEMENT,
+      province: envs.ASAAS_PROVINCE,
+      postalCode: envs.ASAAS_POST_CODE,
+    };
+    const user = await this.authService.createAdmin(password, userDto, dt);
 
     delete user.password;
     delete user.activationCode;

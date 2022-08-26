@@ -1,9 +1,10 @@
-import { FilterDto } from '@app/common';
+import { envs, FilterDto, UserTypes } from '@app/common';
 import { BcryptAdapter } from '@app/utils/bcrypt/bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -19,7 +20,10 @@ import {
   UpdateUserDto,
 } from './dtos';
 import { UserEntity } from './entities/user';
-import { Repository } from 'typeorm'
+import { Connection, Repository } from 'typeorm';
+import { IntegrationEntity } from '@/store/entities/integration';
+import { AsaasService } from '@app/utils/asaas/asaas.service';
+import { AsaasCreateDigitalCC } from '@app/utils/asaas/inputs/create-digitalcc';
 
 @Injectable()
 export class AuthService {
@@ -37,12 +41,17 @@ export class AuthService {
   ];
 
   constructor(
+    private connection: Connection,
+
     @InjectRepository(UserEntity)
     private readonly repository: Repository<UserEntity>,
+    @InjectRepository(IntegrationEntity)
+    private readonly integrationRepository: Repository<IntegrationEntity>,
     private readonly bcryptAdapter: BcryptAdapter,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
-  ) { }
+    private readonly asaasService: AsaasService,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
     const rdm = 1000 + Math.random() * 9000;
@@ -77,6 +86,104 @@ export class AuthService {
     });
 
     return await this.repository.save(tempUser);
+  }
+
+  async createAdmin(
+    password: string,
+    createUserDto: CreateUserDto,
+    integrationDto: AsaasCreateDigitalCC,
+  ): Promise<UserEntity> {
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    const rdm = 1000 + Math.random() * 9000;
+    const activationCode = Math.floor(rdm).toString();
+
+    const [foundAdmin, foundAccount] = await Promise.all([
+      this.repository.findOne({
+        where: { type: UserTypes.admin },
+        select: this.userSelect,
+      }),
+
+      this.repository.findOne({
+        where: { email: createUserDto.email },
+        select: this.userSelect,
+      }),
+    ]);
+
+    if (foundAdmin) {
+      throw new ForbiddenException(
+        'administrador já cadastrado em nosso sistema',
+      );
+    }
+
+    if (password !== envs.ADMIN_PASSWORD) {
+      throw new ForbiddenException(
+        'você não tem permissões para utilizar este recurso',
+      );
+    }
+
+    if (foundAccount) {
+      throw new ConflictException('e-mail já cadastrado em nosso sistema');
+    }
+
+    createUserDto.password = await this.bcryptAdapter.hash(
+      createUserDto.password,
+    );
+
+    try {
+      const digitalAccount =
+        await this.asaasService.digitalAccount.createDigitalAccount(
+          integrationDto,
+        );
+
+      const customer = await this.asaasService.customer.createCustomer({
+        ...integrationDto,
+        observations: "there isn't observations",
+        externalReference: 'null',
+        notificationDisabled: true,
+      });
+
+      const webhook = await this.asaasService.webhook.createWebhook({
+        apiVersion: 3,
+        authToken: digitalAccount.apiKey,
+        email: digitalAccount.email,
+        enabled: true,
+        interrupted: false,
+        url: `${envs.PROD_URL}/payment/v1/charge/webhook`,
+      });
+
+      const tempUser = await this.repository.create({
+        ...createUserDto,
+        email: createUserDto.email.toLowerCase(),
+        activationCode,
+        type: UserTypes.admin,
+        active: true,
+      });
+
+      const user = await queryRunner.manager.save(tempUser);
+
+      const tempIntegration = this.integrationRepository.create({
+        meta: {
+          digitalAccount,
+          customer,
+        },
+        webhook,
+        user,
+      });
+
+      await queryRunner.manager.save(tempIntegration);
+
+      await queryRunner.commitTransaction();
+
+      return tempUser;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async createAuth2(createUserDto: CreateUserDto): Promise<string> {

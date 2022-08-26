@@ -14,7 +14,7 @@ export class AsaasAccEntity {
   }
 
   public async createDigitalAccount(
-    body: AsaasCreateDigitalCC
+    body: AsaasCreateDigitalCC,
   ): Promise<AsaasCreateDigitalCCOutput> {
     try {
       const { data }: { data: AsaasCreateDigitalCCOutput } = await axios.post(
@@ -22,14 +22,17 @@ export class AsaasAccEntity {
         body,
         {
           headers: {
-            access_token: this.X_API_KEY
-          }
-        }
+            access_token: this.X_API_KEY,
+          },
+        },
       );
-  
+
       return data;
-    } catch (err) { 
-      throw new BadRequestException(err?.response?.data)
+    } catch (err) {
+      if (err?.response?.data)
+        throw new BadRequestException(err?.response?.data);
+      else if (err?.response) throw new BadRequestException(err?.response);
+      else throw new BadRequestException(err);
     }
   }
 }

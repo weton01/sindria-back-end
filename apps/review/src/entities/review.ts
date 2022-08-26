@@ -45,11 +45,15 @@ export class ReviewEntity {
   })
   product: ProductEntity;
 
-  @ManyToOne(() => OrderProductEntity, (orderProductEntity) => orderProductEntity.reviews, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @ManyToOne(
+    () => OrderProductEntity,
+    (orderProductEntity) => orderProductEntity.reviews,
+    {
+      cascade: true,
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
   orderProduct: OrderProductEntity;
 
   constructor(entity?: Partial<ReviewEntity>) {

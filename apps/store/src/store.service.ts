@@ -61,15 +61,7 @@ export class StoreService {
         await this.asaasService.digitalAccount.createDigitalAccount(dto.meta);
 
       const customer = await this.asaasService.customer.createCustomer({
-        name: dto.meta.name,
-        email: dto.meta.email,
-        cpfCnpj: dto.meta.cpfCnpj,
-        phone: dto.meta.phone,
-        mobilePhone: dto.meta.mobilePhone,
-        address: dto.meta.address,
-        addressNumber: dto.meta.addressNumber,
-        complement: dto.meta.complement,
-        postalCode: dto.meta.postalCode,
+        ...dto.meta,
         observations: "there isn't observations",
         externalReference: 'null',
         notificationDisabled: true,
@@ -81,10 +73,8 @@ export class StoreService {
         email: digitalAccount.email,
         enabled: true,
         interrupted: false,
-        url: `${envs.PROD_URL}/payment/v1/charge/webhook`
-      })
-
-      console.log('webhook', webhook)
+        url: `${envs.PROD_URL}/payment/v1/charge/webhook`,
+      });
 
       const tempDto = { ...dto };
       delete tempDto.meta;
@@ -100,7 +90,7 @@ export class StoreService {
           digitalAccount,
           customer,
         },
-        webhook
+        webhook,
       });
 
       const store = await queryRunner.manager.save(tempStore);

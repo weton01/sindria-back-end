@@ -8,10 +8,10 @@ import { OrderProductEntity } from '@/order/entities/order-product';
 import { OrderStoreEntity } from '@/order/entities/order-store';
 import { ProductEntity } from '@/product/entities/product';
 import { ReviewEntity } from '@/review/entities/review';
+import { IntegrationEntity } from '@/store/entities/integration';
 import { StoreEntity } from '@/store/entities/store';
 import { UserTypes } from '@app/common/enums/user-type';
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'; 
-
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 
 import {
   Entity,
@@ -113,6 +113,12 @@ export class UserEntity {
 
   @OneToMany(() => CouponEntity, (coupons) => coupons.user)
   coupons: CouponEntity[];
+
+  @OneToMany(() => IntegrationEntity, (integrations) => integrations.user, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  integrations: IntegrationEntity[];
 
   constructor(entity?: Partial<UserEntity>) {
     this.id = entity?.id;
