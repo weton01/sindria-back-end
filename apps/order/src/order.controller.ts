@@ -63,6 +63,8 @@ export class OrderController {
       const bill: BillEntity = await this.paymentService.createPixBill(order);
       return { order, bill };
     }
+
+    
   }
 
   @Get('/')

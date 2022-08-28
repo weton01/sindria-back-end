@@ -43,7 +43,7 @@ export class OrderService {
     private readonly productRepository: Repository<ProductEntity>,
     @InjectRepository(StoreEntity)
     private readonly storeRepository: Repository<StoreEntity>,
-  ) {}
+  ) { }
 
   private createOrderProducts(
     orderProducts: OrderProductEntity[],
@@ -286,17 +286,38 @@ export class OrderService {
     }
   }
 
-  public async createOrder(
-    userId: string,
-    dto: OrderDto,
-  ): Promise<OrderEntity> {
-    const [foundUser, foundAddress] = await Promise.all([
+  public async createDebitOrder(userId: string, dto: OrderDto): Promise<any> {
+    const [foundUser, foundCreditCard, foundAddress] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
-      this.addressRepository.findOne({ id: dto.address.id }),
+      this.creditCardRepository.findOne({
+        id: dto.creditCard.id,
+        user: { id: userId },
+      }),
+      this.addressRepository.findOne({
+        id: dto.address.id,
+        user: { id: userId },
+      }),
     ]);
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
 
-    if (!foundAddress) throw new NotFoundException('endereço não encontrado');
+    if (!dto.installments) {
+      throw new BadRequestException('numero de parcelas são obrigatórias');
+    }
+
+    if (!dto.extraCreditCard) {
+      throw new BadRequestException('informações do cartão são obrigatórias');
+    }
+
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
+
+    if (!foundCreditCard) {
+      throw new NotFoundException('cartão de crédito não encontrado');
+    }
+
+    if (!foundAddress) {
+      throw new NotFoundException('endereço não encontrado');
+    }
 
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -311,6 +332,7 @@ export class OrderService {
         freezePurchaser: foundUser,
         invoiceType: dto.invoiceType,
         address: foundAddress,
+        creditCard: foundCreditCard,
         ordersStores: orderStores,
         purchaser: foundUser,
       });
