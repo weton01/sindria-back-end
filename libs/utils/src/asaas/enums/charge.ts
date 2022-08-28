@@ -3,9 +3,6 @@ export enum AsaasBillingType {
   CREDIT_CARD = 'CREDIT_CARD',
   PIX = 'PIX',
   UNDEFINED = 'UNDEFINED',
-  DEBIT_CARD = 'DEBIT_CARD',
-  TRANSFER = 'TRANSFER',
-  DEPOSIT = 'DEPOSIT',
 }
 
 export enum AsaasDiscountType {

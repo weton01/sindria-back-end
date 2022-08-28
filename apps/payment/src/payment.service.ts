@@ -8,8 +8,9 @@ import { AsaasService } from '@app/utils/asaas/asaas.service';
 import { AsaasSplit } from '@app/utils/asaas/inputs/create-charge';
 import { AsaasCreateWebhookCbOutput } from '@app/utils/asaas/outputs/create-webhookcb';
 import { CypervService } from '@app/utils/cyperv/cyperv.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { NotFoundError } from 'rxjs';
 import { Repository } from 'typeorm';
 import { BillEntity } from './entities/bill';
 
@@ -23,7 +24,7 @@ export class PaymentService {
 
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-  ) {}
+  ) { }
 
   private calculateTotalAmount(orderStores: OrderStoreEntity[]): number {
     let totalAmount = 0;
@@ -65,6 +66,10 @@ export class PaymentService {
       where: { type: 'admin' },
       relations: ['integrations'],
     });
+
+    if (!user) {
+      throw new NotFoundException('administrador não encontrado')
+    }
 
     const { meta } = user.integrations[0];
 
@@ -114,6 +119,52 @@ export class PaymentService {
       value: charge.value,
       installmentCount: installments,
       installmentValue: totalAmount / installments,
+      order,
+      meta: {},
+    });
+
+    return await this.repository.save(bill);
+  }
+
+  async createDebitCardBill(
+    order: OrderEntity,
+    creditCardHolderInfo: ExtraCreditCard,
+  ) {
+    const dueDate: Date = new Date();
+
+    const totalAmount = this.calculateTotalAmount(order.ordersStores);
+    const { customer, walletId } = await this.getCustomerId();
+
+    const split = this.createSplits(order.ordersStores, 1, walletId);
+
+    const charge = await this.asaasService.charge.createChargeCredit({
+      creditCard: {
+        ccv: this.cypervService.decrypt(order.creditCard.cvc),
+        expiryMonth: order.creditCard.expirationDate.split('/')[0],
+        expiryYear: order.creditCard.expirationDate.split('/')[1],
+        holderName: order.creditCard.name,
+        number: this.cypervService.decrypt(order.creditCard.number),
+      },
+      creditCardHolderInfo,
+      billingType: order.invoiceType,
+      customer: customer,
+      description: '',
+      dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
+      split,
+      value: totalAmount,
+      externalReference: 'null',
+      installmentCount: 1,
+      installmentValue: totalAmount / 1,
+    });
+
+    const bill = this.repository.create({
+      billingType: charge.billingType,
+      extenalId: charge.id,
+      status: charge.status,
+      dueDate: charge.dueDate,
+      value: charge.value,
+      installmentCount: 1,
+      installmentValue: totalAmount / 1,
       order,
       meta: {},
     });

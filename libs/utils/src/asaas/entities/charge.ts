@@ -63,6 +63,26 @@ export class AsaasChargeEntity {
     }
   }
 
+  public async createChargeDebit(
+    body: AsaasCreateChargeCredit,
+  ): Promise<AsaasCreateChargeOutput> {
+    try {
+      const { data }: { data: AsaasCreateChargeOutput } = await axios.post(
+        `${this.URL}/api/v3/payments`,
+        body,
+        {
+          headers: {
+            access_token: this.X_API_KEY,
+          },
+        },
+      );
+
+      return data;
+    } catch (err) {
+      throw new BadRequestException(err?.response?.data);
+    }
+  }
+
   public async createChargePix(
     body: AsaasCreateChargePix,
   ): Promise<AsaasCreateChargeOutput> {
