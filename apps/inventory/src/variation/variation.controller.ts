@@ -47,7 +47,7 @@ export class VariationController {
   @UseGuards(JwtAuthGuard)
   async createColorVariation(
     @Req() req,
-    @Body() dto: CreateVariationColorDto,
+    @Body() dto: CreateVariationColorDto[],
     @Param('productId') productId,
   ): Promise<any> {
     const { user } = req;

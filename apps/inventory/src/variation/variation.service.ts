@@ -100,16 +100,13 @@ export class VariationsService {
   async createColor(
     userId: string,
     productId: string,
-    dto: CreateVariationColorDto,
-  ): Promise<VariationEntity> {
-    const [foundUser, foundProduct, foundVariation] = await Promise.all([
+    dto: CreateVariationColorDto[],
+  ): Promise<VariationEntity[]> {
+    const [foundUser, foundProduct] = await Promise.all([
       this.userRepository.findOne({ id: userId }),
       this.productRepository.findOne({
         where: { id: productId },
         relations: ['user'],
-      }),
-      this.repository.findOne({
-        where: { color: dto.color, product: { id: productId } },
       }),
     ]);
 
@@ -117,16 +114,16 @@ export class VariationsService {
 
     if (!foundProduct) throw new NotFoundException('produto não encontrado');
 
-    if (foundVariation) throw new ConflictException('cor já cadastrada');
-
     if (foundProduct.user.id !== userId)
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
 
-    const tempVariation = await this.repository.create({
-      ...dto,
+    const formatColor = dto.map((item) => ({
+      ...item,
       product: foundProduct,
       type: VariationTypes.color,
-    });
+    }));
+
+    const tempVariation = await this.repository.create(formatColor);
 
     return await this.repository.save(tempVariation);
   }
