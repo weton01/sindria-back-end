@@ -50,21 +50,23 @@ export class OrderService {
     queryRunner: QueryRunner,
   ) {
     return orderProducts.map(async (p) => {
-      const product = await this.productRepository.findOne({
-        where: { id: p.product.id },
-        relations: ['user', 'tags', 'categories', 'brand'],
-      });
+      const [product, mutation] = await Promise.all([
+        this.productRepository.findOne({
+          where: { id: p.product.id },
+          relations: ['user', 'tags', 'categories', 'brand'],
+        }),
+        this.mutationRepository.findOne({
+          where: { id: p.mutation.id },
+          relations: ['variations'],
+        })
+      ]) 
 
       if (!product) {
         throw new BadRequestException('produto não encontrado');
       }
 
       p.user = product.user;
-
-      const mutation = await this.mutationRepository.findOne({
-        where: { id: p.mutation.id },
-        relations: ['variations'],
-      });
+ 
 
       if (!mutation) {
         throw new BadRequestException('mutação não encontrada');

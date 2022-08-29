@@ -1,7 +1,7 @@
-import { AsaasChargeStatus } from '../enums/charge';
+import { AsaasChargeStatusWebhook } from '../enums/charge';
 import { AsaasCreateChargeOutput } from './create-charge';
 
 export interface AsaasCreateWebhookCbOutput {
-  event: AsaasChargeStatus;
+  event: AsaasChargeStatusWebhook;
   payment: AsaasCreateChargeOutput;
 }

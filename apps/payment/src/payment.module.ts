@@ -1,5 +1,6 @@
 import { UserEntity } from '@/auth/entities/user';
-import { IntegrationEntity } from '@/store/entities/integration';
+import { OrderEntity } from '@/order/entities/order';
+import { StoreEntity } from '@/store/entities/store';
 import { envs, TypeormConfig } from '@app/common';
 import { AsaasModule } from '@app/utils/asaas/asaas.module';
 import { AsaasMode } from '@app/utils/asaas/enums/asaas-mode';
@@ -12,7 +13,7 @@ import { PaymentService } from './payment.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BillEntity, UserEntity]),
+    TypeOrmModule.forFeature([BillEntity, UserEntity, StoreEntity, OrderEntity]),
     AsaasModule.register({
       MODE: AsaasMode.dev,
       X_API_KEY: envs.ASAAS_TOKEN,
@@ -26,6 +27,6 @@ import { PaymentService } from './payment.service';
     }),
   ],
   controllers: [PaymentController],
-  providers: [PaymentService],
+  providers: [PaymentService,  ],
 })
-export class PaymentModule {}
+export class PaymentModule { }

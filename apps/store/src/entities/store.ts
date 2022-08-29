@@ -34,6 +34,15 @@ export class StoreEntity {
   })
   active: boolean;
 
+  @Column({
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    transformer: floatTransformer,
+    default: 0.00
+  })
+  balance: number;
+
   @CreateDateColumn()
   created_at?: Date;
 

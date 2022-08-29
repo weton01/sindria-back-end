@@ -59,14 +59,7 @@ export class StoreService {
 
       const digitalAccount =
         await this.asaasService.digitalAccount.createDigitalAccount(dto.meta);
-
-      const customer = await this.asaasService.customer.createCustomer({
-        ...dto.meta,
-        observations: "there isn't observations",
-        externalReference: 'null',
-        notificationDisabled: true,
-      });
-
+ 
       const webhook = await this.asaasService.webhook.createWebhook({
         apiVersion: 3,
         authToken: digitalAccount.apiKey,
@@ -87,8 +80,7 @@ export class StoreService {
 
       const tempIntegration = this.integrationRepository.create({
         meta: {
-          digitalAccount,
-          customer,
+          digitalAccount, 
         },
         webhook,
       });

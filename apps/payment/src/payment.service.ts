@@ -2,28 +2,30 @@ import { UserEntity } from '@/auth/entities/user';
 import { ExtraCreditCard } from '@/order/dtos/order';
 import { OrderEntity } from '@/order/entities/order';
 import { OrderStoreEntity } from '@/order/entities/order-store';
-import { IntegrationEntity } from '@/store/entities/integration';
-import { envs, UserTypes } from '@app/common';
+import { StoreEntity } from '@/store/entities/store';
+import { envs } from '@app/common';
 import { AsaasService } from '@app/utils/asaas/asaas.service';
+import { AsaasChargeStatus, AsaasChargeStatusWebhook } from '@app/utils/asaas/enums/charge';
 import { AsaasSplit } from '@app/utils/asaas/inputs/create-charge';
 import { AsaasCreateWebhookCbOutput } from '@app/utils/asaas/outputs/create-webhookcb';
 import { CypervService } from '@app/utils/cyperv/cyperv.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from 'rxjs';
 import { Repository } from 'typeorm';
 import { BillEntity } from './entities/bill';
 
 @Injectable()
 export class PaymentService {
   constructor(
-    private readonly asaasService: AsaasService,
     private readonly cypervService: CypervService,
     @InjectRepository(BillEntity)
     private readonly repository: Repository<BillEntity>,
-
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(StoreEntity)
+    private readonly storeRepository: Repository<StoreEntity>,
+    @InjectRepository(OrderEntity)
+    private readonly asaasService: AsaasService,
   ) { }
 
   private calculateTotalAmount(orderStores: OrderStoreEntity[]): number {
@@ -106,7 +108,7 @@ export class PaymentService {
       dueDate: new Date(dueDate.setDate(dueDate.getDate() + 5)).toISOString(),
       split,
       value: totalAmount,
-      externalReference: 'null',
+      externalReference: null,
       installmentCount: installments,
       installmentValue: totalAmount / installments,
     });
@@ -119,7 +121,7 @@ export class PaymentService {
       value: charge.value,
       installmentCount: installments,
       installmentValue: totalAmount / installments,
-      order,
+      order: { id: order.id },
       meta: {},
     });
 
@@ -247,9 +249,110 @@ export class PaymentService {
   }
 
   async chargeWebhook(data: AsaasCreateWebhookCbOutput) {
-    await this.repository.update(
-      { extenalId: data.payment.id },
-      { status: data.event },
-    );
+    if (data.event === AsaasChargeStatusWebhook.PAYMENT_RECEIVED) {
+      const [bill] = await Promise.all([
+        this.repository.findOne({
+          where: { extenalId: data.payment.id },
+          relations: [
+            'order',
+            'order.ordersStores',
+            'order.ordersStores.store',
+            'order.ordersStores.store.paymentIntegration'
+          ]
+        }),
+        this.repository.update(
+          { extenalId: data.payment.id },
+          {
+            status: AsaasChargeStatus.RECEIVED,
+            webhookStatus: data.event
+          },
+        )
+      ])
+
+      const { order } = bill;
+
+      await Promise.all(order.ordersStores.map(async (os) => {
+        const token = os.store.paymentIntegration.meta.digitalAccount.apiKey;
+        const { balance } = await this.asaasService.digitalAccount.getBalance(token);
+        return this.storeRepository.update({ id: os.store.id }, { balance: balance })
+      }))
+    }
+
+    else if (data.event === AsaasChargeStatusWebhook.PAYMENT_OVERDUE) {
+      const [] = await Promise.all([
+        this.repository.update(
+          { extenalId: data.payment.id },
+          { status: AsaasChargeStatus.OVERDUE },
+        )
+      ])
+    }
+
+    else if (data.event === AsaasChargeStatusWebhook.PAYMENT_REFUNDED) {
+      const [bill] = await Promise.all([
+        this.repository.findOne({
+          where: { extenalId: data.payment.id },
+          relations: [
+            'order',
+            'order.ordersStores',
+            'order.ordersStores.store',
+            'order.ordersStores.store.paymentIntegration'
+          ]
+        }),
+        this.repository.update(
+          { extenalId: data.payment.id },
+          {
+            status: AsaasChargeStatus.REFUNDED,
+            webhookStatus: data.event
+          },
+        )
+      ])
+
+      const { order } = bill;
+
+      await Promise.all(order.ordersStores.map(async (os) => {
+        const token = os.store.paymentIntegration.meta.digitalAccount.apiKey;
+        const { balance } = await this.asaasService.digitalAccount.getBalance(token);
+        return this.storeRepository.update({ id: os.store.id }, { balance: balance })
+      }))
+    }
+
+    else if (data.event === AsaasChargeStatusWebhook.PAYMENT_CHARGEBACK_REQUESTED) {
+      const [bill] = await Promise.all([
+        this.repository.findOne({
+          where: { extenalId: data.payment.id },
+          relations: [
+            'order',
+            'order.ordersStores',
+            'order.ordersStores.store',
+            'order.ordersStores.store.paymentIntegration'
+          ]
+        }),
+        this.repository.update(
+          { extenalId: data.payment.id },
+          {
+            status: AsaasChargeStatus.CHARGEBACK_REQUESTED,
+            webhookStatus: data.event
+          },
+        )
+      ])
+
+      const { order } = bill;
+
+      await Promise.all(order.ordersStores.map(async (os) => {
+        const token = os.store.paymentIntegration.meta.digitalAccount.apiKey;
+        const { balance } = await this.asaasService.digitalAccount.getBalance(token);
+        return this.storeRepository.update({ id: os.store.id }, { balance: balance })
+      }))
+    }
+
+    else {
+      this.repository.update(
+        { extenalId: data.payment.id },
+        {
+          webhookStatus: data.event
+        },
+      )
+    }
+
   }
 }

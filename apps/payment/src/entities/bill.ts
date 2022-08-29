@@ -3,6 +3,7 @@ import { floatTransformer } from '@app/common';
 import {
   AsaasBillingType,
   AsaasChargeStatus,
+  AsaasChargeStatusWebhook,
 } from '@app/utils/asaas/enums/charge';
 
 import {
@@ -34,6 +35,13 @@ export class BillEntity {
   status: AsaasChargeStatus;
 
   @Column({
+    type: 'enum',
+    enum: AsaasChargeStatusWebhook,
+    nullable: false,
+  })
+  webhookStatus: AsaasChargeStatusWebhook;
+
+  @Column({
     type: 'numeric',
     precision: 10,
     scale: 2,
@@ -52,7 +60,9 @@ export class BillEntity {
   })
   installmentValue: number;
 
-  @Column()
+  @Column({
+    unique: true
+  })
   extenalId: string;
 
   @Column()

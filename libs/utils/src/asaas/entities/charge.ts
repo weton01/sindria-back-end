@@ -47,6 +47,8 @@ export class AsaasChargeEntity {
     body: AsaasCreateChargeCredit,
   ): Promise<AsaasCreateChargeOutput> {
     try {
+      console.log(body)
+
       const { data }: { data: AsaasCreateChargeOutput } = await axios.post(
         `${this.URL}/api/v3/payments`,
         body,

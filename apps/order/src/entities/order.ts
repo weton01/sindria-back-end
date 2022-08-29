@@ -10,6 +10,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -74,6 +75,7 @@ export class OrderEntity {
     eager: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   bills: BillEntity;
 
   constructor(entity?: Partial<OrderEntity>) {
