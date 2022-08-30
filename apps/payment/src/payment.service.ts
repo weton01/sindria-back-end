@@ -18,14 +18,14 @@ import { BillEntity } from './entities/bill';
 export class PaymentService {
   constructor(
     private readonly cypervService: CypervService,
+    private readonly asaasService: AsaasService,
+
     @InjectRepository(BillEntity)
     private readonly repository: Repository<BillEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(StoreEntity)
     private readonly storeRepository: Repository<StoreEntity>,
-    @InjectRepository(OrderEntity)
-    private readonly asaasService: AsaasService,
   ) { }
 
   private calculateTotalAmount(orderStores: OrderStoreEntity[]): number {
