@@ -11,7 +11,7 @@ $ nest start your-service-name --watch
 ```bash
 $ nest generate app new-service-name
 
-// remember, if you delete a service, you need delete from nest.json
+// remember, if you delete a service, you need delete from nest.json ee
 ```
 
 ## Nestjs docs 
