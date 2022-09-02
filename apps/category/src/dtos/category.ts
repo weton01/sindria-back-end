@@ -12,7 +12,7 @@ export class CategoryDto {
   name: string;
 
   @ApiProperty({
-    description: 'the url of image',
+    description: 'the url of images',
     example: 'https://any_image.com',
   })
   @IsArray()

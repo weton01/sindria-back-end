@@ -355,4 +355,14 @@ export class PaymentService {
     }
 
   }
+
+  async findById(id: string): Promise<BillEntity> {
+    const bill = await this.repository.findOne({ where: { id }, relations: ['order'] });
+
+    if(!bill){
+      throw new NotFoundException('cobrança não encontrada')
+    }
+
+    return bill
+  }
 }

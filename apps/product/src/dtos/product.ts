@@ -1,4 +1,8 @@
 import { CategoryEntity } from '@/category/entities/category';
+import { CreateVariationColorDto } from '@/inventory/variation/dtos/create-color';
+import { CreateVariationSizeDto } from '@/inventory/variation/dtos/create-size';
+import { VariationDto } from '@/inventory/variation/dtos/variation';
+import { VariationEntity } from '@/inventory/variation/entities/variation';
 import { StoreEntity } from '@/store/entities/store';
 import { TagEntity } from '@/tag/entities/tag';
 import { UnitMeasurement } from '@app/common/enums/unit-measurement';
@@ -142,4 +146,14 @@ export class ProductDto {
   @ValidateNested({ each: true })
   @Type(() => AuxSingleDto)
   tags: TagEntity[];
+
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => CreateVariationColorDto)
+  colors: CreateVariationColorDto[];
+
+  @IsArray()
+  @ValidateNested({each: true})
+  @Type(() => CreateVariationSizeDto)
+  sizes: CreateVariationSizeDto[];
 }

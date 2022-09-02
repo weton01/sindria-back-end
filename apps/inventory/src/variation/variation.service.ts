@@ -27,7 +27,7 @@ export class VariationsService {
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(VariationEntity)
     private readonly repository: Repository<VariationEntity>,
-  ) {}
+  ) { }
 
   async createDefault(
     userId: string,
@@ -45,15 +45,22 @@ export class VariationsService {
       }),
     ]);
 
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
 
-    if (!foundProduct) throw new NotFoundException('produto não encontrado');
+    if (!foundProduct) {
+      throw new NotFoundException('produto não encontrado');
+    }
 
-    if (foundVariation) throw new ConflictException('tipo já cadastrado');
+    if (foundVariation) {
+      throw new ConflictException('tipo já cadastrado');
+    }
 
-    if (foundProduct.user.id !== userId)
+    if (foundProduct.user.id !== userId) {
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
-
+    }
+    
     const tempVariation = await this.repository.create({
       ...dto,
       product: foundProduct,
@@ -79,14 +86,21 @@ export class VariationsService {
       }),
     ]);
 
-    if (!foundUser) throw new NotFoundException('usuário não encontrado');
+    if (!foundUser) {
+      throw new NotFoundException('usuário não encontrado');
+    }
 
-    if (!foundProduct) throw new NotFoundException('produto não encontrado');
+    if (!foundProduct) {
+      throw new NotFoundException('produto não encontrado');
+    }
 
-    if (foundVariation) throw new ConflictException('tamanho já cadastrado');
+    if (foundVariation) {
+      throw new ConflictException('tamanho já cadastrado');
+    }
 
-    if (foundProduct.user.id !== userId)
+    if (foundProduct.user.id !== userId) {
       throw new ForbiddenException(MessageErrors.forbidenToAccess);
+    }
 
     const tempVariation = await this.repository.create({
       ...dto,

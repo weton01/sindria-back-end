@@ -12,7 +12,7 @@ enum Relations {
 enum Fields {
   id,
   name,
-  image,
+  images,
   created_at,
   updated_at,
 }

@@ -28,7 +28,7 @@ export class CategoryEntity {
   name: string;
 
   @ApiProperty({
-    description: 'the url of image',
+    description: 'the url of images',
     example: 'name_of_icon',
   })
   @Column('simple-array')

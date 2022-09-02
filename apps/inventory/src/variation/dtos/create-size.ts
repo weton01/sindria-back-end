@@ -3,7 +3,7 @@ import { VariationDto } from './variation';
 
 export class CreateVariationSizeDto extends OmitType(VariationDto, [
   'type',
-  'image',
+  'images',
   'color',
   'name',
 ] as const) {}

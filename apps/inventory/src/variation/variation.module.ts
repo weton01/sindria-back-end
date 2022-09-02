@@ -13,5 +13,6 @@ import { VariationsService } from './variation.service';
   ],
   controllers: [VariationController],
   providers: [VariationsService, JwtStrategy],
+  exports: [VariationsService]
 })
 export class VariationModule {}

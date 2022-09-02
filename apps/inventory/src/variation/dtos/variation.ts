@@ -67,7 +67,7 @@ export class VariationDto {
   })
   @IsUrl()
   @IsNotEmpty()
-  image: string;
+  images: string;
 
   @ApiProperty({
     example: '#000',

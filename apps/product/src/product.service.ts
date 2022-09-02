@@ -20,6 +20,8 @@ import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
 import { StoreEntity } from '@/store/entities/store';
 import { TagEntity } from '@/tag/entities/tag';
+import { VariationsService } from '@/inventory/variation/variation.service';
+import { MutationService } from '@/inventory/mutation/mutation.service';
 
 @Injectable()
 export class ProductService {
@@ -39,7 +41,9 @@ export class ProductService {
     private readonly storeRepository: Repository<StoreEntity>,
     @InjectRepository(TagEntity)
     private readonly tagRepository: Repository<TagEntity>,
-  ) {}
+    private readonly variationService: VariationsService,
+    private readonly mutationService: MutationService,
+  ) { }
 
   private formatQueryString(
     prefix: string,
@@ -99,11 +103,11 @@ export class ProductService {
       throw new NotFoundException('loja não encontrado');
     }
 
-    if ((foundTags.findIndex(item => item === undefined)) >= 0){
+    if ((foundTags.findIndex(item => item === undefined)) >= 0) {
       throw new NotFoundException('alguma tag não foi encontrada');
     }
 
-    if ((foundCategories.findIndex(item => item === undefined)) >= 0){
+    if ((foundCategories.findIndex(item => item === undefined)) >= 0) {
       throw new NotFoundException('alguma categoria não foi encontrada');
     }
 
@@ -133,7 +137,48 @@ export class ProductService {
       momCategories: momCategories.map((item) => item[1]),
     });
 
-    return await this.repository.save(tempProduct);
+    const product = await this.repository.save(tempProduct);
+
+    //creating colors
+    const colors = await Promise.all(dto.colors.map(color => this.variationService.createColor(
+      userId,
+      product.id,
+      color
+    )))
+
+    //creating sizes
+    const sizes = await Promise.all(dto.sizes.map(size => this.variationService.createSize(
+      userId,
+      product.id,
+      size
+    )))
+
+    const mutations: any = []
+
+    for (let i = 0; i < colors.length; i++) {
+      for (let j = 0; j < sizes.length; j++) {
+        mutations.push({
+          stock: 1,
+          variations: [
+            {
+              id: colors[i].id
+            },
+            {
+              id: sizes[j].id
+            }
+          ]
+        })
+      }
+    }
+
+    //creating mutations
+    await Promise.all(mutations.map(mutation => this.mutationService.create(
+      userId,
+      product.id,
+      mutation
+    )))
+
+    return product
   }
 
   async update(
@@ -204,6 +249,10 @@ export class ProductService {
         'store',
       ],
     });
+
+    if (!product) {
+      throw new NotFoundException('produto não encontrado')
+    }
 
     const splice = product.name.split(' ')[0];
 
@@ -299,37 +348,37 @@ export class ProductService {
     const productQuery = [
       hasCategories
         ? this.formatQueryString(
-            'ProductEntity_ProductEntity__categories.categoriesId',
-            qParams.getAll('p.category'),
-            'OR',
-          )
+          'ProductEntity_ProductEntity__categories.categoriesId',
+          qParams.getAll('p.category'),
+          'OR',
+        )
         : ``,
       hasTags
         ? this.formatQueryString(
-            'ProductEntity_ProductEntity__tags.tagsId',
-            qParams.getAll('p.tag'),
-            'OR',
-          )
+          'ProductEntity_ProductEntity__tags.tagsId',
+          qParams.getAll('p.tag'),
+          'OR',
+        )
         : ``,
       hasVariations
         ? this.formatQueryString(
-            'ProductEntity__variations.id',
-            qParams.getAll('p.variation'),
-            'OR',
-          )
+          'ProductEntity__variations.id',
+          qParams.getAll('p.variation'),
+          'OR',
+        )
         : ``,
       hasBrands
         ? this.formatQueryString(
-            'ProductEntity__brand.id',
-            qParams.getAll('p.brand'),
-            'OR',
-          )
+          'ProductEntity__brand.id',
+          qParams.getAll('p.brand'),
+          'OR',
+        )
         : ``,
       hasName ? `ProductEntity.name LIKE '%${qParams.get('p.name')}%'` : ``,
       hasMinAmount && hasMaxAmount
         ? `ProductEntity.netAmount >= ${qParams.get(
-            'p.minAmount',
-          )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
+          'p.minAmount',
+        )} AND  ProductEntity.netAmount <= ${qParams.get('p.maxAmount')}`
         : ``,
     ];
 
@@ -433,7 +482,7 @@ export class ProductService {
             'SUM(obp.quantity) as salesQuantity',
             'b.name',
             'b.id',
-            'b.image',
+            'b.images',
           ])
           .leftJoin('obp.brand', 'b')
           .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
@@ -448,7 +497,7 @@ export class ProductService {
             'SUM(obp.quantity) as salesQuantity',
             'c.name',
             'c.id',
-            'c.image',
+            'c.images',
           ])
           .leftJoin('obp.categories', 'c')
           .where(`obp.created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)`)
@@ -516,7 +565,7 @@ export class ProductService {
 
     const url = await this.s3.createPresignedPost({
       Bucket: envs.AWS_BUCKER_NAME,
-      Conditions: [{ acl: 'public-read' }, { 'Content-Type': 'image/webp' }],
+      Conditions: [{ acl: 'public-read' }, { 'Content-Type': 'images/webp' }],
       Fields: {
         key: key,
       },

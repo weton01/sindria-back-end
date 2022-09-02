@@ -2,7 +2,7 @@ import { OmitType } from '@nestjs/swagger';
 import { VariationDto } from './variation';
 
 export class UpdateVariationSizeDto extends OmitType(VariationDto, [
-  'image',
+  'images',
   'type',
   'color',
   'name',

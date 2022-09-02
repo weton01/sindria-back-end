@@ -20,7 +20,7 @@ export class ReviewEntity {
   description: string;
 
   @Column('simple-array')
-  image: string[];
+  images: string[];
 
   @Column()
   rating: number;

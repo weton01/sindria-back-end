@@ -1,5 +1,8 @@
 import { UserEntity } from '@/auth/entities/user';
 import { CategoryEntity } from '@/category/entities/category';
+import { MutationModule } from '@/inventory/mutation/mutation.module';
+import { VariationModule } from '@/inventory/variation/variation.module';
+import { VariationsService } from '@/inventory/variation/variation.service';
 import { OrderProductEntity } from '@/order/entities/order-product';
 import { ReviewEntity } from '@/review/entities/review';
 import { StoreEntity } from '@/store/entities/store';
@@ -33,6 +36,8 @@ import { ProductService } from './product.service';
       },
     }),
     TypeormConfig,
+    VariationModule,
+    MutationModule
   ],
   controllers: [ProductController],
   providers: [ProductService, JwtStrategy],

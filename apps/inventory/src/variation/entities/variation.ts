@@ -34,7 +34,7 @@ export class VariationEntity {
   color?: string;
 
   @Column({ nullable: true })
-  image?: string;
+  images?: string;
 
   @Column({
     type: 'enum',

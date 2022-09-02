@@ -26,5 +26,5 @@ export class ReviewDto {
   @IsArray()
   @IsNotEmpty()
   @IsString({ each: true })
-  image: string[];
+  images: string[];
 }

@@ -19,5 +19,6 @@ import { MutationService } from './mutation.service';
   ],
   controllers: [MutationController],
   providers: [MutationService, JwtStrategy],
+  exports: [MutationService]
 })
 export class MutationModule {}

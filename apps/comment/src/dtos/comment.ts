@@ -4,7 +4,7 @@ import { CommentEntity } from '../entities/comment';
 
 export class CommentDto {
   @ApiProperty({
-    description: 'the url of image',
+    description: 'the url of images',
     example: 'https://any_image.com',
   })
   @IsString()

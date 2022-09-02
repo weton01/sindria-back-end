@@ -10,7 +10,7 @@ enum Relations {
 enum Fields {
   id,
   name,
-  image,
+  images,
   groupName,
   created_at,
   updated_at,
