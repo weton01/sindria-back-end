@@ -456,7 +456,14 @@ export class ProductService {
   }
 
   async findHome(): Promise<any> {
-    const [bestSalers, bestBrands, bestCategories, bestReviews] =
+    const [
+      bestSalers,
+      bestBrands,
+      bestCategories,
+      bestReviews,
+      rdmProducts,
+      rdmCategories
+    ] =
       await Promise.all([
         this.orderProductRepository
           .createQueryBuilder('obp')
@@ -524,6 +531,14 @@ export class ProductService {
           .groupBy('r.productId')
           .limit(6)
           .getRawMany(),
+
+        this.repository.query(
+          `SELECT * FROM products ORDER BY RAND() LIMIT 7`
+        ),
+
+        this.repository.query(
+          `SELECT * FROM categories WHERE groupName IS NULL ORDER BY RAND() LIMIT 7`
+        )
       ]);
 
     return {
@@ -531,6 +546,8 @@ export class ProductService {
       bestBrands,
       bestCategories,
       bestReviews,
+      rdmProducts,
+      rdmCategories
     };
   }
 

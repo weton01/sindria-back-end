@@ -28,6 +28,7 @@ export const TypeormConfig = TypeOrmModule.forRoot({
   password: envs.DB_CONNECTION_PASSWORD,
   database: envs.NODE_ENV,
   synchronize: true,
+  verboseRetryLog: true,
   entities: [
     UserEntity,
     AddressEntity,
